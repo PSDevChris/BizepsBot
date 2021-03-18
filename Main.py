@@ -267,7 +267,9 @@ async def _esagame(ctx):
         USER = "esamarathon"
         r = requests.get(f'https://api.twitch.tv/helix/search/channels?query={USER}',
                          headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
-        data = json.loads(r.content)['data'][0]
+        data = json.loads(r.content)['data']
+        data = list(
+            filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
 
         if data['game_id'] is not None:
             gamerequest = requests.get(f'https://api.twitch.tv/helix/games?id={data["game_id"]}',
