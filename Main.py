@@ -1,9 +1,9 @@
 import time
 from datetime import datetime, timedelta
 import json
+import os
 import discord
 from discord.ext import commands, tasks
-from discord.ext.commands.errors import CheckFailure
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -93,36 +93,51 @@ async def _puncounter(ctx):
 
 
 @bot.command(name="mobbing", aliases=["Mobbing", "Hasssprech", "hasssprech"])
-async def _mobbingcounter(ctx):
-    with open('Botcount.json') as CounterJsonRead:
-        data = json.load(CounterJsonRead)
-        data['Mobbing'] = int(data['Mobbing']) + 1
-    with open('Botcount.json', 'w') as write_file:
-        json.dump(data, write_file)
-        MobbingNumber = data['Mobbing']
-    await ctx.send(f"Auf dem Discord wurde bereits {MobbingNumber} Mal Hasssprech betrieben! Pfui!")
+async def _mobbingcounter(ctx, ChangeArg=""):
+    if ChangeArg in ["add," "+"]:
+        with open('Botcount.json') as CounterJsonRead:
+            data = json.load(CounterJsonRead)
+            data['Mobbing'] = int(data['Mobbing']) + 1
+        with open('Botcount.json', 'w') as write_file:
+            json.dump(data, write_file)
+            MobbingNumber = data['Mobbing']
+        await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
+    else:
+        with open('Botcount.json') as CounterJsonRead:
+            data = json.load(CounterJsonRead)
+            await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
 
 
 @bot.command(name="Leak", aliases=["leak"])
-async def _leakcounter(ctx):
-    with open('Botcount.json') as CounterJsonRead:
-        data = json.load(CounterJsonRead)
-        data['Leak'] = int(data['Leak']) + 1
-    with open('Botcount.json', 'w') as write_file:
-        json.dump(data, write_file)
-        LeakNumber = data['Leak']
-    await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
+async def _leakcounter(ctx, ChangeArg=""):
+    if ChangeArg in ["add", "+"]:
+        with open('Botcount.json') as CounterJsonRead:
+            data = json.load(CounterJsonRead)
+            data['Leak'] = int(data['Leak']) + 1
+        with open('Botcount.json', 'w') as write_file:
+            json.dump(data, write_file)
+            LeakNumber = data['Leak']
+        await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
+    else:
+        with open('Botcount.json') as CounterJsonRead:
+            data = json.load(CounterJsonRead)
+            await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
 
 
 @bot.command(name="Salz", aliases=["salz"])
-async def _salzcounter(ctx):
-    with open('Botcount.json') as CounterJsonRead:
-        data = json.load(CounterJsonRead)
-        data['Salz'] = int(data['Salz']) + 1
-    with open('Botcount.json', 'w') as write_file:
-        json.dump(data, write_file)
-        SalzNumber = data['Salz']
-    await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:804768879661416518>")
+async def _salzcounter(ctx, ChangeArg=""):
+    if ChangeArg in ["add", "+"]:
+        with open('Botcount.json') as CounterJsonRead:
+            data = json.load(CounterJsonRead)
+            data['Salz'] = int(data['Salz']) + 1
+        with open('Botcount.json', 'w') as write_file:
+            json.dump(data, write_file)
+            SalzNumber = data['Salz']
+        await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:804768879661416518>")
+    else:
+        with open('Botcount.json') as CounterJsonRead:
+            data = json.load(CounterJsonRead)
+            await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!")
 
 
 @bot.command(name="Pub", aliases=["pub"])
@@ -356,6 +371,16 @@ async def _gameremover(ctx):
         json.dump(groups, write_file)
     await ctx.send("Die Verabredung in diesem Channel wurde (sofern vorhanden) gelöscht.")
 
+@bot.command(name="ext", aliases=["Ext", "Extension", "extension"])
+@commands.check(_is_admin)
+async def _extensions(ctx, ChangeArg, extension):
+    if ChangeArg == "load":
+        bot.load_extension(f"cogs.{extension}")
+        await ctx.send(f"Extension {extension} wurde geladen und ist jetzt einsatzbereit.")
+    elif ChangeArg == "unload":
+        bot.unload_extension(f"cogs.{extension}")
+        await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
+
 ### Tasks Section ###
 
 
@@ -456,6 +481,10 @@ async def GameReminder():
 async def on_ready():
     print(f"We have logged in as {bot.user}")
     print(f"Bot Startup Time: {datetime.now()}")
+    for File in os.listdir('./cogs'):
+        if File.endswith('.py'):
+            bot.load_extension(f"cogs.{File[:-3]}")
+            print(f"Extension {File[:-3]} geladen.")
     TwitchLiveCheck.start()
     GameReminder.start()
 
@@ -507,13 +536,13 @@ async def _joingame_error(ctx, error):
 
 @_mcreboot.error
 async def _mcreboot_error(ctx, error):
-    if isinstance(error, CheckFailure):
+    if isinstance(error, commands.CheckFailure):
         await ctx.send("Na na, das darfst du nicht! <@248181624485838849> guck dir diesen Schelm an!")
 
 
 @_twitchmanagement.error
 async def _twitchmanagement_error(ctx, error):
-    if isinstance(error, CheckFailure):
+    if isinstance(error, commands.CheckFailure):
         await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier möchte jemand in die Twitchliste oder aus der Twitchliste entfernt werden!")
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("Hier fehlte der User oder der Parameter!")
@@ -521,7 +550,7 @@ async def _twitchmanagement_error(ctx, error):
 
 @_gameremover.error
 async def _gameremover_error(ctx, error):
-    if isinstance(error, CheckFailure):
+    if isinstance(error, commands.CheckFailure):
         await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier muss ein Reminder gelöscht werden!")
 
 bot.run(TOKEN)
