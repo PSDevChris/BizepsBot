@@ -122,7 +122,7 @@ async def _salzcounter(ctx):
     with open('Botcount.json', 'w') as write_file:
         json.dump(data, write_file)
         SalzNumber = data['Salz']
-    await ctx.send(f"Doto konnte sich schon {SalzNumber} Mal nicht beherrschen! Böser Doto!<:salt:804768879661416518>")
+    await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:804768879661416518>")
 
 
 @bot.command(name="Pub", aliases=["pub"])
@@ -132,15 +132,15 @@ async def _pubtypo(ctx):
 
 @bot.command(name="Ehrenmann", aliases=["ehrenmann"])
 async def _ehrenmann(ctx):
-    global latestauthor
-    await ctx.send(f"{latestauthor[0]}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
+    await ctx.send(f"{ctx.message.mentions[0].mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
 
 
 @bot.command(name="testgeheim", aliases=["latestmsgtest"])
 async def _latestmsgtest(ctx):
-    global latestmsg
-
-    await ctx.send(f"{ctx.author.name}, deine letzte Nachricht war {latestmsg[0]}")
+    channel = bot.get_channel(ctx.message.channel.id)
+    LastMessages = await channel.history(limit=2).flatten()
+    LastMessages.reverse()
+    await ctx.send(f"{ctx.author.mention}, die letzte Nachricht hier war {LastMessages[0].content}.")
 
 
 @bot.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"])
@@ -355,18 +355,6 @@ async def _gameremover(ctx):
     with open("GROUPS.json", "w") as write_file:
         json.dump(groups, write_file)
     await ctx.send("Die Verabredung in diesem Channel wurde (sofern vorhanden) gelöscht.")
-
-    # FoundGroup = list(filter(lambda x: x["channel"] == CurrentChannel, groups))
-    # if FoundGroup:
-    #     for group in groups:
-    #         if group['channel'] == CurrentChannel:
-    #             groups.pop(groups.index(group))
-    #             break
-    #     with open("GROUPS.json", "w") as write_file:
-    #         json.dump(groups, write_file)
-    #     await ctx.send("Die Verabredung in diesem Channel wurde gelöscht.")
-    # else:
-    #     await ctx.send("In diesem Channel gibt es keine Verabredung.")
 
 ### Tasks Section ###
 
