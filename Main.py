@@ -241,41 +241,6 @@ async def _joingame(ctx):
         json.dump(groups, write_file)
 
 
-### Get the GDQ Schedule and show which game is running ###
-
-@bot.command(name="GDQGame", aliases=["gdqgame"])
-async def _gdqgame(ctx):
-    ListOfRuns = []
-    ListOfTime = []
-    GDQ_URL = "https://gamesdonequick.com/schedule"
-    GDQ_REQ = requests.get(GDQ_URL)
-    GDQ_DATAFRAME = pd.read_html(GDQ_REQ.text)
-    for Entry in GDQ_DATAFRAME:
-        ListOfRuns.append(Entry["Run"])
-        ListOfTime.append(Entry["Time & Length"])
-    mydf = pd.DataFrame()
-    for ListElement in ListOfRuns:
-        mydf["Runs"] = ListElement
-    for ListElement in ListOfTime:
-        mydf["Time and Length"] = ListElement
-    for i in range(len(mydf["Time and Length"])):
-        if i % 2 == 0:
-            GameTime = parse(mydf["Time and Length"].iloc[i])
-            GameDuration = datetime.strptime(
-                mydf["Time and Length"].iloc[i+1], "%H:%M:%S")
-            GameDelta = timedelta(
-                hours=GameDuration.hour, minutes=GameDuration.minute, seconds=GameDuration.second)
-            GameTimeStamp = datetime.timestamp(GameTime + GameDelta)
-            if datetime.timestamp(datetime.now()) < GameTimeStamp:
-                await ctx.send(f"Bei GDQ läuft gerade {mydf['Runs'].iloc[i]} {mydf['Runs'].iloc[i+1]}!")
-                break
-        else:
-            if i == len(mydf["Time and Length"])-1:
-                await ctx.send("GDQ ist vorbei, beehre uns bald wieder.")
-            else:
-                continue
-
-
 @bot.command(name="ESAGame", aliases=["esagame"])
 async def _esagame(ctx):
     try:

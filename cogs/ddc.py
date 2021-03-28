@@ -9,7 +9,7 @@ class DDC(commands.Cog):
     # Events
     @commands.Cog.listener()
     async def on_ready(self):
-        print('Extension DCC is ready.')
+        pass
 
     # Commands
     @commands.command()
