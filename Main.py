@@ -132,10 +132,10 @@ async def _salzcounter(ctx, ChangeArg=""):
         data['Salz'] = int(data['Salz']) + 1
         _write_json('Botcount.json', data)
         SalzNumber = data['Salz']
-        await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:804768879661416518>")
+        await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
     else:
         data = _read_json('Botcount.json')
-        await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!")
+        await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
 
 
 @bot.command(name="Pub", aliases=["pub"])
