@@ -6,8 +6,6 @@ import discord
 from discord.ext import commands, tasks
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
-from dateutil.parser import parse
 import paramiko
 
 
