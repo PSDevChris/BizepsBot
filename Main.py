@@ -79,14 +79,19 @@ def _is_admin(ctx):
 
 
 @bot.command(name="pun", aliases=["Pun"])
-async def _puncounter(ctx):
-    with open('Botcount.json') as CounterJsonRead:
-        data = json.load(CounterJsonRead)
-        data['Puns'] = data['Puns'] + 1
-    with open('Botcount.json', 'w') as write_file:
-        json.dump(data, write_file)
-        PunNumber = data['Puns']
-    await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
+async def _puncounter(ctx, ChangeArg):
+    if ChangeArg in ["add," "+"]:
+        with open('Botcount.json') as CounterJsonRead:
+            data = json.load(CounterJsonRead)
+            data['Puns'] = data['Puns'] + 1
+        with open('Botcount.json', 'w') as write_file:
+            json.dump(data, write_file)
+            PunNumber = data['Puns']
+            await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
+    else:
+        with open('Botcount.json') as CounterJsonRead:
+            data = json.load(CounterJsonRead)
+            await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
 
 
 @bot.command(name="mobbing", aliases=["Mobbing", "Hasssprech", "hasssprech"])
