@@ -169,9 +169,8 @@ async def _coronazahlen(ctx):
 @bot.command(name="game", aliases=["Game"])
 @commands.check(_is_gamechannel)
 async def _playgame(ctx, timearg):
-
-    CurrentDate = datetime.now()
     try:
+        CurrentDate = datetime.now()
         GameTime = datetime.strptime(timearg, "%H:%M").time()
         GameDateTime = datetime.combine(CurrentDate, GameTime)
         GameDateTimeTimestamp = GameDateTime.timestamp()
@@ -186,13 +185,11 @@ async def _playgame(ctx, timearg):
     }
 
     try:
-        with open('GROUPS.json', 'r') as read_file:
-            groups = json.load(read_file)
+        groups = _read_json('GROUPS.json')
 
         if not groups:
             groups.append(group)
-            with open('GROUPS.json', 'w') as write_file:
-                json.dump(groups, write_file)
+            _write_json('GROUPS.json', groups)
             await ctx.send("Die Spielrunde wurde eröffnet!")
         else:
             for team in groups:
@@ -201,24 +198,21 @@ async def _playgame(ctx, timearg):
                 else:
                     if team == groups[-1]:
                         groups.append(group)
-                        with open('GROUPS.json', 'w') as write_file:
-                            json.dump(groups, write_file)
+                        _write_json('GROUPS.json', groups)
                         await ctx.send("Die Spielrunde wurde eröffnet!")
                     else:
                         continue
     except json.decoder.JSONDecodeError:
         groups = []
         groups.append(group)
-        with open('GROUPS.json', 'w') as write_file:
-            json.dump(groups, write_file)
+        _write_json('GROUPS.json', groups)
         await ctx.send("Die Spielrunde wurde eröffnet!")
 
 
 @bot.command(name="join", aliases=["Join"])
 @commands.check(_is_gamechannel)
 async def _joingame(ctx):
-    with open('GROUPS.json', 'r') as read_file:
-        groups = json.load(read_file)
+    groups = _read_json('GROUPS.json')
 
     for group in groups:
         if ctx.message.channel.id == group["channel"] and ctx.message.author.mention in group["members"]:
@@ -233,9 +227,7 @@ async def _joingame(ctx):
                 await ctx.send("In diesem Channel wurde noch kein Spiel geplant.")
             else:
                 continue
-    with open('GROUPS.json', 'w') as write_file:
-        json.dump(groups, write_file)
-
+    _write_json('GROUPS.json', groups)
 
 @bot.command(name="ESAGame", aliases=["esagame"])
 async def _esagame(ctx):
@@ -421,8 +413,7 @@ async def TwitchLiveCheck():
 async def GameReminder():
     FoundIndex = []
     CurrentTime = datetime.timestamp(datetime.now())
-    with open('GROUPS.json', 'r') as read_file:
-        groups = json.load(read_file)
+    groups = _read_json('GROUPS.json')
     for reminder in groups:
         if CurrentTime > reminder["time"]:
             Remindchannel = bot.get_channel(reminder["channel"])
@@ -432,9 +423,7 @@ async def GameReminder():
     if FoundIndex:
         for index in FoundIndex:
             groups.pop(index)
-        with open("GROUPS.json", "w") as write_file:
-            json.dump(groups, write_file)
-
+        _write_json('GROUPS.json', groups)
 
 ### Bot Events ###
 
