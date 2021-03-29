@@ -17,7 +17,7 @@ import paramiko
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix=('!'), intents=intents)
 
-### Twitch Functions ###
+### Functions ###
 
 
 def RequestTwitchToken():
@@ -75,71 +75,67 @@ def _is_gamechannel(ctx):
 def _is_admin(ctx):
     return ctx.author.id == 248181624485838849
 
+def _read_json(FileName):
+    with open(f'{FileName}', 'r') as JsonRead:
+        return json.load(JsonRead)
+
+def _write_json(FileName, Content):
+    with open(f'{FileName}', 'w') as JsonWrite:
+        json.dump(Content, JsonWrite)
+
 ### Commands Section ###
 
 
 @bot.command(name="pun", aliases=["Pun"])
-async def _puncounter(ctx, ChangeArg):
-    if ChangeArg in ["add," "+"]:
-        with open('Botcount.json') as CounterJsonRead:
-            data = json.load(CounterJsonRead)
-            data['Puns'] = data['Puns'] + 1
-        with open('Botcount.json', 'w') as write_file:
-            json.dump(data, write_file)
-            PunNumber = data['Puns']
-            await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
+async def _puncounter(ctx, ChangeArg=""):
+    if ChangeArg in ["add", "+"]:
+        data = _read_json('Botcount.json')
+        data['Puns'] = data['Puns'] + 1
+        PunNumber = data['Puns']
+        _write_json('Botcount.json', data)
+        await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
     else:
-        with open('Botcount.json') as CounterJsonRead:
-            data = json.load(CounterJsonRead)
-            await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
 
 
 @bot.command(name="mobbing", aliases=["Mobbing", "Hasssprech", "hasssprech"])
 async def _mobbingcounter(ctx, ChangeArg=""):
-    if ChangeArg in ["add," "+"]:
-        with open('Botcount.json') as CounterJsonRead:
-            data = json.load(CounterJsonRead)
-            data['Mobbing'] = int(data['Mobbing']) + 1
-        with open('Botcount.json', 'w') as write_file:
-            json.dump(data, write_file)
-            MobbingNumber = data['Mobbing']
+    if ChangeArg in ["add", "+"]:
+        data = _read_json('Botcount.json')
+        data['Mobbing'] = int(data['Mobbing']) + 1
+        _write_json('Botcount.json', data)
+        MobbingNumber = data['Mobbing']
         await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
     else:
-        with open('Botcount.json') as CounterJsonRead:
-            data = json.load(CounterJsonRead)
-            await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
 
 
 @bot.command(name="Leak", aliases=["leak"])
 async def _leakcounter(ctx, ChangeArg=""):
     if ChangeArg in ["add", "+"]:
-        with open('Botcount.json') as CounterJsonRead:
-            data = json.load(CounterJsonRead)
-            data['Leak'] = int(data['Leak']) + 1
-        with open('Botcount.json', 'w') as write_file:
-            json.dump(data, write_file)
-            LeakNumber = data['Leak']
+        data = _read_json('Botcount.json')
+        data['Leak'] = int(data['Leak']) + 1
+        _write_json('Botcount.json', data)
+        LeakNumber = data['Leak']
         await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
     else:
-        with open('Botcount.json') as CounterJsonRead:
-            data = json.load(CounterJsonRead)
-            await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
 
 
 @bot.command(name="Salz", aliases=["salz"])
 async def _salzcounter(ctx, ChangeArg=""):
     if ChangeArg in ["add", "+"]:
-        with open('Botcount.json') as CounterJsonRead:
-            data = json.load(CounterJsonRead)
-            data['Salz'] = int(data['Salz']) + 1
-        with open('Botcount.json', 'w') as write_file:
-            json.dump(data, write_file)
-            SalzNumber = data['Salz']
+        data = _read_json('Botcount.json')
+        data['Salz'] = int(data['Salz']) + 1
+        _write_json('Botcount.json', data)
+        SalzNumber = data['Salz']
         await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:804768879661416518>")
     else:
-        with open('Botcount.json') as CounterJsonRead:
-            data = json.load(CounterJsonRead)
-            await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!")
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!")
 
 
 @bot.command(name="Pub", aliases=["pub"])
