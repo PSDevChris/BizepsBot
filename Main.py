@@ -17,9 +17,6 @@ import paramiko
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix=('!'), intents=intents)
 
-latestmsg = []
-latestauthor = []
-
 ### Twitch Functions ###
 
 
@@ -458,16 +455,6 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
-
-    global latestmsg
-    latestmsg.append(message.content)
-    if len(latestmsg) > 2:
-        latestmsg.pop(0)
-
-    global latestauthor
-    latestauthor.append(message.author.name)
-    if len(latestauthor) > 2:
-        latestauthor.pop(-1)
 
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
