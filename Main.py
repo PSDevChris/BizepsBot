@@ -258,14 +258,14 @@ async def _esagame(ctx):
 @commands.check(_is_mcsu)
 async def _mcreboot(ctx):
     try:
-        with open("MC_DATA.json", "r") as MCFILE:
-            MCDATA = json.load(MCFILE)
-            host = MCDATA['MC_HOST']
-            username = MCDATA['MC_USER']
-            password = MCDATA['MC_PW']
-            port = MCDATA['SSH_PORT']
-            KillScreenCommand = "screen -S minecraft -X quit"
-            RebootCommand = "sudo reboot"
+        
+        MCDATA = _read_json('MC_DATA.json')
+        host = MCDATA['MC_HOST']
+        username = MCDATA['MC_USER']
+        password = MCDATA['MC_PW']
+        port = MCDATA['SSH_PORT']
+        KillScreenCommand = "screen -S minecraft -X quit"
+        RebootCommand = "sudo reboot"
 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -302,11 +302,9 @@ async def _twitchmanagement(ctx, ChangeArg, Member):
             await ctx.send("Konnte User nicht hinzufügen.")
     elif ChangeArg in ["del", "-"]:
         try:
-            with open('TWITCHUSER.json', 'r') as TwitchFile:
-                TwitchUser = json.load(TwitchFile)
-                TwitchUser.pop(f"{Member}")
-            with open("TWITCHUSER.json", "w") as write_file:
-                json.dump(TwitchUser, write_file)
+            TwitchUser = _read_json('TWITCHUSER.json')
+            TwitchUser.pop(f"{Member}")
+            _write_json('TWITCHUSER.json', TwitchUser)
             await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
         except:
             await ctx.send("Konnte User nicht entfernen.")
@@ -315,13 +313,11 @@ async def _twitchmanagement(ctx, ChangeArg, Member):
 @bot.command(name="RemGame", aliases=["remgame"])
 @commands.check(_is_admin)
 async def _gameremover(ctx):
-    with open('GROUPS.json', 'r') as read_file:
-        groups = json.load(read_file)
+    groups = _read_json('GROUPS.json')
     CurrentChannel = ctx.message.channel.id
     groups[:] = [dict for dict in groups if dict.get(
         'channel') != CurrentChannel]
-    with open("GROUPS.json", "w") as write_file:
-        json.dump(groups, write_file)
+    _write_json('GROUPS.json', groups)
     await ctx.send("Die Verabredung in diesem Channel wurde (sofern vorhanden) gelöscht.")
 
 @bot.command(name="ext", aliases=["Ext", "Extension", "extension"])
@@ -341,9 +337,8 @@ async def _extensions(ctx, ChangeArg, extension):
 async def TwitchLiveCheck():
     if datetime.timestamp(datetime.now()) > TWITCH_TOKEN_EXPIRES:
         RequestTwitchToken()
-
-    with open("TWITCHUSER.json", "r") as TWITCHUSER:
-        TWITCHUSERNAMES = json.load(TWITCHUSER)
+    
+    TWITCHUSERNAMES = _read_json('TWITCHUSER.json')
 
     for USER, LASTSTATE in TWITCHUSERNAMES.items():
 
@@ -405,8 +400,7 @@ async def TwitchLiveCheck():
 
         if LASTSTATE is not data['is_live']:
             TWITCHUSERNAMES[USER] = data['is_live']
-            with open("TWITCHUSER.json", "w") as write_file:
-                json.dump(TWITCHUSERNAMES, write_file)
+            _write_json('TWITCHUSER.json', TWITCHUSERNAMES)
 
 
 @tasks.loop(seconds=60)
