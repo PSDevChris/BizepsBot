@@ -7,6 +7,7 @@ from discord.ext import commands, tasks
 import requests
 from bs4 import BeautifulSoup
 import paramiko
+import random
 
 
 # To show the whole table, currently unused
@@ -148,8 +149,7 @@ async def _ehrenmann(ctx):
 
 @bot.command(name="testgeheim", aliases=["latestmsgtest"])
 async def _latestmsgtest(ctx):
-    channel = bot.get_channel(ctx.message.channel.id)
-    LastMessages = await channel.history(limit=2).flatten()
+    LastMessages = await ctx.message.channel.history(limit=2).flatten()
     LastMessages.reverse()
     await ctx.send(f"{ctx.author.mention}, die letzte Nachricht hier war {LastMessages[0].content}.")
 
@@ -330,6 +330,25 @@ async def _extensions(ctx, ChangeArg, extension):
         bot.unload_extension(f"cogs.{extension}")
         await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
 
+@bot.group(name="meme", aliases=["Meme"], invoke_without_command=True)
+@commands.has_permissions(attach_files=True)
+async def _memearchiv(ctx):
+    RandomMeme = random.choice(next(os.walk("memes/"))[2])
+    await ctx.send(f"Zufalls-Meme! {RandomMeme}", file=discord.File(f"memes/{RandomMeme}"))
+
+@_memearchiv.command(name="add", aliases=["+"])
+async def _addmeme(ctx):
+    AllFiles = next(os.walk("memes/"))[2]
+    NumberOfFiles= len(AllFiles)
+    LastMessages = await ctx.message.channel.history(limit=2).flatten()
+    LastMessages.reverse()
+    for index, meme in enumerate(LastMessages[0].attachments):
+        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):    
+            await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
+        else:
+            await ctx.send("Nana, das sind aber keine Bilder!")
+    await ctx.send(f"Memes hinzugefügt.")
+
 ### Tasks Section ###
 
 
@@ -373,7 +392,7 @@ async def TwitchLiveCheck():
                 Displayname = USER.title()
             CurrentTime = int(datetime.timestamp(datetime.now()))
             embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
-                0x772ce8), url=f"https://twitch.tv/{USER}")
+                0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.utcnow())
             embed.set_image(
                 url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
             embed.set_author(
