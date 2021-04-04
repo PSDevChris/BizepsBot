@@ -334,7 +334,7 @@ async def _extensions(ctx, ChangeArg, extension):
 @commands.has_permissions(attach_files=True)
 async def _memearchiv(ctx):
     RandomMeme = random.choice(next(os.walk("memes/"))[2])
-    await ctx.send(f"Zufalls-Meme! {RandomMeme}", file=discord.File(f"memes/{RandomMeme}"))
+    await ctx.send("Zufalls-Meme!", file=discord.File(f"memes/{RandomMeme}"))
 
 @_memearchiv.command(name="add", aliases=["+"])
 async def _addmeme(ctx):
@@ -460,9 +460,8 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-    if _isgeneral(message.channel.id) is False:
-        # This line needs to be added so the commands are actually processed
-        await bot.process_commands(message)
+    # This line needs to be added so the commands are actually processed
+    await bot.process_commands(message)
 
 
 @bot.event
