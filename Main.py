@@ -74,15 +74,18 @@ def _is_gamechannel(ctx):
 def _is_admin(ctx):
     return ctx.author.id == 248181624485838849
 
+
 def _read_json(FileName):
     with open(f'{FileName}', 'r') as JsonRead:
         return json.load(JsonRead)
+
 
 def _write_json(FileName, Content):
     with open(f'{FileName}', 'w') as JsonWrite:
         json.dump(Content, JsonWrite)
 
 ### Commands Section ###
+
 
 @bot.group(name="pun",  aliases=["Pun"], invoke_without_command=True)
 async def _puncounter(ctx):
@@ -97,13 +100,13 @@ async def _addpun(ctx):
     PunNumber = data['Puns']
     _write_json('Botcount.json', data)
     await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
-        
 
 
 @bot.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True)
 async def _mobbingcounter(ctx):
     data = _read_json('Botcount.json')
     await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
+
 
 @_mobbingcounter.command(name="add", aliases=["+"])
 async def _addmobbing(ctx):
@@ -112,6 +115,7 @@ async def _addmobbing(ctx):
     _write_json('Botcount.json', data)
     MobbingNumber = data['Mobbing']
     await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
+
 
 @bot.group(name="leak", aliases=["Leak"], invoke_without_command=True)
 async def _leakcounter(ctx):
@@ -126,14 +130,14 @@ async def _addleak(ctx):
     _write_json('Botcount.json', data)
     LeakNumber = data['Leak']
     await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
-        
 
 
 @bot.group(name="salz", aliases=["Salz"], invoke_without_command=True)
 async def _salzcounter(ctx):
     data = _read_json('Botcount.json')
     await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
-    
+
+
 @_salzcounter.command(name="add", aliases=["+"])
 async def _addsalz(ctx):
     data = _read_json('Botcount.json')
@@ -141,7 +145,6 @@ async def _addsalz(ctx):
     _write_json('Botcount.json', data)
     SalzNumber = data['Salz']
     await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
-        
 
 
 @bot.command(name="Pub", aliases=["pub"])
@@ -236,6 +239,7 @@ async def _joingame(ctx):
                 continue
     _write_json('GROUPS.json', groups)
 
+
 @bot.command(name="ESAGame", aliases=["esagame"])
 async def _esagame(ctx):
     try:
@@ -265,7 +269,7 @@ async def _esagame(ctx):
 @commands.check(_is_mcsu)
 async def _mcreboot(ctx):
     try:
-        
+
         MCDATA = _read_json('MC_DATA.json')
         host = MCDATA['MC_HOST']
         username = MCDATA['MC_USER']
@@ -327,6 +331,7 @@ async def _gameremover(ctx):
     _write_json('GROUPS.json', groups)
     await ctx.send("Die Verabredung in diesem Channel wurde (sofern vorhanden) gelöscht.")
 
+
 @bot.command(name="ext", aliases=["Ext", "Extension", "extension"])
 @commands.check(_is_admin)
 async def _extensions(ctx, ChangeArg, extension):
@@ -337,20 +342,22 @@ async def _extensions(ctx, ChangeArg, extension):
         bot.unload_extension(f"cogs.{extension}")
         await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
 
+
 @bot.group(name="meme", aliases=["Meme"], invoke_without_command=True)
 @commands.has_permissions(attach_files=True)
 async def _memearchiv(ctx):
     RandomMeme = random.choice(next(os.walk("memes/"))[2])
     await ctx.send("Zufalls-Meme!", file=discord.File(f"memes/{RandomMeme}"))
 
+
 @_memearchiv.command(name="add", aliases=["+"])
 async def _addmeme(ctx):
     AllFiles = next(os.walk("memes/"))[2]
-    NumberOfFiles= len(AllFiles)
+    NumberOfFiles = len(AllFiles)
     LastMessages = await ctx.message.channel.history(limit=2).flatten()
     LastMessages.reverse()
     for index, meme in enumerate(LastMessages[0].attachments):
-        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):    
+        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
             await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
         else:
             await ctx.send("Nana, das sind aber keine Bilder!")
@@ -363,7 +370,7 @@ async def _addmeme(ctx):
 async def TwitchLiveCheck():
     if datetime.timestamp(datetime.now()) > TWITCH_TOKEN_EXPIRES:
         RequestTwitchToken()
-    
+
     TWITCHUSERNAMES = _read_json('TWITCHUSER.json')
 
     for USER, LASTSTATE in TWITCHUSERNAMES.items():
@@ -446,6 +453,7 @@ async def GameReminder():
         _write_json('GROUPS.json', groups)
 
 ### Bot Events ###
+
 
 @bot.event
 async def on_ready():
