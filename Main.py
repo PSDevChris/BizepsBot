@@ -84,57 +84,64 @@ def _write_json(FileName, Content):
 
 ### Commands Section ###
 
-
-@bot.command(name="pun", aliases=["Pun"])
-async def _puncounter(ctx, ChangeArg=""):
-    if ChangeArg in ["add", "+"]:
-        data = _read_json('Botcount.json')
-        data['Puns'] = data['Puns'] + 1
-        PunNumber = data['Puns']
-        _write_json('Botcount.json', data)
-        await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
-    else:
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
+@bot.group(name="pun",  aliases=["Pun"], invoke_without_command=True)
+async def _puncounter(ctx):
+    data = _read_json('Botcount.json')
+    await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
 
 
-@bot.command(name="mobbing", aliases=["Mobbing", "Hasssprech", "hasssprech"])
-async def _mobbingcounter(ctx, ChangeArg=""):
-    if ChangeArg in ["add", "+"]:
-        data = _read_json('Botcount.json')
-        data['Mobbing'] = int(data['Mobbing']) + 1
-        _write_json('Botcount.json', data)
-        MobbingNumber = data['Mobbing']
-        await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
-    else:
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
+@_puncounter.command(name="pun", aliases=["Pun"])
+async def _addpun(ctx):
+    data = _read_json('Botcount.json')
+    data['Puns'] = data['Puns'] + 1
+    PunNumber = data['Puns']
+    _write_json('Botcount.json', data)
+    await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
+        
 
 
-@bot.command(name="Leak", aliases=["leak"])
-async def _leakcounter(ctx, ChangeArg=""):
-    if ChangeArg in ["add", "+"]:
-        data = _read_json('Botcount.json')
-        data['Leak'] = int(data['Leak']) + 1
-        _write_json('Botcount.json', data)
-        LeakNumber = data['Leak']
-        await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
-    else:
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
+@bot.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True)
+async def _mobbingcounter(ctx):
+    data = _read_json('Botcount.json')
+    await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
+
+@_mobbingcounter.command(name="add", aliases=["+"])
+async def _addmobbing(ctx):
+    data = _read_json('Botcount.json')
+    data['Mobbing'] = int(data['Mobbing']) + 1
+    _write_json('Botcount.json', data)
+    MobbingNumber = data['Mobbing']
+    await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
+
+@bot.group(name="leak", aliases=["Leak"], invoke_without_command=True)
+async def _leakcounter(ctx):
+    data = _read_json('Botcount.json')
+    await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
 
 
-@bot.command(name="Salz", aliases=["salz"])
-async def _salzcounter(ctx, ChangeArg=""):
-    if ChangeArg in ["add", "+"]:
-        data = _read_json('Botcount.json')
-        data['Salz'] = int(data['Salz']) + 1
-        _write_json('Botcount.json', data)
-        SalzNumber = data['Salz']
-        await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
-    else:
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
+@_leakcounter.command(name="add", aliases=["+"])
+async def _addleak(ctx):
+    data = _read_json('Botcount.json')
+    data['Leak'] = int(data['Leak']) + 1
+    _write_json('Botcount.json', data)
+    LeakNumber = data['Leak']
+    await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
+        
+
+
+@bot.group(name="salz", aliases=["Salz"], invoke_without_command=True)
+async def _salzcounter(ctx):
+    data = _read_json('Botcount.json')
+    await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
+    
+@_salzcounter.command(name="add", aliases=["+"])
+async def _addsalz(ctx):
+    data = _read_json('Botcount.json')
+    data['Salz'] = int(data['Salz']) + 1
+    _write_json('Botcount.json', data)
+    SalzNumber = data['Salz']
+    await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
+        
 
 
 @bot.command(name="Pub", aliases=["pub"])
