@@ -360,8 +360,20 @@ async def _addmeme(ctx):
         if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
             await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
         else:
-            await ctx.send("Nana, das sind aber keine Bilder!")
-    await ctx.send(f"Memes hinzugefügt.")
+            pass
+        await ctx.send(f"Memes hinzugefügt.")
+
+@_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"])
+async def _collmeme(ctx, MessageID: int):
+    AllFiles = next(os.walk("memes/"))[2]
+    NumberOfFiles = len(AllFiles)
+    Message = await ctx.fetch_message(MessageID)
+    for index, meme in enumerate(Message.attachments):
+        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+            await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
+        else:
+            pass
+        await ctx.send(f"Die spicy Memes wurden eingesammelt.")
 
 ### Tasks Section ###
 
