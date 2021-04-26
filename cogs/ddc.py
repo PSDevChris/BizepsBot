@@ -12,8 +12,8 @@ class DDC(commands.Cog):
         pass
 
     # Commands
-    @commands.command()
-    async def ping(self, ctx):
+    @commands.command(name="ping", aliases=["Ping"])
+    async def _ping(self, ctx):
         await ctx.send("Pong!")
 
 def setup(bot):

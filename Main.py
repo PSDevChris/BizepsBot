@@ -4,6 +4,7 @@ import json
 import os
 import discord
 from discord.ext import commands, tasks
+from discord.ext.commands import context
 import requests
 from bs4 import BeautifulSoup
 import paramiko
@@ -53,14 +54,7 @@ with open("TOKEN.json", "r") as TOKENFILE:
         RequestTwitchToken()
 
 
-def _isgeneral(channelid):
-    """
-    docstring
-    """
-    return channelid == 539546796939149334
-
-
-def _is_mcsu(ctx):
+def _is_mcsu(ctx: context.Context):
     return ctx.author.id in [247117682875432960, 232561052573892608, 257249704872509441, 248181624485838849]
 
 
@@ -363,6 +357,7 @@ async def _addmeme(ctx):
             pass
         await ctx.send(f"Memes hinzugefügt.")
 
+
 @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"])
 async def _collmeme(ctx, MessageID: int):
     AllFiles = next(os.walk("memes/"))[2]
@@ -472,7 +467,7 @@ async def on_ready():
     print(f"We have logged in as {bot.user}")
     print(f"Bot Startup Time: {datetime.now()}")
     for File in os.listdir('./cogs'):
-        if File.endswith('.py'):
+        if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys():
             bot.load_extension(f"cogs.{File[:-3]}")
             print(f"Extension {File[:-3]} geladen.")
     TwitchLiveCheck.start()
