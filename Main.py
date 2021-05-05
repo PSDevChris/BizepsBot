@@ -42,18 +42,6 @@ def RequestTwitchToken():
         json.dump(data, write_file)
 
 
-with open("TOKEN.json", "r") as TOKENFILE:
-    TOKENDATA = json.load(TOKENFILE)
-    TOKEN = TOKENDATA['DISCORD_TOKEN']
-    TWITCH_CLIENT_ID = TOKENDATA['TWITCH_CLIENT_ID']
-    TWITCH_CLIENT_SECRET = TOKENDATA['TWITCH_CLIENT_SECRET']
-    if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys():
-        TWITCH_TOKEN = TOKENDATA['TWITCH_TOKEN']
-        TWITCH_TOKEN_EXPIRES = TOKENDATA['TWITCH_TOKEN_EXPIRES']
-    else:
-        RequestTwitchToken()
-
-
 def _is_mcsu(ctx: context.Context):
     return ctx.author.id in [247117682875432960, 232561052573892608, 257249704872509441, 248181624485838849]
 
@@ -77,6 +65,21 @@ def _read_json(FileName):
 def _write_json(FileName, Content):
     with open(f'{FileName}', 'w') as JsonWrite:
         json.dump(Content, JsonWrite)
+
+
+### General Settings ###
+
+
+with open("TOKEN.json", "r") as TOKENFILE:
+    TOKENDATA = json.load(TOKENFILE)
+    TOKEN = TOKENDATA['DISCORD_TOKEN']
+    TWITCH_CLIENT_ID = TOKENDATA['TWITCH_CLIENT_ID']
+    TWITCH_CLIENT_SECRET = TOKENDATA['TWITCH_CLIENT_SECRET']
+    if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys():
+        TWITCH_TOKEN = TOKENDATA['TWITCH_TOKEN']
+        TWITCH_TOKEN_EXPIRES = TOKENDATA['TWITCH_TOKEN_EXPIRES']
+    else:
+        RequestTwitchToken()
 
 ### Commands Section ###
 
@@ -470,8 +473,14 @@ async def on_ready():
         if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys():
             bot.load_extension(f"cogs.{File[:-3]}")
             print(f"Extension {File[:-3]} geladen.")
-    TwitchLiveCheck.start()
-    GameReminder.start()
+    try:        
+        TwitchLiveCheck.start()
+    except RuntimeError:
+        print("Der Task TwitchLiveCheck läuft bereits...")
+    try:        
+        GameReminder.start()
+    except RuntimeError:
+        print("Der Task GameReminder läuft bereits...")
 
 
 @bot.event
