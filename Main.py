@@ -473,14 +473,10 @@ async def on_ready():
         if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys():
             bot.load_extension(f"cogs.{File[:-3]}")
             print(f"Extension {File[:-3]} geladen.")
-    try:        
+    if TwitchLiveCheck.is_running() is not True: 
         TwitchLiveCheck.start()
-    except RuntimeError:
-        print("Der Task TwitchLiveCheck läuft bereits...")
-    try:        
+    if GameReminder.is_running() is not True:
         GameReminder.start()
-    except RuntimeError:
-        print("Der Task GameReminder läuft bereits...")
 
 
 @bot.event
