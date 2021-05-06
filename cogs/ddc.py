@@ -12,7 +12,7 @@ class DDC(commands.Cog):
         pass
 
     # Commands
-    @commands.command(name="ping", aliases=["Ping"])
+    @commands.command(name="ping", aliases=["Ping"], brief="Macht Pong")
     async def _ping(self, ctx):
         await ctx.send("Pong!")
 

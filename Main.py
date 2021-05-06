@@ -81,297 +81,353 @@ with open("TOKEN.json", "r") as TOKENFILE:
     else:
         RequestTwitchToken()
 
-### Commands Section ###
+### Commands and Cogs Section ###
 
 
-@bot.group(name="pun",  aliases=["Pun"], invoke_without_command=True)
-async def _puncounter(ctx):
-    data = _read_json('Botcount.json')
-    await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
+class Counter(commands.Cog, name="Counter"):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Der Pun Counter")
+    async def _puncounter(self, ctx):
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
+
+    @_puncounter.command(name="add", aliases=["Add", "+"], brief="Erhöht den Pun Counter")
+    async def _addpun(self, ctx):
+        data = _read_json('Botcount.json')
+        data['Puns'] = data['Puns'] + 1
+        PunNumber = data['Puns']
+        _write_json('Botcount.json', data)
+        await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
+
+    @commands.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True, brief="Der Hasssprech Counter")
+    async def _mobbingcounter(self, ctx):
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
+
+    @_mobbingcounter.command(name="add", aliases=["+"], brief="Erhöht den Hasssprech Counter")
+    async def _addmobbing(self, ctx):
+        data = _read_json('Botcount.json')
+        data['Mobbing'] = int(data['Mobbing']) + 1
+        _write_json('Botcount.json', data)
+        MobbingNumber = data['Mobbing']
+        await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
+
+    @commands.group(name="leak", aliases=["Leak"], invoke_without_command=True, brief="Der Leak Counter")
+    async def _leakcounter(self, ctx):
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
+
+    @_leakcounter.command(name="add", aliases=["+"], brief="Erhöht den Leak Counter")
+    async def _addleak(self, ctx):
+        data = _read_json('Botcount.json')
+        data['Leak'] = int(data['Leak']) + 1
+        _write_json('Botcount.json', data)
+        LeakNumber = data['Leak']
+        await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
+
+    @commands.group(name="salz", aliases=["Salz"], invoke_without_command=True, brief="Der Salz Counter")
+    async def _salzcounter(self, ctx):
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
+
+    @_salzcounter.command(name="add", aliases=["+"], brief="Erhöht den Salz Counter")
+    async def _addsalz(self, ctx):
+        data = _read_json('Botcount.json')
+        data['Salz'] = int(data['Salz']) + 1
+        _write_json('Botcount.json', data)
+        SalzNumber = data['Salz']
+        await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
 
 
-@_puncounter.command(name="pun", aliases=["Pun"])
-async def _addpun(ctx):
-    data = _read_json('Botcount.json')
-    data['Puns'] = data['Puns'] + 1
-    PunNumber = data['Puns']
-    _write_json('Botcount.json', data)
-    await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
+class Fun(commands.Cog, name="Schabernack"):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name="Pub", aliases=["pub"], brief="Typos...")
+    async def _pubtypo(self, ctx):
+        await ctx.send(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
+
+    @commands.command(name="Ehrenmann", aliases=["ehrenmann"], brief="Der erwähnte User ist ein Ehrenmann!")
+    async def _ehrenmann(self, ctx):
+        await ctx.send(f"{ctx.message.mentions[0].mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
+
+    @commands.command(name="testgeheim", aliases=["latestmsgtest"], brief="Super geheim")
+    async def _latestmsgtest(self, ctx):
+        LastMessages = await ctx.message.channel.history(limit=2).flatten()
+        LastMessages.reverse()
+        await ctx.send(f"{ctx.author.mention}, die letzte Nachricht hier war {LastMessages[0].content}.")
+
+    @commands.group(name="meme", aliases=["Meme"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
+    @commands.has_permissions(attach_files=True)
+    async def _memearchiv(self, ctx):
+        RandomMeme = random.choice(next(os.walk("memes/"))[2])
+        await ctx.send("Zufalls-Meme!", file=discord.File(f"memes/{RandomMeme}"))
+
+    @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
+    async def _addmeme(self, ctx):
+        AllFiles = next(os.walk("memes/"))[2]
+        NumberOfFiles = len(AllFiles)
+        LastMessages = await ctx.message.channel.history(limit=2).flatten()
+        LastMessages.reverse()
+        for index, meme in enumerate(LastMessages[0].attachments):
+            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
+            else:
+                pass
+            await ctx.send(f"Memes hinzugefügt.")
+
+    @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
+    async def _collmeme(self, ctx, MessageID: int):
+        AllFiles = next(os.walk("memes/"))[2]
+        NumberOfFiles = len(AllFiles)
+        Message = await ctx.fetch_message(MessageID)
+        for index, meme in enumerate(Message.attachments):
+            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
+            else:
+                pass
+            await ctx.send(f"Die spicy Memes wurden eingesammelt.")
 
 
-@bot.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True)
-async def _mobbingcounter(ctx):
-    data = _read_json('Botcount.json')
-    await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
+class Corona(commands.Cog, name="Corona"):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"], brief="Gibt aktuelle Coronazahlen aus")
+    async def _coronazahlen(self, ctx):
+        CORONA_URL = "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html"
+        CORONA_PAGE = requests.get(CORONA_URL)
+        CORONA_RESULT = BeautifulSoup(CORONA_PAGE.content, "html.parser")
+        CORONA_TABLE = CORONA_RESULT.find("table")
+        CORONA_ROWS = CORONA_TABLE.find_all("strong")
+        CORONA_CASES_YESTERDAY = CORONA_ROWS[2].text
+        CORONA_CASES_WEEK = CORONA_ROWS[3].text
+        await ctx.send(f"Seit gestern gab es {CORONA_CASES_YESTERDAY} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {CORONA_CASES_WEEK} Fälle\U0001F637")
 
 
-@_mobbingcounter.command(name="add", aliases=["+"])
-async def _addmobbing(ctx):
-    data = _read_json('Botcount.json')
-    data['Mobbing'] = int(data['Mobbing']) + 1
-    _write_json('Botcount.json', data)
-    MobbingNumber = data['Mobbing']
-    await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
+class Meetings(commands.Cog, name="Meetings"):
 
+    def __init__(self, bot):
+        self.bot = bot
 
-@bot.group(name="leak", aliases=["Leak"], invoke_without_command=True)
-async def _leakcounter(ctx):
-    data = _read_json('Botcount.json')
-    await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
+    @commands.command(name="game", aliases=["Game"], brief="Startet eine Verabredung")
+    @commands.check(_is_gamechannel)
+    async def _playgame(self, ctx, timearg):
+        try:
+            CurrentDate = datetime.now()
+            GameTime = datetime.strptime(timearg, "%H:%M").time()
+            GameDateTime = datetime.combine(CurrentDate, GameTime)
+            GameDateTimeTimestamp = GameDateTime.timestamp()
+        except ValueError:
+            await ctx.send("Na na, das ist keine Uhrzeit!")
+            return
 
+        group = {
+            "channel": ctx.message.channel.id,
+            "time": GameDateTimeTimestamp,
+            "members": [f"{ctx.message.author.mention}"]
+        }
 
-@_leakcounter.command(name="add", aliases=["+"])
-async def _addleak(ctx):
-    data = _read_json('Botcount.json')
-    data['Leak'] = int(data['Leak']) + 1
-    _write_json('Botcount.json', data)
-    LeakNumber = data['Leak']
-    await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
+        try:
+            groups = _read_json('GROUPS.json')
 
-
-@bot.group(name="salz", aliases=["Salz"], invoke_without_command=True)
-async def _salzcounter(ctx):
-    data = _read_json('Botcount.json')
-    await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
-
-
-@_salzcounter.command(name="add", aliases=["+"])
-async def _addsalz(ctx):
-    data = _read_json('Botcount.json')
-    data['Salz'] = int(data['Salz']) + 1
-    _write_json('Botcount.json', data)
-    SalzNumber = data['Salz']
-    await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
-
-
-@bot.command(name="Pub", aliases=["pub"])
-async def _pubtypo(ctx):
-    await ctx.send(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
-
-
-@bot.command(name="Ehrenmann", aliases=["ehrenmann"])
-async def _ehrenmann(ctx):
-    await ctx.send(f"{ctx.message.mentions[0].mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
-
-
-@bot.command(name="testgeheim", aliases=["latestmsgtest"])
-async def _latestmsgtest(ctx):
-    LastMessages = await ctx.message.channel.history(limit=2).flatten()
-    LastMessages.reverse()
-    await ctx.send(f"{ctx.author.mention}, die letzte Nachricht hier war {LastMessages[0].content}.")
-
-
-@bot.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"])
-async def _coronazahlen(ctx):
-    CORONA_URL = "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html"
-    CORONA_PAGE = requests.get(CORONA_URL)
-    CORONA_RESULT = BeautifulSoup(CORONA_PAGE.content, "html.parser")
-    CORONA_TABLE = CORONA_RESULT.find("table")
-    CORONA_ROWS = CORONA_TABLE.find_all("strong")
-    CORONA_CASES_YESTERDAY = CORONA_ROWS[2].text
-    CORONA_CASES_WEEK = CORONA_ROWS[3].text
-    await ctx.send(f"Seit gestern gab es {CORONA_CASES_YESTERDAY} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {CORONA_CASES_WEEK} Fälle\U0001F637")
-
-
-@bot.command(name="game", aliases=["Game"])
-@commands.check(_is_gamechannel)
-async def _playgame(ctx, timearg):
-    try:
-        CurrentDate = datetime.now()
-        GameTime = datetime.strptime(timearg, "%H:%M").time()
-        GameDateTime = datetime.combine(CurrentDate, GameTime)
-        GameDateTimeTimestamp = GameDateTime.timestamp()
-    except ValueError:
-        await ctx.send("Na na, das ist keine Uhrzeit!")
-        return
-
-    group = {
-        "channel": ctx.message.channel.id,
-        "time": GameDateTimeTimestamp,
-        "members": [f"{ctx.message.author.mention}"]
-    }
-
-    try:
-        groups = _read_json('GROUPS.json')
-
-        if not groups:
+            if not groups:
+                groups.append(group)
+                _write_json('GROUPS.json', groups)
+                await ctx.send("Die Spielrunde wurde eröffnet!")
+            else:
+                for team in groups:
+                    if ctx.message.channel.id == team["channel"]:
+                        await ctx.send(f"{ctx.author.name}, hier ist schon eine Spielrunde geplant. Joine einfach mit !join")
+                    else:
+                        if team == groups[-1]:
+                            groups.append(group)
+                            _write_json('GROUPS.json', groups)
+                            await ctx.send("Die Spielrunde wurde eröffnet!")
+                        else:
+                            continue
+        except json.decoder.JSONDecodeError:
+            groups = []
             groups.append(group)
             _write_json('GROUPS.json', groups)
             await ctx.send("Die Spielrunde wurde eröffnet!")
-        else:
-            for team in groups:
-                if ctx.message.channel.id == team["channel"]:
-                    await ctx.send(f"{ctx.author.name}, hier ist schon eine Spielrunde geplant. Joine einfach mit !join")
-                else:
-                    if team == groups[-1]:
-                        groups.append(group)
-                        _write_json('GROUPS.json', groups)
-                        await ctx.send("Die Spielrunde wurde eröffnet!")
-                    else:
-                        continue
-    except json.decoder.JSONDecodeError:
-        groups = []
-        groups.append(group)
-        _write_json('GROUPS.json', groups)
-        await ctx.send("Die Spielrunde wurde eröffnet!")
 
+    @commands.command(name="join", aliases=["Join"], brief="Tritt einer Verabredung bei")
+    @commands.check(_is_gamechannel)
+    async def _joingame(self, ctx):
+        groups = _read_json('GROUPS.json')
 
-@bot.command(name="join", aliases=["Join"])
-@commands.check(_is_gamechannel)
-async def _joingame(ctx):
-    groups = _read_json('GROUPS.json')
-
-    for group in groups:
-        if ctx.message.channel.id == group["channel"] and ctx.message.author.mention in group["members"]:
-            await ctx.send(f"{ctx.message.author.name}, du bist bereits als Teilnehmer im geplanten Spiel.")
-        elif ctx.message.channel.id == group["channel"] and f"{ctx.message.author.mention}" not in group["members"]:
-            FoundIndex = groups.index(group)
-            groups[FoundIndex]["members"].append(
-                f"{ctx.message.author.mention}")
-            await ctx.send(f"{ctx.author.mention}, du wurdest dem Spiel hinzugefügt.")
-        else:
-            if group == groups[-1]:
-                await ctx.send("In diesem Channel wurde noch kein Spiel geplant.")
+        for group in groups:
+            if ctx.message.channel.id == group["channel"] and ctx.message.author.mention in group["members"]:
+                await ctx.send(f"{ctx.message.author.name}, du bist bereits als Teilnehmer im geplanten Spiel.")
+            elif ctx.message.channel.id == group["channel"] and f"{ctx.message.author.mention}" not in group["members"]:
+                FoundIndex = groups.index(group)
+                groups[FoundIndex]["members"].append(
+                    f"{ctx.message.author.mention}")
+                await ctx.send(f"{ctx.author.mention}, du wurdest dem Spiel hinzugefügt.")
             else:
-                continue
-    _write_json('GROUPS.json', groups)
+                if group == groups[-1]:
+                    await ctx.send("In diesem Channel wurde noch kein Spiel geplant.")
+                else:
+                    continue
+        _write_json('GROUPS.json', groups)
+
+    ## Error Handling for Meetings Cog ###
+    @_playgame.error
+    async def _playgame_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("Bitte gib eine Uhrzeit an!")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("Das hier ist kein Unterhaltungschannel, hier kann man sich nicht verabreden.")
+
+    @_joingame.error
+    async def _joingame_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("Das hier ist kein Unterhaltungschannel, hier kann man sich nicht verabreden.")
 
 
-@bot.command(name="ESAGame", aliases=["esagame"])
-async def _esagame(ctx):
-    try:
-        USER = "esamarathon"
-        r = requests.get(f'https://api.twitch.tv/helix/search/channels?query={USER}',
-                         headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
-        data = json.loads(r.content)['data']
-        data = list(
-            filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
+class Games(commands.Cog, name="Games"):
 
-        if data['game_id'] is not None:
-            gamerequest = requests.get(f'https://api.twitch.tv/helix/games?id={data["game_id"]}',
-                                       headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
-            game = json.loads(gamerequest.content)['data'][0]
-        else:
-            game = {"name": "Irgendwas"}
+    def __init__(self, bot):
+        self.bot = bot
 
-        await ctx.send(f"Bei ESA wird gerade {game['name']} gespielt!")
-    except IndexError:
-        # Username does not exist or Username is wrong, greetings to Schnabeltier
-        print("Der ESA Kanal ist weg. Gelöscht?!")
-    except json.decoder.JSONDecodeError:
-        print("Twitch API scheint nicht erreichbar.")
-
-
-@bot.command(name="mcreboot", aliases=["MCReboot"])
-@commands.check(_is_mcsu)
-async def _mcreboot(ctx):
-    try:
-
-        MCDATA = _read_json('MC_DATA.json')
-        host = MCDATA['MC_HOST']
-        username = MCDATA['MC_USER']
-        password = MCDATA['MC_PW']
-        port = MCDATA['SSH_PORT']
-        KillScreenCommand = "screen -S minecraft -X quit"
-        RebootCommand = "sudo reboot"
-
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(host, port, username, password)
-
-        ssh.exec_command(KillScreenCommand)
-        time.sleep(10)
-        ssh.exec_command(RebootCommand)
-        print(f"{ctx.author.name} hat den Minecraft Server neugestartet.")
-        ssh.close()
-
-        await ctx.send(f"{ctx.author.name} hat den Minecraft Server neugestartet.")
-
-    except json.JSONDecodeError:
-        print("Konnte das Minecraft JSON File nicht laden...")
-    except:
-        print("Etwas anderes ist schief gelaufen... Ist der Minecraft Pi erreichbar?")
-
-
-@bot.command(name="tw", aliases=["twitch", "Twitch", "TW"])
-@commands.check(_is_admin)
-async def _twitchmanagement(ctx, ChangeArg, Member):
-    if ChangeArg in ["add", "+"]:
+    @commands.command(name="ESAGame", aliases=["esagame"], brief="Gibt das aktuelle ESA Game aus")
+    async def _esagame(self, ctx):
         try:
-            with open('TWITCHUSER.json', 'r+') as TwitchFile:
-                TwitchUser = json.load(TwitchFile)
-                TwitchMember = {f"{Member}": False}
-                TwitchUser.update(TwitchMember)
-                # Seek is enough since the new String is longer otherwise TwitchFile.truncate() would be needed
-                TwitchFile.seek(0)
-                json.dump(TwitchUser, TwitchFile)
-            await ctx.send(f"{Member} zur Twitchliste hinzugefügt!")
-        except:
-            await ctx.send("Konnte User nicht hinzufügen.")
-    elif ChangeArg in ["del", "-"]:
+            USER = "esamarathon"
+            r = requests.get(f'https://api.twitch.tv/helix/search/channels?query={USER}',
+                             headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
+            data = json.loads(r.content)['data']
+            data = list(
+                filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
+
+            if data['game_id'] is not None:
+                gamerequest = requests.get(f'https://api.twitch.tv/helix/games?id={data["game_id"]}',
+                                           headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
+                game = json.loads(gamerequest.content)['data'][0]
+            else:
+                game = {"name": "Irgendwas"}
+
+            await ctx.send(f"Bei ESA wird gerade {game['name']} gespielt!")
+        except IndexError:
+            # Username does not exist or Username is wrong, greetings to Schnabeltier
+            print("Der ESA Kanal ist weg. Gelöscht?!")
+        except json.decoder.JSONDecodeError:
+            print("Twitch API scheint nicht erreichbar.")
+
+
+class Administration(commands.Cog, name="Administration"):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name="mcreboot", aliases=["MCReboot"], brief="Rebootet den MC Server")
+    @commands.check(_is_mcsu)
+    async def _mcreboot(self, ctx):
         try:
-            TwitchUser = _read_json('TWITCHUSER.json')
-            TwitchUser.pop(f"{Member}")
-            _write_json('TWITCHUSER.json', TwitchUser)
-            await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
+
+            MCDATA = _read_json('MC_DATA.json')
+            host = MCDATA['MC_HOST']
+            username = MCDATA['MC_USER']
+            password = MCDATA['MC_PW']
+            port = MCDATA['SSH_PORT']
+            KillScreenCommand = "screen -S minecraft -X quit"
+            RebootCommand = "sudo reboot"
+
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(host, port, username, password)
+
+            ssh.exec_command(KillScreenCommand)
+            time.sleep(10)
+            ssh.exec_command(RebootCommand)
+            print(f"{ctx.author.name} hat den Minecraft Server neugestartet.")
+            ssh.close()
+
+            await ctx.send(f"{ctx.author.name} hat den Minecraft Server neugestartet.")
+
+        except json.JSONDecodeError:
+            print("Konnte das Minecraft JSON File nicht laden...")
         except:
-            await ctx.send("Konnte User nicht entfernen.")
+            print("Etwas anderes ist schief gelaufen... Ist der Minecraft Pi erreichbar?")
+
+    @commands.command(name="tw", aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File")
+    @commands.check(_is_admin)
+    async def _twitchmanagement(self, ctx, ChangeArg, Member):
+        if ChangeArg in ["add", "+"]:
+            try:
+                with open('TWITCHUSER.json', 'r+') as TwitchFile:
+                    TwitchUser = json.load(TwitchFile)
+                    TwitchMember = {f"{Member}": False}
+                    TwitchUser.update(TwitchMember)
+                    # Seek is enough since the new String is longer otherwise TwitchFile.truncate() would be needed
+                    TwitchFile.seek(0)
+                    json.dump(TwitchUser, TwitchFile)
+                await ctx.send(f"{Member} zur Twitchliste hinzugefügt!")
+            except:
+                await ctx.send("Konnte User nicht hinzufügen.")
+        elif ChangeArg in ["del", "-"]:
+            try:
+                TwitchUser = _read_json('TWITCHUSER.json')
+                TwitchUser.pop(f"{Member}")
+                _write_json('TWITCHUSER.json', TwitchUser)
+                await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
+            except:
+                await ctx.send("Konnte User nicht entfernen.")
+
+    @commands.command(name="RemGame", aliases=["remgame"], brief="Löscht die Verabredung")
+    @commands.check(_is_admin)
+    async def _gameremover(self, ctx):
+        groups = _read_json('GROUPS.json')
+        CurrentChannel = ctx.message.channel.id
+        groups[:] = [dict for dict in groups if dict.get(
+            'channel') != CurrentChannel]
+        _write_json('GROUPS.json', groups)
+        await ctx.send("Die Verabredung in diesem Channel wurde (sofern vorhanden) gelöscht.")
+
+    @commands.command(name="ext", aliases=["Ext", "Extension", "extension"], brief="Verwaltet Extensions")
+    @commands.check(_is_admin)
+    async def _extensions(self, ctx, ChangeArg, extension):
+        if ChangeArg == "load":
+            bot.load_extension(f"cogs.{extension}")
+            await ctx.send(f"Extension {extension} wurde geladen und ist jetzt einsatzbereit.")
+        elif ChangeArg == "unload":
+            bot.unload_extension(f"cogs.{extension}")
+            await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
+
+    ### Error Handling for Administrator Cog ###
+
+    @_mcreboot.error
+    async def _mcreboot_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("Na na, das darfst du nicht! <@248181624485838849> guck dir diesen Schelm an!")
+
+    @_twitchmanagement.error
+    async def _twitchmanagement_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier möchte jemand in die Twitchliste oder aus der Twitchliste entfernt werden!")
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("Hier fehlte der User oder der Parameter!")
+
+    @_gameremover.error
+    async def _gameremover_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier muss ein Reminder gelöscht werden!")
 
 
-@bot.command(name="RemGame", aliases=["remgame"])
-@commands.check(_is_admin)
-async def _gameremover(ctx):
-    groups = _read_json('GROUPS.json')
-    CurrentChannel = ctx.message.channel.id
-    groups[:] = [dict for dict in groups if dict.get(
-        'channel') != CurrentChannel]
-    _write_json('GROUPS.json', groups)
-    await ctx.send("Die Verabredung in diesem Channel wurde (sofern vorhanden) gelöscht.")
+### Add Cogs in bot file ###
 
-
-@bot.command(name="ext", aliases=["Ext", "Extension", "extension"])
-@commands.check(_is_admin)
-async def _extensions(ctx, ChangeArg, extension):
-    if ChangeArg == "load":
-        bot.load_extension(f"cogs.{extension}")
-        await ctx.send(f"Extension {extension} wurde geladen und ist jetzt einsatzbereit.")
-    elif ChangeArg == "unload":
-        bot.unload_extension(f"cogs.{extension}")
-        await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
-
-
-@bot.group(name="meme", aliases=["Meme"], invoke_without_command=True)
-@commands.has_permissions(attach_files=True)
-async def _memearchiv(ctx):
-    RandomMeme = random.choice(next(os.walk("memes/"))[2])
-    await ctx.send("Zufalls-Meme!", file=discord.File(f"memes/{RandomMeme}"))
-
-
-@_memearchiv.command(name="add", aliases=["+"])
-async def _addmeme(ctx):
-    AllFiles = next(os.walk("memes/"))[2]
-    NumberOfFiles = len(AllFiles)
-    LastMessages = await ctx.message.channel.history(limit=2).flatten()
-    LastMessages.reverse()
-    for index, meme in enumerate(LastMessages[0].attachments):
-        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-            await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
-        else:
-            pass
-        await ctx.send(f"Memes hinzugefügt.")
-
-
-@_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"])
-async def _collmeme(ctx, MessageID: int):
-    AllFiles = next(os.walk("memes/"))[2]
-    NumberOfFiles = len(AllFiles)
-    Message = await ctx.fetch_message(MessageID)
-    for index, meme in enumerate(Message.attachments):
-        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-            await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
-        else:
-            pass
-        await ctx.send(f"Die spicy Memes wurden eingesammelt.")
+bot.add_cog(Counter(bot))
+bot.add_cog(Fun(bot))
+bot.add_cog(Corona(bot))
+bot.add_cog(Meetings(bot))
+bot.add_cog(Games(bot))
+bot.add_cog(Administration(bot))
 
 ### Tasks Section ###
 
@@ -473,9 +529,9 @@ async def on_ready():
         if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys():
             bot.load_extension(f"cogs.{File[:-3]}")
             print(f"Extension {File[:-3]} geladen.")
-    if TwitchLiveCheck.is_running() is not True: 
+    if not TwitchLiveCheck.is_running():
         TwitchLiveCheck.start()
-    if GameReminder.is_running() is not True:
+    if not GameReminder.is_running():
         GameReminder.start()
 
 
@@ -495,41 +551,5 @@ async def on_message(message):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         print(f"{error}, {ctx.author} möchte wohl einen neuen Befehl.")
-
-
-### Error Handling ###
-
-@_playgame.error
-async def _playgame_error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("Bitte gib eine Uhrzeit an!")
-    elif isinstance(error, commands.CheckFailure):
-        await ctx.send("Das hier ist kein Unterhaltungschannel, hier kann man sich nicht verabreden.")
-
-
-@_joingame.error
-async def _joingame_error(ctx, error):
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("Das hier ist kein Unterhaltungschannel, hier kann man sich nicht verabreden.")
-
-
-@_mcreboot.error
-async def _mcreboot_error(ctx, error):
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("Na na, das darfst du nicht! <@248181624485838849> guck dir diesen Schelm an!")
-
-
-@_twitchmanagement.error
-async def _twitchmanagement_error(ctx, error):
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier möchte jemand in die Twitchliste oder aus der Twitchliste entfernt werden!")
-    elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("Hier fehlte der User oder der Parameter!")
-
-
-@_gameremover.error
-async def _gameremover_error(ctx, error):
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier muss ein Reminder gelöscht werden!")
 
 bot.run(TOKEN)

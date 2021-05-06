@@ -16,7 +16,7 @@ class GDQ(commands.Cog):
         pass
 
     ### Get the GDQ Schedule and show which game is running ###
-    @commands.command(name="gdqgame", aliases=["GDQgame", "GDQGame"])
+    @commands.command(name="gdqgame", aliases=["GDQgame", "GDQGame"], brief="Gibt das aktuelle GDQ Game, Runner und Kategorie aus")
     async def _gdqgame(self, ctx):
         ListOfRuns = []
         ListOfTime = []
