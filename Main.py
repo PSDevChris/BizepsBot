@@ -48,7 +48,7 @@ def _is_mcsu(ctx: context.Context):
 
 
 def _is_nouwuchannel(ctx):
-    return ctx.message.channel.category_id != 539547423782207488 and ctx.message.channel.id != 539549544585756693
+    return ctx.message.channel.category_id != 539547423782207488 and ctx.message.channel.id != 539549544585756693 and ctx.message.channel.id != 539546796939149334
 
 
 def _is_gamechannel(ctx):
