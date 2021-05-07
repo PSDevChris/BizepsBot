@@ -2,13 +2,14 @@ import time
 from datetime import datetime, timedelta
 import json
 import os
+import random
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import context
 import requests
 from bs4 import BeautifulSoup
 import paramiko
-import random
+
 
 
 # To show the whole table, currently unused
@@ -86,9 +87,6 @@ with open("TOKEN.json", "r") as TOKENFILE:
 
 class Counter(commands.Cog, name="Counter"):
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Der Pun Counter")
     async def _puncounter(self, ctx):
         data = _read_json('Botcount.json')
@@ -144,9 +142,6 @@ class Counter(commands.Cog, name="Counter"):
 
 class Fun(commands.Cog, name="Schabernack"):
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(name="Pub", aliases=["pub"], brief="Typos...")
     async def _pubtypo(self, ctx):
         await ctx.send(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
@@ -178,7 +173,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
             else:
                 pass
-            await ctx.send(f"Memes hinzugefügt.")
+            await ctx.send("Memes hinzugefügt.")
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     async def _collmeme(self, ctx, MessageID: int):
@@ -195,9 +190,6 @@ class Fun(commands.Cog, name="Schabernack"):
 
 class Corona(commands.Cog, name="Corona"):
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"], brief="Gibt aktuelle Coronazahlen aus")
     async def _coronazahlen(self, ctx):
         CORONA_URL = "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html"
@@ -211,9 +203,6 @@ class Corona(commands.Cog, name="Corona"):
 
 
 class Meetings(commands.Cog, name="Meetings"):
-
-    def __init__(self, bot):
-        self.bot = bot
 
     @commands.command(name="game", aliases=["Game"], brief="Startet eine Verabredung")
     @commands.check(_is_gamechannel)
@@ -293,9 +282,6 @@ class Meetings(commands.Cog, name="Meetings"):
 
 class Games(commands.Cog, name="Games"):
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command(name="ESAGame", aliases=["esagame"], brief="Gibt das aktuelle ESA Game aus")
     async def _esagame(self, ctx):
         try:
@@ -322,7 +308,7 @@ class Games(commands.Cog, name="Games"):
 
 
 class Administration(commands.Cog, name="Administration"):
-
+    global bot
     def __init__(self, bot):
         self.bot = bot
 
