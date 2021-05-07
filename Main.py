@@ -180,10 +180,9 @@ class Fun(commands.Cog, name="Schabernack"):
             await ctx.send("Memes hinzugefügt.")
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
-    async def _collmeme(self, ctx, MessageID: int):
+    async def _collmeme(self, ctx, Message: commands.MessageConverter):
         AllFiles = next(os.walk("memes/"))[2]
         NumberOfFiles = len(AllFiles)
-        Message = await ctx.fetch_message(MessageID)
         for index, meme in enumerate(Message.attachments):
             if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
                 await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
