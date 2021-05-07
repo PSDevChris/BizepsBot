@@ -5,6 +5,8 @@ import os
 import random
 import discord
 from discord import flags
+from discord import channel
+from discord import message
 from discord.ext import commands, tasks
 from discord.ext.commands import context
 import requests
@@ -46,6 +48,10 @@ def RequestTwitchToken():
 
 def _is_mcsu(ctx: context.Context):
     return ctx.author.id in [247117682875432960, 232561052573892608, 257249704872509441, 248181624485838849]
+
+
+def _is_nouwuchannel(ctx):
+    return ctx.message.channel.category_id != 539547423782207488 and ctx.message.channel.id != 539549544585756693
 
 
 def _is_gamechannel(ctx):
@@ -176,24 +182,6 @@ class Fun(commands.Cog, name="Schabernack"):
                 pass
             await ctx.send("Memes hinzugefügt.")
 
-    @commands.Cog.listener("on_message")
-    async def _uwumsg(self, message):
-        if message.author == bot.user:
-            return
-        if random.randint(0, 100) == 1:
-            LastMessageContent = message.content
-            flags= uwuify.SMILEY | uwuify.YU
-            await message.channel.send(f"UwU {uwuify.uwu(LastMessageContent, flags=flags)}")
-
-    @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
-    async def _uwuthis(self, ctx):
-        if ctx.message.author == bot.user:
-            return
-        LastMessages = await ctx.message.channel.history(limit=2).flatten()
-        LastMessages.reverse()
-        flags= uwuify.SMILEY | uwuify.YU
-        await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
-
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     async def _collmeme(self, ctx, MessageID: int):
         AllFiles = next(os.walk("memes/"))[2]
@@ -205,6 +193,26 @@ class Fun(commands.Cog, name="Schabernack"):
             else:
                 pass
             await ctx.send(f"Die spicy Memes wurden eingesammelt.")
+
+    @commands.Cog.listener("on_message")
+    @commands.check(_is_nouwuchannel)
+    async def _uwumsg(self, message):
+        if message.author == bot.user:
+            return
+        if random.randint(0, 100) == 1:
+            LastMessageContent = message.content
+            flags = uwuify.SMILEY | uwuify.YU
+            await message.channel.send(f"UwU {uwuify.uwu(LastMessageContent, flags=flags)}")
+
+    @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
+    @commands.check(_is_nouwuchannel)
+    async def _uwuthis(self, ctx):
+        if ctx.message.author == bot.user:
+            return
+        LastMessages = await ctx.message.channel.history(limit=2).flatten()
+        LastMessages.reverse()
+        flags = uwuify.SMILEY | uwuify.YU
+        await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
 
 
 class Corona(commands.Cog, name="Corona"):
