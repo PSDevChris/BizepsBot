@@ -152,8 +152,8 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
 
     @commands.command(name="Ehrenmann", aliases=["ehrenmann"], brief="Der erwähnte User ist ein Ehrenmann!")
-    async def _ehrenmann(self, ctx):
-        await ctx.send(f"{ctx.message.mentions[0].mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
+    async def _ehrenmann(self, ctx, user: commands.MemberConverter):
+        await ctx.send(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
 
     @commands.command(name="testgeheim", aliases=["latestmsgtest"], brief="Super geheim")
     async def _latestmsgtest(self, ctx):
