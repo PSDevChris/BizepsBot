@@ -4,12 +4,13 @@ import json
 import os
 import random
 import discord
+from discord import flags
 from discord.ext import commands, tasks
 from discord.ext.commands import context
 import requests
 from bs4 import BeautifulSoup
 import paramiko
-
+import uwuify
 
 
 # To show the whole table, currently unused
@@ -175,6 +176,24 @@ class Fun(commands.Cog, name="Schabernack"):
                 pass
             await ctx.send("Memes hinzugefügt.")
 
+    @commands.Cog.listener("on_message")
+    async def _uwumsg(self, message):
+        if message.author == bot.user:
+            return
+        if random.randint(0, 100) == 1:
+            LastMessageContent = message.content
+            flags= uwuify.SMILEY | uwuify.YU
+            await message.channel.send(f"UwU {uwuify.uwu(LastMessageContent, flags=flags)}")
+
+    @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
+    async def _uwuthis(self, ctx):
+        if ctx.message.author == bot.user:
+            return
+        LastMessages = await ctx.message.channel.history(limit=2).flatten()
+        LastMessages.reverse()
+        flags= uwuify.SMILEY | uwuify.YU
+        await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
+
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     async def _collmeme(self, ctx, MessageID: int):
         AllFiles = next(os.walk("memes/"))[2]
@@ -309,6 +328,7 @@ class Games(commands.Cog, name="Games"):
 
 class Administration(commands.Cog, name="Administration"):
     global bot
+
     def __init__(self, bot):
         self.bot = bot
 
