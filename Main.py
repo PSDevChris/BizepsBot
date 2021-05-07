@@ -4,9 +4,6 @@ import json
 import os
 import random
 import discord
-from discord import flags
-from discord import channel
-from discord import message
 from discord.ext import commands, tasks
 from discord.ext.commands import context
 import requests
@@ -192,7 +189,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
             else:
                 pass
-            await ctx.send(f"Die spicy Memes wurden eingesammelt.")
+            await ctx.send(f"Dieses spicy Meme wurde eingesammelt", file=await meme.to_file())
 
     @commands.Cog.listener("on_message")
     @commands.check(_is_nouwuchannel)
