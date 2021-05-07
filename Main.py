@@ -189,7 +189,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
             else:
                 pass
-            await ctx.send(f"Dieses spicy Meme wurde eingesammelt", file=await meme.to_file())
+            await ctx.send(f"Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
 
     @commands.Cog.listener("on_message")
     @commands.check(_is_nouwuchannel)
