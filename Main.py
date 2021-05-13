@@ -307,6 +307,20 @@ class Meetings(commands.Cog, name="Meetings"):
         elif ctx.message.channel.name not in groups.keys():
             await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
+    @commands.command(name="RemGame", aliases=["remgame"], brief="Löscht die Verabredung")
+    @commands.check(_is_gamechannel)
+    async def _gameremover(self, ctx):
+        CurrentChannel = ctx.message.channel.name
+        groups = _read_json('GROUPS.json')
+        if ctx.message.channel.name in groups.keys() and ctx.message.author.mention == groups[f"{CurrentChannel}"]["owner"]:
+            groups.pop(CurrentChannel)
+            _write_json('GROUPS.json', groups)
+            await ctx.send("Die Verabredung in diesem Channel wurde gelöscht.")
+        elif ctx.message.channel.name in groups.keys() and ctx.message.author.mention != groups[f"{CurrentChannel}"]["owner"]:
+            await ctx.send("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er diese löscht!")
+        elif ctx.message.channel.name not in groups.keys():
+            await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
+
     ## Error Handling for Meetings Cog ###
 
     @_playgame.error
@@ -409,16 +423,6 @@ class Administration(commands.Cog, name="Administration"):
             except:
                 await ctx.send("Konnte User nicht entfernen.")
 
-    @commands.command(name="RemGame", aliases=["remgame"], brief="Löscht die Verabredung")
-    @commands.check(_is_admin)
-    async def _gameremover(self, ctx):
-        groups = _read_json('GROUPS.json')
-        CurrentChannel = ctx.message.channel.id
-        groups[:] = [dict for dict in groups if dict.get(
-            'channel') != CurrentChannel]
-        _write_json('GROUPS.json', groups)
-        await ctx.send("Die Verabredung in diesem Channel wurde (sofern vorhanden) gelöscht.")
-
     @commands.command(name="ext", aliases=["Ext", "Extension", "extension"], brief="Verwaltet Extensions")
     @commands.check(_is_admin)
     async def _extensions(self, ctx, ChangeArg, extension):
@@ -442,11 +446,6 @@ class Administration(commands.Cog, name="Administration"):
             await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier möchte jemand in die Twitchliste oder aus der Twitchliste entfernt werden!")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Hier fehlte der User oder der Parameter!")
-
-    @_gameremover.error
-    async def _gameremover_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier muss ein Reminder gelöscht werden!")
 
 
 ### Add Cogs in bot file ###
