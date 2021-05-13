@@ -71,7 +71,6 @@ def _write_json(FileName, Content):
     with open(f'{FileName}', 'w') as JsonWrite:
         json.dump(Content, JsonWrite)
 
-
 ### General Settings ###
 
 
@@ -240,56 +239,76 @@ class Meetings(commands.Cog, name="Meetings"):
             return
 
         group = {
-            "channel": ctx.message.channel.id,
-            "time": GameDateTimeTimestamp,
-            "members": [f"{ctx.message.author.mention}"]
+            f"{ctx.message.channel.name}": {
+                "id": ctx.message.channel.id,
+                "owner": ctx.message.author.mention,
+                "time": GameDateTimeTimestamp,
+                "members": [f"{ctx.message.author.mention}"]
+            }
         }
 
         try:
             groups = _read_json('GROUPS.json')
 
             if not groups:
-                groups.append(group)
+                groups.update(group)
                 _write_json('GROUPS.json', groups)
                 await ctx.send("Die Spielrunde wurde eröffnet!")
             else:
-                for team in groups:
-                    if ctx.message.channel.id == team["channel"]:
-                        await ctx.send(f"{ctx.author.name}, hier ist schon eine Spielrunde geplant. Joine einfach mit !join")
-                    else:
-                        if team == groups[-1]:
-                            groups.append(group)
-                            _write_json('GROUPS.json', groups)
-                            await ctx.send("Die Spielrunde wurde eröffnet!")
-                        else:
-                            continue
+                if ctx.message.channel.name in groups.keys():
+                    await ctx.send(f"{ctx.author.name}, hier ist schon eine Spielrunde geplant. Joine einfach mit !join")
+                else:
+                    groups.update(group)
+                    _write_json('GROUPS.json', groups)
+                    await ctx.send("Die Spielrunde wurde eröffnet!")
         except json.decoder.JSONDecodeError:
-            groups = []
-            groups.append(group)
+            groups = {}
+            groups.update(group)
             _write_json('GROUPS.json', groups)
             await ctx.send("Die Spielrunde wurde eröffnet!")
 
     @commands.command(name="join", aliases=["Join"], brief="Tritt einer Verabredung bei")
     @commands.check(_is_gamechannel)
     async def _joingame(self, ctx):
+        CurrentChannel = ctx.message.channel.name
         groups = _read_json('GROUPS.json')
 
-        for group in groups:
-            if ctx.message.channel.id == group["channel"] and ctx.message.author.mention in group["members"]:
-                await ctx.send(f"{ctx.message.author.name}, du bist bereits als Teilnehmer im geplanten Spiel.")
-            elif ctx.message.channel.id == group["channel"] and f"{ctx.message.author.mention}" not in group["members"]:
-                FoundIndex = groups.index(group)
-                groups[FoundIndex]["members"].append(
-                    f"{ctx.message.author.mention}")
-                await ctx.send(f"{ctx.author.mention}, du wurdest dem Spiel hinzugefügt.")
-            else:
-                if group == groups[-1]:
-                    await ctx.send("In diesem Channel wurde noch kein Spiel geplant.")
-                else:
-                    continue
-        _write_json('GROUPS.json', groups)
+        if ctx.message.channel.name in groups.keys() and ctx.message.author.mention in groups[f"{CurrentChannel}"]["members"]:
+            await ctx.send(f"{ctx.message.author.name}, du bist bereits als Teilnehmer im geplanten Spiel.")
+        elif ctx.message.channel.name in groups.keys() and f"{ctx.message.author.mention}" not in groups[f"{CurrentChannel}"]["members"]:
+            groups[f"{CurrentChannel}"]["members"].append(
+                f"{ctx.message.author.mention}")
+            await ctx.send(f"{ctx.author.mention}, du wurdest dem Spiel hinzugefügt.")
+            _write_json('GROUPS.json', groups)
+        else:
+            await ctx.send("In diesem Channel wurde noch kein Spiel geplant.")
+
+    @commands.command(name="UpdateGame", aliases=["updategame", "Updategame", "updateGame"], brief="Verschiebt das Spiel auf die gewünschte Zeit")
+    @commands.check(_is_gamechannel)
+    async def _movegame(self, ctx, timearg):
+        CurrentChannel = ctx.message.channel.name
+        groups = _read_json('GROUPS.json')
+
+        if ctx.message.channel.name in groups.keys() and ctx.message.author.mention == groups[f"{CurrentChannel}"]["owner"]:
+            try:
+                CurrentDate = datetime.now()
+                GameTime = datetime.strptime(timearg, "%H:%M").time()
+                GameDateTime = datetime.combine(CurrentDate, GameTime)
+                GameDateTimeTimestamp = GameDateTime.timestamp()
+            except ValueError:
+                await ctx.send("Na na, das ist keine Uhrzeit!")
+                return
+
+            groups[f"{CurrentChannel}"]["time"] = GameDateTimeTimestamp
+            _write_json('GROUPS.json', groups)
+            await ctx.send(f"Die Uhrzeit der Verabredung wurde auf {timearg} geändert.")
+        elif ctx.message.channel.name in groups.keys() and ctx.message.author.mention != groups[f"{CurrentChannel}"]["owner"]:
+            await ctx.send("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er es verschiebt!")
+        elif ctx.message.channel.name not in groups.keys():
+            await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
     ## Error Handling for Meetings Cog ###
+
     @_playgame.error
     async def _playgame_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
@@ -514,18 +533,18 @@ async def TwitchLiveCheck():
 
 @tasks.loop(seconds=60)
 async def GameReminder():
-    FoundIndex = []
     CurrentTime = datetime.timestamp(datetime.now())
     groups = _read_json('GROUPS.json')
-    for reminder in groups:
-        if CurrentTime > reminder["time"]:
-            Remindchannel = bot.get_channel(reminder["channel"])
-            ReminderMembers = ", ".join(reminder["members"])
+    FoundList = []
+    for reminder in groups.keys():
+        if CurrentTime > groups[f"{reminder}"]["time"]:
+            Remindchannel = bot.get_channel(groups[f"{reminder}"]["id"])
+            ReminderMembers = ", ".join(groups[f"{reminder}"]["members"])
             await Remindchannel.send(f" Das Spiel geht los! Mit dabei sind: {ReminderMembers}")
-            FoundIndex.append(groups.index(reminder))
-    if FoundIndex:
-        for index in FoundIndex:
-            groups.pop(index)
+            FoundList.append(reminder)
+    if FoundList:
+        for reminder in FoundList:
+            groups.pop(f'{reminder}')
         _write_json('GROUPS.json', groups)
 
 ### Bot Events ###
