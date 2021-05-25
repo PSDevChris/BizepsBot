@@ -90,57 +90,57 @@ with open("TOKEN.json", "r") as TOKENFILE:
 
 class Counter(commands.Cog, name="Counter"):
 
-    @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Der Pun Counter")
+    @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Erhöht den Pun Counter")
     async def _puncounter(self, ctx):
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
-
-    @_puncounter.command(name="add", aliases=["Add", "+"], brief="Erhöht den Pun Counter")
-    async def _addpun(self, ctx):
         data = _read_json('Botcount.json')
         data['Puns'] = data['Puns'] + 1
         PunNumber = data['Puns']
         _write_json('Botcount.json', data)
         await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
 
-    @commands.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True, brief="Der Hasssprech Counter")
-    async def _mobbingcounter(self, ctx):
+    @_puncounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Puncount")
+    async def _show_puncounter(self, ctx):
         data = _read_json('Botcount.json')
-        await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
+        await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
 
-    @_mobbingcounter.command(name="add", aliases=["+"], brief="Erhöht den Hasssprech Counter")
-    async def _addmobbing(self, ctx):
+    @commands.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True, brief="Erhöht Hasssprech Counter")
+    async def _mobbingcounter(self, ctx):
         data = _read_json('Botcount.json')
         data['Mobbing'] = int(data['Mobbing']) + 1
         _write_json('Botcount.json', data)
         MobbingNumber = data['Mobbing']
         await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
 
-    @commands.group(name="leak", aliases=["Leak"], invoke_without_command=True, brief="Der Leak Counter")
-    async def _leakcounter(self, ctx):
+    @_mobbingcounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Hasssprech Counter")
+    async def _show_mobbingcounter(self, ctx):
         data = _read_json('Botcount.json')
-        await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
+        await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
 
-    @_leakcounter.command(name="add", aliases=["+"], brief="Erhöht den Leak Counter")
-    async def _addleak(self, ctx):
+    @commands.group(name="leak", aliases=["Leak"], invoke_without_command=True, brief="Erhöht den Leak Counter")
+    async def _leakcounter(self, ctx):
         data = _read_json('Botcount.json')
         data['Leak'] = int(data['Leak']) + 1
         _write_json('Botcount.json', data)
         LeakNumber = data['Leak']
         await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
 
-    @commands.group(name="salz", aliases=["Salz"], invoke_without_command=True, brief="Der Salz Counter")
-    async def _salzcounter(self, ctx):
+    @_leakcounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Leak Counter")
+    async def _show_leakcounter(self, ctx):
         data = _read_json('Botcount.json')
-        await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
+        await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
 
-    @_salzcounter.command(name="add", aliases=["+"], brief="Erhöht den Salz Counter")
-    async def _addsalz(self, ctx):
+    @commands.group(name="salz", aliases=["Salz"], invoke_without_command=True, brief="Erhöht den Salz Counter")
+    async def _salzcounter(self, ctx):
         data = _read_json('Botcount.json')
         data['Salz'] = int(data['Salz']) + 1
         _write_json('Botcount.json', data)
         SalzNumber = data['Salz']
         await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
+
+    @_salzcounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Salz Counter")
+    async def _show_salzcounter(self, ctx):
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
 
 
 class Fun(commands.Cog, name="Schabernack"):
@@ -194,10 +194,10 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _uwumsg(self, message):
         if message.author == bot.user:
             return
-        if random.randint(0, 100) == 1:
+        if random.randint(0, 50) == 1:
             LastMessageContent = message.content
             flags = uwuify.SMILEY | uwuify.YU
-            await message.channel.send(f"UwU {uwuify.uwu(LastMessageContent, flags=flags)}")
+            await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} UwU")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
     @commands.check(_is_nouwuchannel)
