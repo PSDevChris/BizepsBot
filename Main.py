@@ -363,7 +363,7 @@ class Games(commands.Cog, name="Games"):
         except json.decoder.JSONDecodeError:
             print("Twitch API scheint nicht erreichbar.")
 
-    @commands.command(name="OwHeld", aliases=["owhero", "OwHeld", "owheld", "OWHeld", "RndHeld", "RndOwHeld", "RndOWHeld", "rndowheld"], brief="Weißt einen zufälligen Helden zu")
+    @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "RndOwHeld", "RndOWHeld", "rndowheld"], brief="Weißt einen zufälligen Helden zu")
     async def _randomowhero(self, ctx, *args):
         OWPage = requests.get('https://playoverwatch.com/en-us/heroes/#all')
         OWContent = BeautifulSoup(OWPage.content, "html.parser")
