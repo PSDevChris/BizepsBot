@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import json
 import os
 import random
+from typing import List
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import context
@@ -361,6 +362,55 @@ class Games(commands.Cog, name="Games"):
             print("Der ESA Kanal ist weg. Gelöscht?!")
         except json.decoder.JSONDecodeError:
             print("Twitch API scheint nicht erreichbar.")
+
+    @commands.command(name="OwHeld", aliases=["owhero", "OwHeld", "owheld", "OWHeld", "RndHeld", "RndOwHeld", "RndOWHeld", "rndowheld"], brief="Weißt einen zufälligen Helden zu")
+    async def _randomowhero(self, ctx, *args):
+        OWPage = requests.get('https://playoverwatch.com/en-us/heroes/#all')
+        OWContent = BeautifulSoup(OWPage.content, "html.parser")
+        OW_Heros = OWContent.find_all(
+            'div', class_='hero-portrait-detailed-container')
+        ListOfSupports = []
+        ListOfTanks = []
+        ListOfDPS = []
+        SelectedHeros = []
+        role = args[0]
+        number = int(args[1])
+        for hero in OW_Heros:
+            if hero.attrs["data-groups"][2:-2] == "SUPPORT":
+                ListOfSupports.append(hero.text)
+            elif hero.attrs["data-groups"][2:-2] == "TANK":
+                ListOfTanks.append(hero.text)
+            elif hero.attrs["data-groups"][2:-2] == "DAMAGE":
+                ListOfDPS.append(hero.text)
+        ListOfAllHeros = ListOfTanks + ListOfDPS + ListOfSupports
+        if role in ["SUPPORT", "support", "Support", "healer", "Healer"] and number < len(ListOfSupports):
+            for i in range(0, number):
+                SelectedHero = random.choice(ListOfSupports)
+                ListOfSupports.remove(f"{SelectedHero}")
+                SelectedHeros.append(SelectedHero)
+                SelectedHerosString = ", ".join(SelectedHeros)
+            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
+        elif role in ["DAMAGE", "DPS", "DMG", "Damage", "dmg", "dps", "Dps"] and number < len(ListOfDPS):
+            for i in range(0, number):
+                SelectedHero = random.choice(ListOfDPS)
+                ListOfDPS.remove(f"{SelectedHero}")
+                SelectedHeros.append(SelectedHero)
+                SelectedHerosString = ", ".join(SelectedHeros)
+            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
+        elif role in ["TANK", "tank", "Tank"] and number < len(ListOfTanks):
+            for i in range(0, number):
+                SelectedHero = random.choice(ListOfTanks)
+                ListOfTanks.remove(f"{SelectedHero}")
+                SelectedHeros.append(SelectedHero)
+                SelectedHerosString = ", ".join(SelectedHeros)
+            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
+        elif role in ["all", "All", "ALL", "alle", "Alle"] and number < len(ListOfAllHeros):
+            for i in range(0, number):
+                SelectedHero = random.choice(ListOfAllHeros)
+                ListOfAllHeros.remove(f"{SelectedHero}")
+                SelectedHeros.append(SelectedHero)
+                SelectedHerosString = ", ".join(SelectedHeros)
+            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
 
 
 class Administration(commands.Cog, name="Administration"):
