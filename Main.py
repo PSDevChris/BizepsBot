@@ -47,6 +47,9 @@ def RequestTwitchToken():
 def _is_mcsu(ctx: context.Context):
     return ctx.author.id in [247117682875432960, 232561052573892608, 257249704872509441, 248181624485838849]
 
+def _is_owchannel(ctx):
+    return ctx.message.channel.id == 554390037811167363 
+
 
 def _is_nouwuchannel(ctx):
     return ctx.message.channel.category_id != 539547423782207488 and ctx.message.channel.id != 539549544585756693 and ctx.message.channel.id != 539546796939149334
@@ -364,6 +367,7 @@ class Games(commands.Cog, name="Games"):
             print("Twitch API scheint nicht erreichbar.")
 
     @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "RndOwHeld", "RndOWHeld", "rndowheld"], brief="Weißt einen zufälligen Helden zu")
+    @commands.check(_is_owchannel)
     async def _randomowhero(self, ctx, *args):
         OWPage = requests.get('https://playoverwatch.com/en-us/heroes/#all')
         OWContent = BeautifulSoup(OWPage.content, "html.parser")
