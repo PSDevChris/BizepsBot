@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import json
 import os
 import random
-from typing import List
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import context
@@ -48,7 +47,7 @@ def _is_mcsu(ctx: context.Context):
     return ctx.author.id in [247117682875432960, 232561052573892608, 257249704872509441, 248181624485838849]
 
 def _is_owchannel(ctx):
-    return ctx.message.channel.id == 554390037811167363 
+    return ctx.message.channel.id == 554390037811167363
 
 
 def _is_nouwuchannel(ctx):
