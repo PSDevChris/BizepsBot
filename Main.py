@@ -387,28 +387,28 @@ class Games(commands.Cog, name="Games"):
                 ListOfDPS.append(hero.text)
         ListOfAllHeros = ListOfTanks + ListOfDPS + ListOfSupports
         if role in ["SUPPORT", "support", "Support", "healer", "Healer"] and number < len(ListOfSupports):
-            for i in range(0, number):
+            for _ in range(0, number):
                 SelectedHero = random.choice(ListOfSupports)
                 ListOfSupports.remove(f"{SelectedHero}")
                 SelectedHeros.append(SelectedHero)
                 SelectedHerosString = ", ".join(SelectedHeros)
             await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
         elif role in ["DAMAGE", "DPS", "DMG", "Damage", "dmg", "dps", "Dps"] and number < len(ListOfDPS):
-            for i in range(0, number):
+            for _ in range(0, number):
                 SelectedHero = random.choice(ListOfDPS)
                 ListOfDPS.remove(f"{SelectedHero}")
                 SelectedHeros.append(SelectedHero)
                 SelectedHerosString = ", ".join(SelectedHeros)
             await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
         elif role in ["TANK", "tank", "Tank"] and number < len(ListOfTanks):
-            for i in range(0, number):
+            for _ in range(0, number):
                 SelectedHero = random.choice(ListOfTanks)
                 ListOfTanks.remove(f"{SelectedHero}")
                 SelectedHeros.append(SelectedHero)
                 SelectedHerosString = ", ".join(SelectedHeros)
             await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
         elif role in ["all", "All", "ALL", "alle", "Alle"] and number < len(ListOfAllHeros):
-            for i in range(0, number):
+            for _ in range(0, number):
                 SelectedHero = random.choice(ListOfAllHeros)
                 ListOfAllHeros.remove(f"{SelectedHero}")
                 SelectedHeros.append(SelectedHero)
