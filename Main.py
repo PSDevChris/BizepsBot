@@ -10,6 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 import paramiko
 import uwuify
+import pandas as pd
 
 
 # To show the whole table, currently unused
@@ -45,6 +46,7 @@ def RequestTwitchToken():
 
 def _is_mcsu(ctx: context.Context):
     return ctx.author.id in [247117682875432960, 232561052573892608, 257249704872509441, 248181624485838849]
+
 
 def _is_owchannel(ctx):
     return ctx.message.channel.id == 554390037811167363
@@ -599,6 +601,30 @@ async def GameReminder():
             groups.pop(f'{reminder}')
         _write_json('GROUPS.json', groups)
 
+
+@tasks.loop(hours=1)
+async def MuellReminder():
+    MyDiscordUser = await bot.fetch_user(248181624485838849)
+    TodayatSixPM = datetime.now().replace(hour=18, minute=00, second=00)
+    if datetime.now() > TodayatSixPM:
+        tomorrowNow = datetime.today() + timedelta(days=1)
+        tomorrowClean = tomorrowNow.replace(
+            hour=00, minute=00, second=00, microsecond=00)
+        MuellListe = pd.read_csv('Muell.csv', sep=";")
+        for entry in MuellListe["Schwarze Tonne"].dropna():
+            EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
+            if tomorrowClean == EntryDate:
+                await MyDiscordUser.send(f"Die nächste schwarze Tonne ist morgen am: {entry}")
+        for entry in MuellListe["Blaue Tonne"].dropna():
+            EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
+            if tomorrowClean == EntryDate:
+                await MyDiscordUser.send(f"Die nächste blaue Tonne ist morgen am: {entry}")
+        for entry in MuellListe["Gelbe Saecke"].dropna():
+            EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
+            if tomorrowClean == EntryDate:
+                await bot.send(f"Die nächsten gelben Säcke sind morgen am: {entry}")
+
+
 ### Bot Events ###
 
 
@@ -614,6 +640,8 @@ async def on_ready():
         TwitchLiveCheck.start()
     if not GameReminder.is_running():
         GameReminder.start()
+    if not MuellReminder.is_running():
+        MuellReminder.start()
 
 
 @bot.event
