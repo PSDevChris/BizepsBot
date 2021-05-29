@@ -602,7 +602,7 @@ async def GameReminder():
         _write_json('GROUPS.json', groups)
 
 
-@tasks.loop(hours=1)
+@tasks.loop(hours=24)
 async def MuellReminder():
     MyDiscordUser = await bot.fetch_user(248181624485838849)
     TodayatSixPM = datetime.now().replace(hour=18, minute=00, second=00)
