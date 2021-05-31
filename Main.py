@@ -165,6 +165,7 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"{ctx.author.mention}, die letzte Nachricht hier war {LastMessages[0].content}.")
 
     @commands.group(name="meme", aliases=["Meme"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
+    @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
     async def _memearchiv(self, ctx):
         RandomMeme = random.choice(next(os.walk("memes/"))[2])
@@ -205,6 +206,7 @@ class Fun(commands.Cog, name="Schabernack"):
             await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} UwU")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
+    @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.check(_is_nouwuchannel)
     async def _uwuthis(self, ctx):
         if ctx.message.author == bot.user:
@@ -213,6 +215,16 @@ class Fun(commands.Cog, name="Schabernack"):
         LastMessages.reverse()
         flags = uwuify.SMILEY | uwuify.YU
         await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
+
+    @_memearchiv.error
+    async def _memearchiv_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
+
+    @_uwuthis.error
+    async def _uwuthis_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
 
 
 class Corona(commands.Cog, name="Corona"):
@@ -425,6 +437,7 @@ class Administration(commands.Cog, name="Administration"):
         self.bot = bot
 
     @commands.command(name="mcreboot", aliases=["MCReboot"], brief="Rebootet den MC Server")
+    @commands.cooldown(1, 7200, commands.BucketType.user)
     @commands.check(_is_mcsu)
     async def _mcreboot(self, ctx):
         try:
@@ -494,6 +507,8 @@ class Administration(commands.Cog, name="Administration"):
     async def _mcreboot_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send("Na na, das darfst du nicht! <@248181624485838849> guck dir diesen Schelm an!")
+        elif isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Der Befehl ist aktuell noch im Cooldown.")
 
     @_twitchmanagement.error
     async def _twitchmanagement_error(self, ctx, error):
@@ -502,8 +517,8 @@ class Administration(commands.Cog, name="Administration"):
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Hier fehlte der User oder der Parameter!")
 
-
 ### Add Cogs in bot file ###
+
 
 bot.add_cog(Counter(bot))
 bot.add_cog(Fun(bot))
