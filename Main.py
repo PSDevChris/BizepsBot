@@ -6,6 +6,7 @@ import random
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import context
+from discord.ext.commands.cooldowns import BucketType
 import requests
 from bs4 import BeautifulSoup
 import paramiko
@@ -215,6 +216,12 @@ class Fun(commands.Cog, name="Schabernack"):
         LastMessages.reverse()
         flags = uwuify.SMILEY | uwuify.YU
         await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
+
+    @commands.command(name="Hans", aliases=["hans"], brief="Er muss arbeiten...")
+    @commands.check(_is_owchannel)
+    @commands.cooldown(1, 10, BucketType.user)
+    async def _hansworks(self, ctx):
+        await ctx.send(f"Hans muss arbeiten...")
 
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
