@@ -218,10 +218,38 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
 
     @commands.command(name="Hans", aliases=["hans"], brief="Er muss arbeiten...")
-    @commands.check(_is_owchannel)
     @commands.cooldown(1, 10, BucketType.user)
     async def _hansworks(self, ctx):
         await ctx.send(f"Hans muss arbeiten...")
+
+    @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief="Weebs out for Schnabi \o/")
+    @commands.cooldown(1, 10, BucketType.user)
+    async def _schnabiuwu(self, ctx):
+        await ctx.send(f"""
+⡆⣐⢕⢕⢕⢕⢕⢕⢕⢕⠅⢗⢕⢕⢕⢕⢕⢕⢕⠕⠕⢕⢕⢕⢕⢕⢕⢕⢕⢕
+⢐⢕⢕⢕⢕⢕⣕⢕⢕⠕⠁⢕⢕⢕⢕⢕⢕⢕⢕⠅⡄⢕⢕⢕⢕⢕⢕⢕⢕⢕
+⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕
+⢕⢕⢕⢕⠁⢜⠕⢁⣴⣿⡇⢓⢕⢵⢐⢕⢕⠕⢁⣾⢿⣧⠑⢕⢕⠄⢑⢕⠅⢕
+⢕⢕⠵⢁⠔⢁⣤⣤⣶⣶⣶⡐⣕⢽⠐⢕⠕⣡⣾⣶⣶⣶⣤⡁⢓⢕⠄⢑⢅⢑
+⠍⣧⠄⣶⣾⣿⣿⣿⣿⣿⣿⣷⣔⢕⢄⢡⣾⣿⣿⣿⣿⣿⣿⣿⣦⡑⢕⢤⠱⢐
+⢠⢕⠅⣾⣿⠋⢿⣿⣿⣿⠉⣿⣿⣷⣦⣶⣽⣿⣿⠈⣿⣿⣿⣿⠏⢹⣷⣷⡅⢐
+⣔⢕⢥⢻⣿⡀⠈⠛⠛⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⡀⠈⠛⠛⠁⠄⣼⣿⣿⡇⢔
+⢕⢕⢽⢸⢟⢟⢖⢖⢤⣶⡟⢻⣿⡿⠻⣿⣿⡟⢀⣿⣦⢤⢤⢔⢞⢿⢿⣿⠁⢕
+⢕⢕⠅⣐⢕⢕⢕⢕⢕⣿⣿⡄⠛⢀⣦⠈⠛⢁⣼⣿⢗⢕⢕⢕⢕⢕⢕⡏⣘⢕
+⢕⢕⠅⢓⣕⣕⣕⣕⣵⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣷⣕⢕⢕⢕⢕⡵⢀⢕⢕
+⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕
+⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁
+⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿""")
+
+    @commands.command(name="Zucker", aliases=["zucker", "Zuggi", "zuggi"], brief="Zuckersüß")
+    @commands.cooldown(1, 10, BucketType.user)
+    async def _zuggishow(self, ctx):
+        await ctx.send(f"(◕‿◕✿)")
+
+    @commands.command(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk"], brief="Wirtschaft dankt!")
+    @commands.cooldown(1, 10, BucketType.user)
+    async def _schnenkorder(self, ctx):
+        await ctx.send(f"Schnenko hat dieses Jahr bereits für {random.randint(100, 999)}€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!")
 
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
@@ -230,6 +258,26 @@ class Fun(commands.Cog, name="Schabernack"):
 
     @_uwuthis.error
     async def _uwuthis_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
+
+    @_hansworks.error
+    async def _zuggishow_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
+
+    @_zuggishow.error
+    async def _zuggishow_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
+
+    @_schnabiuwu.error
+    async def _zuggishow_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
+
+    @_schnenkorder.error
+    async def _schnenkorder_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
 
