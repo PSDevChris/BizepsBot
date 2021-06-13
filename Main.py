@@ -75,7 +75,7 @@ def _read_json(FileName):
 
 def _write_json(FileName, Content):
     with open(f'{FileName}', 'w') as JsonWrite:
-        json.dump(Content, JsonWrite)
+        json.dump(Content, JsonWrite, indent=4)
 
 ### General Settings ###
 
@@ -147,6 +147,38 @@ class Counter(commands.Cog, name="Counter"):
     async def _show_salzcounter(self, ctx):
         data = _read_json('Botcount.json')
         await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
+
+    @commands.group(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk"], invoke_without_command=True, brief="Wirtschaft dankt!")
+    @commands.cooldown(1, 10, BucketType.user)
+    async def _schnenkorder(self, ctx):
+        data = _read_json('Botcount.json')
+        data['Lieferando'] = int(data['Lieferando']) + 20
+        _write_json('Botcount.json', data)
+        LieferandoNumber = data['Lieferando']
+        await ctx.send(f"Schnenko hat dieses Jahr bereits für {LieferandoNumber}€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!")
+
+    @_schnenkorder.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Salz Counter")
+    async def _show_schnenkcounter(self, ctx):
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Schnenko hat dieses Jahr bereits {data['Lieferando']}€ in Lieferando investiert. Ist das der neue Bitcoin?!")
+
+    @commands.group(name="Pipi", aliases=["pipi"], invoke_without_command=True, brief="Erhöht den Pipi Counter")
+    async def _pipicounter(self, ctx):
+        data = _read_json('Botcount.json')
+        data['Pipi'] = int(data['Pipi']) + 1
+        _write_json('Botcount.json', data)
+        PipiNumber = data['Pipi']
+        await ctx.send(f"Dotas Babyblase hat ihn schon {PipiNumber} auf das stille Örtchen getrieben!")
+
+    @_pipicounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Pipi Counter")
+    async def _show_salzcounter(self, ctx):
+        data = _read_json('Botcount.json')
+        await ctx.send(f"Bisher war Dota schon {data['Pipi']} Mal auf dem stillen Örtchen!")
+
+    @_schnenkorder.error
+    async def _schnenkorder_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
 
 
 class Fun(commands.Cog, name="Schabernack"):
@@ -246,11 +278,6 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _zuggishow(self, ctx):
         await ctx.send(f"(◕‿◕✿)")
 
-    @commands.command(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk"], brief="Wirtschaft dankt!")
-    @commands.cooldown(1, 10, BucketType.user)
-    async def _schnenkorder(self, ctx):
-        await ctx.send(f"Schnenko hat dieses Jahr bereits für {random.randint(100, 999)}€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!")
-
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
@@ -273,11 +300,6 @@ class Fun(commands.Cog, name="Schabernack"):
 
     @_schnabiuwu.error
     async def _zuggishow_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Dieser Befehl ist noch im Cooldown.")
-
-    @_schnenkorder.error
-    async def _schnenkorder_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
 
