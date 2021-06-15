@@ -717,7 +717,7 @@ async def MuellReminder():
         for entry in MuellListe["Gelbe Saecke"].dropna():
             EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
             if tomorrowClean == EntryDate:
-                await bot.send(f"Die nächsten gelben Säcke sind morgen am: {entry}")
+                await MyDiscordUser.send(f"Die nächsten gelben Säcke sind morgen am: {entry}")
 
 
 ### Bot Events ###
