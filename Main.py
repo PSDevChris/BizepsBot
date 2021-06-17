@@ -3,17 +3,16 @@ from datetime import datetime, timedelta
 import json
 import os
 import random
+import logging
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import context
-from discord.ext.commands.converter import MemberConverter
 from discord.ext.commands.cooldowns import BucketType
 import requests
 from bs4 import BeautifulSoup
 import paramiko
 import uwuify
 import pandas as pd
-import logging
 
 
 logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, handlers=[logging.FileHandler(f'./logs/{datetime.now().date()}_bot.log'),
