@@ -96,7 +96,7 @@ with open("TOKEN.json", "r") as TOKENFILE:
     else:
         RequestTwitchToken()
         logging.info("Neues Twitch Token wurde erfolgreich angefordert.")
-    logging.info("Token erfolgreich geladen.")
+    logging.info("Token successfully loaded.")
 
 ### Commands and Cogs Section ###
 
@@ -428,7 +428,8 @@ class Meetings(commands.Cog, name="Meetings"):
             groups[f"{CurrentChannel}"]["time"] = GameDateTimeTimestamp
             _write_json('GROUPS.json', groups)
             await ctx.send(f"Die Uhrzeit der Verabredung wurde auf {timearg} geändert.")
-            logging.info(f"{ctx.author} hat seine Verabredung verschoben auf {timearg}.")
+            logging.info(
+                f"{ctx.author} hat seine Verabredung verschoben auf {timearg}.")
         elif ctx.message.channel.name in groups.keys() and ctx.message.author.mention != groups[f"{CurrentChannel}"]["owner"]:
             await ctx.send("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er es verschiebt!")
             logging.warning(
