@@ -7,14 +7,13 @@ import logging
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import context
-from discord.ext.commands.cooldowns import BucketType
 import requests
 from bs4 import BeautifulSoup
 import paramiko
 import uwuify
 import pandas as pd
 
-
+logging.getLogger("discord").setLevel(logging.WARNING)
 logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, handlers=[logging.FileHandler(f'./logs/{datetime.now().date()}_bot.log'),
                                                                                       logging.StreamHandler()])
 
@@ -155,7 +154,7 @@ class Counter(commands.Cog, name="Counter"):
         await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
 
     @ commands.group(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk"], invoke_without_command=True, brief="Wirtschaft dankt!")
-    @ commands.cooldown(1, 10, BucketType.user)
+    @ commands.cooldown(1, 10, commands.BucketType.user)
     async def _schnenkorder(self, ctx):
         data = _read_json('Botcount.json')
         data['Lieferando'] = int(data['Lieferando']) + 20
@@ -262,12 +261,12 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
 
     @ commands.command(name="Hans", aliases=["hans"], brief="Er muss arbeiten...")
-    @ commands.cooldown(1, 10, BucketType.user)
+    @ commands.cooldown(1, 10, commands.BucketType.user)
     async def _hansworks(self, ctx):
         await ctx.send(f"Hans muss arbeiten...")
 
     @ commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief="Weebs out for Schnabi \o/")
-    @ commands.cooldown(1, 10, BucketType.user)
+    @ commands.cooldown(1, 10, commands.BucketType.user)
     async def _schnabiuwu(self, ctx):
         await ctx.send("""
 ⡆⣐⢕⢕⢕⢕⢕⢕⢕⢕⠅⢗⢕⢕⢕⢕⢕⢕⢕⠕⠕⢕⢕⢕⢕⢕⢕⢕⢕⢕
@@ -286,7 +285,7 @@ class Fun(commands.Cog, name="Schabernack"):
 ⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿""")
 
     @ commands.command(name="Zucker", aliases=["zucker", "Zuggi", "zuggi"], brief="Zuckersüß")
-    @ commands.cooldown(1, 10, BucketType.user)
+    @ commands.cooldown(1, 10, commands.BucketType.user)
     async def _zuggishow(self, ctx):
         await ctx.send("(◕‿◕✿)")
 
