@@ -642,7 +642,8 @@ class Administration(commands.Cog, name="Administration"):
     @commands.check(_is_admin)
     async def _showlog(self, ctx):
         AllLogFiles = next(os.walk("logs/"))[2]
-        LatestLogFile = AllLogFiles[-1]
+        SortedLogFiles = sorted(AllLogFiles)
+        LatestLogFile = SortedLogFiles[-1]
         with open(f'logs/{LatestLogFile}', 'r') as LogFileRead:
             LogContent = LogFileRead.readlines()
             LatestLogLines = LogContent[-10:]
