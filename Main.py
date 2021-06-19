@@ -638,6 +638,18 @@ class Administration(commands.Cog, name="Administration"):
             await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
             logging.info(f"Extension {extension} was unloaded.")
 
+    @commands.command(name="log", aliases=["Log", "LOG"], brief="Zeigt die neusten Logeinträge des Bots")
+    @commands.check(_is_admin)
+    async def _showlog(self, ctx):
+        AllLogFiles = next(os.walk("logs/"))[2]
+        LatestLogFile = AllLogFiles[-1]
+        with open(f'logs/{LatestLogFile}', 'r') as LogFileRead:
+            LogContent = LogFileRead.readlines()
+            LatestLogLines = LogContent[-10:]
+            LogOutputInString = "".join(LatestLogLines)
+            await ctx.send(f"```{LogOutputInString}```")
+        logging.info(f"{ctx.author} has called for the log.")
+
     ### Error Handling for Administrator Cog ###
 
     @ _mcreboot.error
