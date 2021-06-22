@@ -239,8 +239,9 @@ class Fun(commands.Cog, name="Schabernack"):
             logging.info(
                 f"{ctx.author} hat ein Meme erfolgreich eingesammelt.")
 
+    @commands.command()
     @commands.Cog.listener("on_message")
-    @commands.Cog.cog_check(_is_nouwuchannel)
+    @commands.check(_is_nouwuchannel)
     async def _uwumsg(self, message):
         if message.author == bot.user:
             return
