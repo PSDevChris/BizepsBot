@@ -241,8 +241,8 @@ class Fun(commands.Cog, name="Schabernack"):
 
     @commands.Cog.listener("on_message")
     @commands.check(_is_nouwuchannel)
-    async def _uwumsg(self, ctx, message):
-        if ctx.message.channel.category_id != 539547423782207488 and ctx.message.channel.id not in [539549544585756693, 539546796939149334]:
+    async def _uwumsg(self, message):
+        if message.channel.category_id != 539547423782207488 and message.channel.id not in [539549544585756693, 539546796939149334]:
             if message.author == bot.user:
                 return
             if random.randint(0, 50) == 1:
