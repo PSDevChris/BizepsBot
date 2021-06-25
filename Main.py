@@ -242,13 +242,16 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.Cog.listener("on_message")
     @commands.check(_is_nouwuchannel)
     async def _uwumsg(self, message):
-        if message.channel.category_id != 539547423782207488 and message.channel.id not in [539549544585756693, 539546796939149334]:
-            if message.author == bot.user:
-                return
-            if random.randint(0, 50) == 1:
-                LastMessageContent = message.content
-                flags = uwuify.SMILEY | uwuify.YU
-                await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} UwU")
+        if isinstance(message.channel, discord.channel.DMChannel):
+            pass
+        else:
+            if message.channel.category_id != 539547423782207488 and message.channel.id not in [539549544585756693, 539546796939149334]:
+                if message.author == bot.user:
+                    return
+                if random.randint(0, 50) == 1:
+                    LastMessageContent = message.content
+                    flags = uwuify.SMILEY | uwuify.YU
+                    await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} UwU")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
     @commands.cooldown(1, 30, commands.BucketType.user)
