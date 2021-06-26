@@ -373,7 +373,7 @@ class Meetings(commands.Cog, name="Meetings"):
                 _write_json('GROUPS.json', groups)
                 await ctx.send("Die Spielrunde wurde eröffnet!")
                 logging.info(
-                    f" 1. Verabredung in {ctx.message.channel.name} eröffnet.")
+                    f"Verabredung in {ctx.message.channel.name} eröffnet.")
             else:
                 if ctx.message.channel.name in groups.keys():
                     await ctx.send(f"{ctx.author.name}, hier ist schon eine Spielrunde geplant. Joine einfach mit !join")
