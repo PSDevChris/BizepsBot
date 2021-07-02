@@ -456,6 +456,31 @@ class Meetings(commands.Cog, name="Meetings"):
         elif ctx.message.channel.name not in groups.keys():
             await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
+    @commands.command(name="LeaveGame", aliases=["leavegame", "lvgame", "qGame", "QuitGame"], brief="Verlässt die aktuelle Verabredung")
+    @commands.check(_is_gamechannel)
+    async def _leavegame(self, ctx):
+        CurrentChannel = ctx.message.channel.name
+        StartedGroups = _read_json('GROUPS.json')
+        if ctx.message.channel.name in StartedGroups.keys() and ctx.message.author.mention == StartedGroups[f"{CurrentChannel}"]["owner"]:
+            StartedGroups.pop(CurrentChannel)
+            _write_json('GROUPS.json', StartedGroups)
+            await ctx.send(f"{ctx.author.mention}, die Verabredung in diesem Channel wurde gelöscht, da du der Besitzer warst.")
+            logging.info(f"{ctx.author} hat seine Verabredung verlassen, daher wurde sie gelöscht.")
+        elif ctx.message.channel.name in StartedGroups.keys() and ctx.message.author.mention in StartedGroups[f"{CurrentChannel}"]["members"]:
+            StartedGroups[f"{CurrentChannel}"]["members"].remove(ctx.message.author.mention)
+            await ctx.send(f"{ctx.author.mention}, du wurdest aus der Verabredung entfernt.")
+            logging.info(
+                f"{ctx.author} wurde aus der Verabredung in {ctx.message.channel.name} entfernt.")
+            _write_json('GROUPS.json', StartedGroups)
+        elif ctx.message.channel.name in StartedGroups.keys() and ctx.message.author.mention not in StartedGroups[f"{CurrentChannel}"]["members"]:
+            await ctx.send(f"{ctx.author.mention}, du bist der Verabredung nicht beigetreten und wurdest daher auch nicht entfernt.")
+            logging.info(
+                f"{ctx.author} wollte die Verabredung in {ctx.message.channel.name} verlassen, war aber kein Mitglied.")
+        else:
+            await ctx.send(f"{ctx.author.mention}, hier gibt es keine Verabredung, die du verlassen könntest.")
+            logging.info(
+                f"{ctx.author} wollte eine Verabredung in {ctx.message.channel.name} verlassen, aber es gab keine.")
+
     ## Error Handling for Meetings Cog ###
 
     @_playgame.error
@@ -474,6 +499,13 @@ class Meetings(commands.Cog, name="Meetings"):
             await ctx.send("Das hier ist kein Unterhaltungschannel, hier kann man sich nicht verabreden.")
             logging.warning(
                 f"{ctx.author} wollte sich in keinem Unterhaltungschannel verabreden!")
+    
+    @_leavegame.error
+    async def _leavegame_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("Das hier ist kein Unterhaltungschannel, hier gibt es keine Verabredungen.")
+            logging.warning(
+                f"{ctx.author} wollte eine Verabredung abseits eines Unterhaltungschannels verlassen!")
 
 
 class Games(commands.Cog, name="Games"):
