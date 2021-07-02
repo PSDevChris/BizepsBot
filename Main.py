@@ -465,9 +465,11 @@ class Meetings(commands.Cog, name="Meetings"):
             StartedGroups.pop(CurrentChannel)
             _write_json('GROUPS.json', StartedGroups)
             await ctx.send(f"{ctx.author.mention}, die Verabredung in diesem Channel wurde gelöscht, da du der Besitzer warst.")
-            logging.info(f"{ctx.author} hat seine Verabredung verlassen, daher wurde sie gelöscht.")
+            logging.info(
+                f"{ctx.author} hat seine Verabredung verlassen, daher wurde sie gelöscht.")
         elif ctx.message.channel.name in StartedGroups.keys() and ctx.message.author.mention in StartedGroups[f"{CurrentChannel}"]["members"]:
-            StartedGroups[f"{CurrentChannel}"]["members"].remove(ctx.message.author.mention)
+            StartedGroups[f"{CurrentChannel}"]["members"].remove(
+                ctx.message.author.mention)
             await ctx.send(f"{ctx.author.mention}, du wurdest aus der Verabredung entfernt.")
             logging.info(
                 f"{ctx.author} wurde aus der Verabredung in {ctx.message.channel.name} entfernt.")
@@ -499,7 +501,7 @@ class Meetings(commands.Cog, name="Meetings"):
             await ctx.send("Das hier ist kein Unterhaltungschannel, hier kann man sich nicht verabreden.")
             logging.warning(
                 f"{ctx.author} wollte sich in keinem Unterhaltungschannel verabreden!")
-    
+
     @_leavegame.error
     async def _leavegame_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
