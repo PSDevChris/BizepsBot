@@ -264,10 +264,13 @@ class Fun(commands.Cog, name="Schabernack"):
         flags = uwuify.SMILEY | uwuify.YU
         await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
 
-    @commands.command(name="Hans", aliases=["hans"], brief="Er muss arbeiten...")
+    @commands.command(name="Hans", aliases=["hans"], brief="Er muss arbeiten...?")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _hansworks(self, ctx):
-        await ctx.send(f"Hans muss arbeiten...")
+        HansTasks = ["schneiden", "rendern",
+                     "hochladen", "arbeiten", "eine rauchen"]
+        HansTask = random.choice(HansTasks)
+        await ctx.send(f"Hans muss {HansTask}...")
 
     @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief="Weebs out for Schnabi \o/")
     @commands.cooldown(1, 10, commands.BucketType.user)
