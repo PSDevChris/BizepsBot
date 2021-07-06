@@ -248,10 +248,12 @@ class Fun(commands.Cog, name="Schabernack"):
             if message.channel.category_id != 539547423782207488 and message.channel.id not in [539549544585756693, 539546796939149334]:
                 if message.author == bot.user:
                     return
-                if random.randint(0, 50) == 1:
+                if random.randint(0, 75) == 1:
                     LastMessageContent = message.content
                     flags = uwuify.SMILEY | uwuify.YU
                     await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} UwU")
+                    logging.info(
+                        f"{message.author} hat die Nachricht [{LastMessageContent}] geUwUt.")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -263,6 +265,7 @@ class Fun(commands.Cog, name="Schabernack"):
         LastMessages.reverse()
         flags = uwuify.SMILEY | uwuify.YU
         await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
+        logging.info(f"Die Nachricht [{LastMessages[0].content}] wurde UwUt.")
 
     @commands.command(name="Hans", aliases=["hans"], brief="Er muss arbeiten...?")
     @commands.cooldown(1, 10, commands.BucketType.user)
