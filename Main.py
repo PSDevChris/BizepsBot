@@ -27,6 +27,9 @@ bot = commands.Bot(command_prefix=('!'), intents=intents)
 
 
 def RequestTwitchToken():
+    """
+    Beantragt ein neues Twitch Token zur Authentifizierung.
+    """
     global TWITCH_TOKEN, TWITCH_TOKEN_EXPIRES
 
     rTwitchTokenData = requests.post('https://id.twitch.tv/oauth2/token', data={
@@ -100,6 +103,10 @@ with open("TOKEN.json", "r") as TOKENFILE:
 
 
 class Counter(commands.Cog, name="Counter"):
+    """
+    Die Klasse die alle Counter enthält und diese erhöht oder anzeigt,
+    die Counter werden in einem JSON File abgelegt und gespeichert.
+    """
 
     @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Erhöht den Pun Counter")
     async def _puncounter(self, ctx):
@@ -189,6 +196,10 @@ class Counter(commands.Cog, name="Counter"):
 
 
 class Fun(commands.Cog, name="Schabernack"):
+    """
+    Die Klasse für Spaßfunktionen, diverse Textausgaben, eine Funktion um Bilder in die Memegallery zu speichern,
+    sie anzuzeigen und eine Textreplace Funktion um Texte zu UwUen wird alles hier abgehandelt.
+    """
 
     @commands.command(name="Pub", aliases=["pub"], brief="Typos...")
     async def _pubtypo(self, ctx):
@@ -253,7 +264,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     flags = uwuify.SMILEY | uwuify.YU
                     await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} UwU")
                     logging.info(
-                        f"{message.author} hat die Nachricht [{LastMessageContent}] geUwUt.")
+                        f"Die Nachricht [{LastMessageContent}] wurde UwUt.")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -265,7 +276,8 @@ class Fun(commands.Cog, name="Schabernack"):
         LastMessages.reverse()
         flags = uwuify.SMILEY | uwuify.YU
         await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
-        logging.info(f"Die Nachricht [{LastMessages[0].content}] wurde UwUt.")
+        logging.info(
+            f"{ctx.message.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
 
     @commands.command(name="Hans", aliases=["hans"], brief="Er muss arbeiten...?")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -331,6 +343,9 @@ class Fun(commands.Cog, name="Schabernack"):
 
 
 class Corona(commands.Cog, name="Corona"):
+    """
+    Eine Klasse für Corona Funktionen, aktuell werden hier nur aktuelle Zahlen abgerufen.
+    """
 
     @commands.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"], brief="Gibt aktuelle Coronazahlen aus")
     async def _coronazahlen(self, ctx):
@@ -347,6 +362,11 @@ class Corona(commands.Cog, name="Corona"):
 
 
 class Meetings(commands.Cog, name="Meetings"):
+    """
+    Diese Klasse handelt alle Verabredungen, sowie deren Funktionen ab.
+    Man kann joinen oder leaven, eine starten oder löschen lassen.
+    Zuletzt gibt es noch eine Funktion um die Uhrzeit zu aktualisieren.
+    """
 
     @commands.command(name="game", aliases=["Game"], brief="Startet eine Verabredung")
     @commands.check(_is_gamechannel)
@@ -517,6 +537,12 @@ class Meetings(commands.Cog, name="Meetings"):
 
 
 class Games(commands.Cog, name="Games"):
+    """
+    Klasse für Videospielinhalte (eigentlich nicht mehr notwendig/vollständig).
+
+    ESAGame:        Zeigt das aktuelle ESA Game auf Twitch an.
+    OWHeld:         Generiert einen OW Helden, supported Rollen und Anzahl.
+    """
 
     @commands.command(name="ESAGame", aliases=["esagame"], brief="Gibt das aktuelle ESA Game aus")
     async def _esagame(self, ctx):
@@ -546,6 +572,11 @@ class Games(commands.Cog, name="Games"):
     @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "RndOwHeld", "RndOWHeld", "rndowheld"], brief="Weißt einen zufälligen Helden zu")
     @commands.check(_is_owchannel)
     async def _randomowhero(self, ctx, *args):
+        """
+        Lässt einen zufälligen Helden aus Overwatch generieren.
+        Unterstützt sowohl Rolle, als auch Anzahl der Helden.
+        """
+
         OWPage = requests.get('https://playoverwatch.com/en-us/heroes/#all')
         OWContent = BeautifulSoup(OWPage.content, "html.parser")
         OW_Heros = OWContent.find_all(
@@ -603,6 +634,14 @@ class Games(commands.Cog, name="Games"):
 
 
 class Administration(commands.Cog, name="Administration"):
+    """
+    Die Administrator Klasse, hier werden Teile des Bots verwaltet:
+
+    Cogs:                      Können geladen oder entladen werden.
+    Twitch:                    User hinzufügen oder löschen.
+    Log:                       Zeigt die neusten 10 Zeilen des Log.
+    MC Reboot:                 Startet den MC Server neu.
+    """
     global bot
 
     def __init__(self, bot):
@@ -612,6 +651,10 @@ class Administration(commands.Cog, name="Administration"):
     @commands.cooldown(1, 7200, commands.BucketType.user)
     @commands.check(_is_mcsu)
     async def _mcreboot(self, ctx):
+        """
+        Rebootet den Minecraft Server per SSH.
+        """
+
         try:
 
             MCDATA = _read_json('MC_DATA.json')
@@ -643,6 +686,13 @@ class Administration(commands.Cog, name="Administration"):
     @commands.command(name="tw", aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File")
     @commands.check(_is_admin)
     async def _twitchmanagement(self, ctx, ChangeArg, Member):
+        """
+        Verwaltet die Twitch Benachrichtigungen.
+
+        Add: Fügt den User hinzu
+        Del: Entfernt den User
+        """
+
         if ChangeArg in ["add", "+"]:
             try:
                 with open('TWITCHUSER.json', 'r+') as TwitchFile:
@@ -673,6 +723,13 @@ class Administration(commands.Cog, name="Administration"):
     @commands.command(name="ext", aliases=["Ext", "Extension", "extension"], brief="Verwaltet Extensions")
     @commands.check(_is_admin)
     async def _extensions(self, ctx, ChangeArg, extension):
+        """
+        Verwaltet die externen Cogs.
+
+        Load:   Lädt die Cog in den Bot.
+        Unload: Entfernt die Cog aus dem Bot.
+        """
+
         if ChangeArg == "load":
             bot.load_extension(f"cogs.{extension}")
             await ctx.send(f"Extension {extension} wurde geladen und ist jetzt einsatzbereit.")
@@ -685,6 +742,10 @@ class Administration(commands.Cog, name="Administration"):
     @commands.command(name="log", aliases=["Log", "LOG"], brief="Zeigt die neusten Logeinträge des Bots")
     @commands.check(_is_admin)
     async def _showlog(self, ctx):
+        """
+        Zeigt die letzten 10 Einträge des Logs.
+        """
+
         AllLogFiles = next(os.walk("logs/"))[2]
         SortedLogFiles = sorted(AllLogFiles)
         LatestLogFile = SortedLogFiles[-1]
@@ -738,6 +799,13 @@ logging.info(f"Extension {Administration.__name__} loaded.")
 
 @tasks.loop(seconds=60)
 async def TwitchLiveCheck():
+    """
+    Erneuert den Twitch Token, sofern abgelaufen.
+    Prüft jede Minute ob jemand bei Twitch live gegangen ist,
+    das Ganze wird in ein JSON File gespeichert, sofern der Livestatus sich geändert hat.
+    Zuletzt wird eine Benachrichtigung in meinen oder den Kumpels Channel gepostet.
+    """
+
     if datetime.timestamp(datetime.now()) > TWITCH_TOKEN_EXPIRES:
         RequestTwitchToken()
 
@@ -814,6 +882,11 @@ async def TwitchLiveCheck():
 
 @tasks.loop(seconds=60)
 async def GameReminder():
+    """
+    Prüft jede Minute ob eine Verabredung eingerichtet ist,
+    wenn ja wird in den Channel ein Reminder zur Uhrzeit gepostet.
+    """
+
     CurrentTime = datetime.timestamp(datetime.now())
     groups = _read_json('GROUPS.json')
     FoundList = []
@@ -832,6 +905,11 @@ async def GameReminder():
 
 @tasks.loop(minutes=30)
 async def MuellReminder():
+    """
+    Prüft alle 30min ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
+    dabei wird eine CSV Datei eingelesen und durchiteriert.
+    """
+
     MyDiscordUser = await bot.fetch_user(248181624485838849)
     TodayatSixPM = datetime.now().replace(
         hour=18, minute=00, second=00, microsecond=00)
@@ -867,6 +945,11 @@ async def MuellReminder():
 
 @bot.event
 async def on_ready():
+    """
+    Startet den Bot und lädt alle notwendigen Cogs,
+    dazu werden die Loops gestartet.
+    """
+
     logging.info(f"Logged in as {bot.user}!")
     logging.info("Bot started up!")
     for File in os.listdir('./cogs'):
@@ -883,6 +966,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    """
+    Was bei einer Nachricht passieren soll.
+    """
     if message.author == bot.user:
         return
 
@@ -895,6 +981,11 @@ async def on_message(message):
 
 @bot.event
 async def on_command_error(ctx, error):
+    """
+    Fehlerbehandlung falls Fehler bei einem Befehl auftreten.
+    Aktuell werden dort nur fehlende Befehle behandelt.
+    """
+
     if isinstance(error, commands.CommandNotFound):
         logging.warning(
             f"{error}, {ctx.author} möchte wohl einen neuen Befehl.")
