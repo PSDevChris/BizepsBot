@@ -283,7 +283,9 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _hansworks(self, ctx):
         HansTasks = ["schneiden", "rendern",
-                     "hochladen", "arbeiten", "eine rauchen", "irgendwelche npm Abhängigkeiten fixen", "Code aus 1986 debuggen"]
+                     "hochladen", "arbeiten", "eine rauchen",
+                     "irgendwelche npm Abhängigkeiten fixen",
+                     "Code aus 1986 debuggen", "Mövius anbeten"]
         HansTask = random.choice(HansTasks)
         await ctx.send(f"Hans muss {HansTask}...")
 
