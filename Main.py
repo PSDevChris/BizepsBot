@@ -285,7 +285,8 @@ class Fun(commands.Cog, name="Schabernack"):
         HansTasks = ["schneiden", "rendern",
                      "hochladen", "arbeiten", "eine rauchen",
                      "irgendwelche npm Abhängigkeiten fixen",
-                     "Code aus 1986 debuggen", "Mövius anbeten"]
+                     "Code aus 1986 debuggen", "Mövius anbeten",
+                     "schneidne, renderne, hochladne", "an Mövius schrauben"]
         HansTask = random.choice(HansTasks)
         await ctx.send(f"Hans muss {HansTask}...")
 
@@ -365,9 +366,13 @@ class Corona(commands.Cog, name="Corona"):
 
 class Meetings(commands.Cog, name="Meetings"):
     """
-    Diese Klasse handelt alle Verabredungen, sowie deren Funktionen ab.
-    Man kann joinen oder leaven, eine starten oder löschen lassen.
-    Zuletzt gibt es noch eine Funktion um die Uhrzeit zu aktualisieren.
+    Diese Klasse handelt alle Verabredungen, sowie deren Funktionen, wie zum Beispiel Beitritt ab.
+
+    !Game [Uhrzeit]:        Erstellt eine Verabredung zur Uhrzeit im Format HH:mm
+    !Join                   Tritt der Verabredung bei
+    !RemGame                Löscht die Verabredung
+    !LeaveGame              Verlässt die Verabredung, ist man Owner, wird diese gelöscht
+    !UpdateGame [Uhrzeit]   Aktualisiert die Verabredung auf die angegebene Uhrzeit
     """
 
     @commands.command(name="game", aliases=["Game"], brief="Startet eine Verabredung")
@@ -913,11 +918,11 @@ async def MuellReminder():
     """
 
     MyDiscordUser = await bot.fetch_user(248181624485838849)
-    TodayatSixPM = datetime.now().replace(
-        hour=18, minute=00, second=00, microsecond=00)
-    TodayatSixAndAHalfPM = datetime.now().replace(
-        hour=18, minute=32, second=00, microsecond=00)
-    if datetime.now() >= TodayatSixPM and datetime.now() <= TodayatSixAndAHalfPM:
+    TodayAtFivePM = datetime.now().replace(
+        hour=17, minute=00, second=00, microsecond=00)
+    TodayAtFiveAndAHalfPM = datetime.now().replace(
+        hour=17, minute=32, second=00, microsecond=00)
+    if datetime.now() >= TodayAtFivePM and datetime.now() <= TodayAtFiveAndAHalfPM:
         tomorrowNow = datetime.today() + timedelta(days=1)
         tomorrowClean = tomorrowNow.replace(
             hour=00, minute=00, second=00, microsecond=00)
@@ -949,7 +954,7 @@ async def MuellReminder():
 async def on_ready():
     """
     Startet den Bot und lädt alle notwendigen Cogs,
-    dazu werden die Loops gestartet.
+    dazu werden die Loops gestartet, sollten sie nicht schon laufen.
     """
 
     logging.info(f"Logged in as {bot.user}!")
@@ -973,9 +978,6 @@ async def on_message(message):
     """
     if message.author == bot.user:
         return
-
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
 
     # This line needs to be added so the commands are actually processed
     await bot.process_commands(message)
