@@ -992,7 +992,7 @@ async def GetFreeEpicGames():
                         _write_json('FreeEpicGames.json', FreeGameObject)
                         EndOfOffer = offer['promotionalOffers'][0]['endDate']
                         EndDateOfOffer = parser.parse(EndOfOffer).date()
-                        await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}")
+                        await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
                     else:
                         if FreeGame['title'] in FreeGamesList.keys():
                             pass
