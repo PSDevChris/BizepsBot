@@ -965,6 +965,8 @@ async def GetFreeEpicGames():
     if EndedOffers:
         for EndedOffer in EndedOffers:
             FreeGamesList.pop(EndedOffer)
+            logging.info(
+                f"{EndedOffer} aus den gratis Epic Games entfernt, da abgelaufen!")
         _write_json('FreeEpicGames.json', FreeGamesList)
 
     EpicStoreURL = 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
@@ -993,6 +995,8 @@ async def GetFreeEpicGames():
                         EndOfOffer = offer['promotionalOffers'][0]['endDate']
                         EndDateOfOffer = parser.parse(EndOfOffer).date()
                         await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
+                        logging.info(
+                            f"{FreeGame['title']} wurde zu den gratis Epic Games hinzugefügt!")
                     else:
                         if FreeGame['title'] in FreeGamesList.keys():
                             pass
@@ -1003,6 +1007,8 @@ async def GetFreeEpicGames():
                             EndDateOfOffer = parser.parse(
                                 EndOfOffer, dayfirst=True).date()
                             await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
+                            logging.info(
+                                f"{FreeGame['title']} wurde der Liste der gratis Epic Games hinzugefügt!")
 
                 except json.decoder.JSONDecodeError:
                     FreeGamesList = {}
