@@ -1,5 +1,5 @@
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 import os
 import random
@@ -7,6 +7,7 @@ import logging
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import context
+from dateutil import parser
 import requests
 from bs4 import BeautifulSoup
 import paramiko
@@ -947,6 +948,66 @@ async def MuellReminder():
                     f"Reminder für den gelben Sack am {entry} gesendet!")
 
 
+@tasks.loop(hours=24)
+async def GetFreeEpicGames():
+
+    FreeGamesList = _read_json('FreeEpicGames.json')
+    CurrentTime = datetime.now(timezone.utc)
+    EndedOffers = []
+
+    for FreeGameEntry in FreeGamesList.keys():
+
+        GameEndDate = parser.parse(
+            FreeGamesList[f"{FreeGameEntry}"]["endDate"])
+        if CurrentTime > GameEndDate:
+            EndedOffers.append(FreeGameEntry)
+
+    if EndedOffers:
+        for EndedOffer in EndedOffers:
+            FreeGamesList.pop(EndedOffer)
+        _write_json('FreeEpicGames.json', FreeGamesList)
+
+    EpicStoreURL = 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
+
+    RequestFromEpic = requests.get(EpicStoreURL)
+
+    JSONFromEpicStore = RequestFromEpic.json()
+
+    for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
+        if FreeGame['promotions'] != None and FreeGame['promotions']['promotionalOffers'] != []:
+            offers = FreeGame['promotions']['promotionalOffers']
+            for offer in offers:
+
+                FreeGameObject = {
+                    f"{FreeGame['title']}": {
+                        "startDate": offer['promotionalOffers'][0]['startDate'],
+                        "endDate": offer['promotionalOffers'][0]['endDate'],
+                    }
+                }
+
+                try:
+
+                    if not FreeGamesList:
+                        FreeGamesList.update(FreeGameObject)
+                        _write_json('FreeEpicGames.json', FreeGameObject)
+                        EndOfOffer = offer['promotionalOffers'][0]['endDate']
+                        EndDateOfOffer = parser.parse(EndOfOffer).date()
+                        await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}")
+                    else:
+                        if FreeGame['title'] in FreeGamesList.keys():
+                            pass
+                        else:
+                            FreeGamesList.update(FreeGameObject)
+                            _write_json('FreeEpicGames.json', FreeGamesList)
+                            EndOfOffer = offer['promotionalOffers'][0]['endDate']
+                            EndDateOfOffer = parser.parse(EndOfOffer, dayfirst=True).date()
+                            await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
+
+                except json.decoder.JSONDecodeError:
+                    FreeGamesList = {}
+                    FreeGamesList.update(FreeGameObject)
+                    _write_json('FreeEpicGames.json', FreeGamesList)
+
 ### Bot Events ###
 
 
@@ -969,6 +1030,8 @@ async def on_ready():
         GameReminder.start()
     if not MuellReminder.is_running():
         MuellReminder.start()
+    if not GetFreeEpicGames.is_running():
+        GetFreeEpicGames.start()
 
 
 @bot.event
