@@ -287,11 +287,12 @@ class Fun(commands.Cog, name="Schabernack"):
                      "hochladen", "arbeiten", "eine rauchen",
                      "irgendwelche npm Abhängigkeiten fixen",
                      "Code aus 1986 debuggen", "Mövius anbeten",
-                     "schneidne, renderne, hochladne", "an Mövius schrauben"]
+                     "schneidne, renderne, hochladne", "an Mövius schrauben",
+                     "eine Switch erwerben"]
         HansTask = random.choice(HansTasks)
         await ctx.send(f"Hans muss {HansTask}...")
 
-    @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief="Weebs out for Schnabi \o/")
+    @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _schnabiuwu(self, ctx):
         await ctx.send("""
@@ -948,7 +949,7 @@ async def MuellReminder():
                     f"Reminder für den gelben Sack am {entry} gesendet!")
 
 
-@tasks.loop(hours=24)
+@tasks.loop(hours=3)
 async def GetFreeEpicGames():
 
     FreeGamesList = _read_json('FreeEpicGames.json')
@@ -976,7 +977,7 @@ async def GetFreeEpicGames():
     JSONFromEpicStore = RequestFromEpic.json()
 
     for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
-        if FreeGame['promotions'] != None and FreeGame['promotions']['promotionalOffers'] != []:
+        if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
             offers = FreeGame['promotions']['promotionalOffers']
             for offer in offers:
 
