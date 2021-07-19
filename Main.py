@@ -886,12 +886,10 @@ async def TwitchLiveCheck():
                     for message in LastMessages:
                         if message.content.startswith(f"**{Displayname}**") is True:
                             break
-                        elif message.content.startswith(f"**{Displayname}**") is True and message == LastMessages[-1]:
-                            await bot.get_channel(703530328836407327).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
-                            logging.info(
-                                f"{Displayname} ging live auf Twitch! Twitch Benachrichtigung gesendet, da älter als 60min!")
-                        else:
-                            pass
+                    else:
+                        await bot.get_channel(703530328836407327).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
+                        logging.info(
+                            f"{Displayname} ging live auf Twitch! Twitch Benachrichtigung gesendet, da älter als 60min oder nicht vorhanden!")
                 else:
                     await bot.get_channel(703530328836407327).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
                     logging.info(
