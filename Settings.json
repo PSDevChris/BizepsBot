@@ -2,25 +2,25 @@
     "Settings": {
         "TwitchUser": {
             "dota_joker": false,
-			"desschnabeltier": false,
-			"metasmiths": false,
-			"patti2plays": false,
-			"argonius_draw": false,
-			"an4rky": false,
-			"travestor": false,
-			"zuckerprinzessin": false,
-			"hanseichlp": false,
-			"schnenko": false,
-			"dedge": false
+            "desschnabeltier": false,
+            "metasmiths": false,
+            "patti2plays": false,
+            "argonius_draw": false,
+            "an4rky": false,
+            "travestor": false,
+            "zuckerprinzessin": false,
+            "hanseichlp": false,
+            "schnenko": false,
+            "dedge": false
         },
         "Groups": {},
         "Counter": {
             "Puns": 0,
-			"Leak": 2,
-			"Mobbing": 10,
-			"Salz": 6,
-			"Lieferando": 190,
-			"Pipi": 1
+            "Leak": 2,
+            "Mobbing": 10,
+            "Salz": 6,
+            "Lieferando": 190,
+            "Pipi": 1
         },
         "HansTask": {
             "Tasks": [
@@ -35,7 +35,8 @@
                 "schneidne, renderne, hochladne",
                 "an M\u00f6vius schrauben",
                 "eine Switch erwerben",
-                "sich gut erholen"
+                "sich gut erholen",
+                "Doto beim debuggen helfen"
             ]
         },
         "FreeEpicGames": {
