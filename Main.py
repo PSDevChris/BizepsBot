@@ -289,7 +289,7 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
-        HansTask = random.choice(HansTasks['Settings']['HansTasks']['Tasks'])
+        HansTask = random.choice(HansTasks['Settings']['HansTask']['Tasks'])
         await ctx.send(f"Hans muss {HansTask}...")
 
     @_hansworks.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
