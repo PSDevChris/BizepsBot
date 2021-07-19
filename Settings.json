@@ -1,0 +1,52 @@
+{
+    "Settings": {
+        "TwitchUser": {
+            "dota_joker": false,
+			"desschnabeltier": false,
+			"metasmiths": false,
+			"patti2plays": false,
+			"argonius_draw": false,
+			"an4rky": false,
+			"travestor": false,
+			"zuckerprinzessin": false,
+			"hanseichlp": false,
+			"schnenko": false,
+			"dedge": false
+        },
+        "Groups": {},
+        "Counter": {
+            "Puns": 0,
+			"Leak": 2,
+			"Mobbing": 10,
+			"Salz": 6,
+			"Lieferando": 190,
+			"Pipi": 1
+        },
+        "HansTask": {
+            "Tasks": [
+                "schneiden",
+                "rendern",
+                "hochladen",
+                "arbeiten",
+                "eine rauchen",
+                "irgendwelche npm Abh\u00e4ngigkeiten fixen",
+                "Code aus 1986 debuggen",
+                "M\u00f6vius anbeten",
+                "schneidne, renderne, hochladne",
+                "an M\u00f6vius schrauben",
+                "eine Switch erwerben",
+                "sich gut erholen"
+            ]
+        },
+        "FreeEpicGames": {
+            "Offworld Trading Company": {
+                "startDate": "2021-07-15T15:00:00.000Z",
+                "endDate": "2021-07-22T15:00:00.000Z"
+            },
+            "Obduction": {
+                "startDate": "2021-07-15T15:00:00.000Z",
+                "endDate": "2021-07-22T15:00:00.000Z"
+            }
+        }
+    }
+}

@@ -76,12 +76,12 @@ def _is_admin(ctx):
 
 
 def _read_json(FileName):
-    with open(f'{FileName}', 'r') as JsonRead:
+    with open(f'{FileName}', 'r', encoding='utf-8') as JsonRead:
         return json.load(JsonRead)
 
 
 def _write_json(FileName, Content):
-    with open(f'{FileName}', 'w') as JsonWrite:
+    with open(f'{FileName}', 'w', encoding='utf-8') as JsonWrite:
         json.dump(Content, JsonWrite, indent=4)
 
 ### General Settings ###
@@ -111,82 +111,87 @@ class Counter(commands.Cog, name="Counter"):
 
     @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Erhöht den Pun Counter")
     async def _puncounter(self, ctx):
-        data = _read_json('Botcount.json')
-        data['Puns'] = data['Puns'] + 1
-        PunNumber = data['Puns']
-        _write_json('Botcount.json', data)
+        data = _read_json('Settings.json')
+        data['Settings']['Counter']['Puns'] = data['Settings']['Counter']['Puns'] + 1
+        PunNumber = data['Settings']['Counter']['Puns']
+        _write_json('Settings.json', data)
         await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
 
-    @_puncounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Puncount")
+    @_puncounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Puncount")
     async def _show_puncounter(self, ctx):
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Bereits {data['Puns']} Gagfeuerwerke wurden gezündet!")
+        data = _read_json('Settings.json')
+        await ctx.send(f"Bereits {data['Settings']['Counter']['Puns']} Gagfeuerwerke wurden gezündet!")
 
     @commands.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True, brief="Erhöht Hasssprech Counter")
     async def _mobbingcounter(self, ctx):
-        data = _read_json('Botcount.json')
-        data['Mobbing'] = int(data['Mobbing']) + 1
-        _write_json('Botcount.json', data)
-        MobbingNumber = data['Mobbing']
+        data = _read_json('Settings.json')
+        data['Settings']['Counter']['Mobbing'] = int(
+            data['Settings']['Counter']['Mobbing']) + 1
+        _write_json('Settings.json', data)
+        MobbingNumber = data['Settings']['Counter']['Mobbing']
         await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
 
-    @_mobbingcounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Hasssprech Counter")
+    @_mobbingcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Hasssprech Counter")
     async def _show_mobbingcounter(self, ctx):
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Auf dem Discord wurde bereits {data['Mobbing']} Mal Hasssprech betrieben! Pfui!")
+        data = _read_json('Settings.json')
+        await ctx.send(f"Auf dem Discord wurde bereits {data['Settings']['Counter']['Mobbing']} Mal Hasssprech betrieben! Pfui!")
 
     @commands.group(name="leak", aliases=["Leak"], invoke_without_command=True, brief="Erhöht den Leak Counter")
     async def _leakcounter(self, ctx):
-        data = _read_json('Botcount.json')
-        data['Leak'] = int(data['Leak']) + 1
-        _write_json('Botcount.json', data)
-        LeakNumber = data['Leak']
+        data = _read_json('Settings.json')
+        data['Settings']['Counter']['Leak'] = int(
+            data['Settings']['Counter']['Leak']) + 1
+        _write_json('Settings.json', data)
+        LeakNumber = data['Settings']['Counter']['Leak']
         await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
 
-    @_leakcounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Leak Counter")
+    @_leakcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Leak Counter")
     async def _show_leakcounter(self, ctx):
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Bisher wurden {data['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
+        data = _read_json('Settings.json')
+        await ctx.send(f"Bisher wurden {data['Settings']['Counter']['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
 
     @commands.group(name="salz", aliases=["Salz"], invoke_without_command=True, brief="Erhöht den Salz Counter")
     async def _salzcounter(self, ctx):
-        data = _read_json('Botcount.json')
-        data['Salz'] = int(data['Salz']) + 1
-        _write_json('Botcount.json', data)
-        SalzNumber = data['Salz']
+        data = _read_json('Settings.json')
+        data['Settings']['Counter']['Salz'] = int(
+            data['Settings']['Counter']['Salz']) + 1
+        _write_json('Settings.json', data)
+        SalzNumber = data['Settings']['Counter']['Salz']
         await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
 
-    @_salzcounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Salz Counter")
+    @_salzcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Salz Counter")
     async def _show_salzcounter(self, ctx):
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Bisher war es schon {data['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
+        data = _read_json('Settings.json')
+        await ctx.send(f"Bisher war es schon {data['Settings']['Counter']['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
 
     @commands.group(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk"], invoke_without_command=True, brief="Wirtschaft dankt!")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _schnenkorder(self, ctx):
-        data = _read_json('Botcount.json')
-        data['Lieferando'] = int(data['Lieferando']) + 20
-        _write_json('Botcount.json', data)
-        LieferandoNumber = data['Lieferando']
+        data = _read_json('Settings.json')
+        data['Settings']['Counter']['Lieferando'] = int(
+            data['Settings']['Counter']['Lieferando']) + 20
+        _write_json('Settings.json', data)
+        LieferandoNumber = data['Settings']['Counter']['Lieferando']
         await ctx.send(f"Schnenko hat dieses Jahr bereits für {LieferandoNumber}€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!")
 
-    @_schnenkorder.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Salz Counter")
+    @_schnenkorder.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt Schnenkos Bestellfreudigkeit in Euro")
     async def _show_schnenkcounter(self, ctx):
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Schnenko hat dieses Jahr bereits {data['Lieferando']}€ in Lieferando investiert. Ist das der neue Bitcoin?!")
+        data = _read_json('Settings.json')
+        await ctx.send(f"Schnenko hat dieses Jahr bereits {data['Settings']['Counter']['Lieferando']}€ in Lieferando investiert. Ist das der neue Bitcoin?!")
 
     @commands.group(name="Pipi", aliases=["pipi"], invoke_without_command=True, brief="Erhöht den Pipi Counter")
     async def _pipicounter(self, ctx):
-        data = _read_json('Botcount.json')
-        data['Pipi'] = int(data['Pipi']) + 1
-        _write_json('Botcount.json', data)
-        PipiNumber = data['Pipi']
+        data = _read_json('Settings.json')
+        data['Settings']['Counter']['Pipi'] = int(
+            data['Settings']['Counter']['Pipi']) + 1
+        _write_json('Settings.json', data)
+        PipiNumber = data['Settings']['Counter']['Pipi']
         await ctx.send(f"Dotas Babyblase hat ihn schon {PipiNumber} auf das stille Örtchen getrieben!")
 
-    @_pipicounter.command(name="show", aliases=["sh", "-s"], brief="Zeigt den aktuellen Pipi Counter")
-    async def _show_salzcounter(self, ctx):
-        data = _read_json('Botcount.json')
-        await ctx.send(f"Bisher war Dota schon {data['Pipi']} Mal auf dem stillen Örtchen!")
+    @_pipicounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Pipi Counter")
+    async def _show_pipicounter(self, ctx):
+        data = _read_json('Settings.json')
+        await ctx.send(f"Bisher war Dota schon {data['Settings']['Counter']['Pipi']} Mal auf dem stillen Örtchen!")
 
     @_schnenkorder.error
     async def _schnenkorder_error(self, ctx, error):
@@ -280,17 +285,25 @@ class Fun(commands.Cog, name="Schabernack"):
         logging.info(
             f"{ctx.message.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
 
-    @commands.command(name="Hans", aliases=["hans"], brief="Er muss arbeiten...?")
+    @commands.group(name="Hans", invoke_without_command=True, aliases=["hans"], brief="Er muss arbeiten...?")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _hansworks(self, ctx):
-        HansTasks = ["schneiden", "rendern",
-                     "hochladen", "arbeiten", "eine rauchen",
-                     "irgendwelche npm Abhängigkeiten fixen",
-                     "Code aus 1986 debuggen", "Mövius anbeten",
-                     "schneidne, renderne, hochladne", "an Mövius schrauben",
-                     "eine Switch erwerben"]
-        HansTask = random.choice(HansTasks)
+        HansTasks = _read_json('Settings.json')
+        HansTask = random.choice(HansTasks['Settings']['HansTasks']['Tasks'])
         await ctx.send(f"Hans muss {HansTask}...")
+
+    @_hansworks.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
+    async def _add_hansworks(self, ctx, task):
+        HansTasks = _read_json('Settings.json')
+        HansTasks['Settings']['HansTask']['Tasks'].append(task)
+        _write_json('Settings.json', HansTasks)
+        await ctx.send(f"Der Task {task} wurde Hans hinzugefügt.")
+
+    @_hansworks.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
+    async def _show_hansworks(self, ctx):
+        HansTasks = _read_json('Settings.json')
+        HansTasksString = "\n".join(HansTasks['Settings']['HansTask']['Tasks'])
+        await ctx.send(f"Hans hat folgende Tasks:\n```{HansTasksString}```")
 
     @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -401,46 +414,46 @@ class Meetings(commands.Cog, name="Meetings"):
         }
 
         try:
-            groups = _read_json('GROUPS.json')
+            groups = _read_json('Settings.json')
 
             if not groups:
-                groups.update(group)
-                _write_json('GROUPS.json', groups)
+                groups["Settings"]["Groups"].update(group)
+                _write_json('Settings.json', groups)
                 await ctx.send("Die Spielrunde wurde eröffnet!")
                 logging.info(
                     f"Verabredung in {ctx.message.channel.name} eröffnet.")
             else:
-                if ctx.message.channel.name in groups.keys():
+                if ctx.message.channel.name in groups["Settings"]["Groups"].keys():
                     await ctx.send(f"{ctx.author.name}, hier ist schon eine Spielrunde geplant. Joine einfach mit !join")
                 else:
-                    groups.update(group)
-                    _write_json('GROUPS.json', groups)
+                    groups["Settings"]["Groups"].update(group)
+                    _write_json('Settings.json', groups)
                     await ctx.send("Die Spielrunde wurde eröffnet!")
                     logging.info(
                         f"Verabredung in {ctx.message.channel.name} eröffnet.")
         except json.decoder.JSONDecodeError:
             groups = {}
-            groups.update(group)
-            _write_json('GROUPS.json', groups)
+            groups["Settings"]["Groups"].update(group)
+            _write_json('Settings.json', groups)
             await ctx.send("Die Spielrunde wurde eröffnet!")
             logging.warning(
-                f"Das Groups.json File war nicht lesbar, Verabredung in {ctx.message.channel.name} trotzdem eröffnet!")
+                f"Das Settings.json File war nicht lesbar, Verabredung in {ctx.message.channel.name} trotzdem eröffnet!")
 
     @commands.command(name="join", aliases=["Join"], brief="Tritt einer Verabredung bei")
     @commands.check(_is_gamechannel)
     async def _joingame(self, ctx):
         CurrentChannel = ctx.message.channel.name
-        groups = _read_json('GROUPS.json')
+        groups = _read_json('Settings.json')
 
-        if ctx.message.channel.name in groups.keys() and ctx.message.author.mention in groups[f"{CurrentChannel}"]["members"]:
+        if ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention in groups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             await ctx.send(f"{ctx.message.author.name}, du bist bereits als Teilnehmer im geplanten Spiel.")
-        elif ctx.message.channel.name in groups.keys() and f"{ctx.message.author.mention}" not in groups[f"{CurrentChannel}"]["members"]:
-            groups[f"{CurrentChannel}"]["members"].append(
+        elif ctx.message.channel.name in groups["Settings"]["Groups"].keys() and f"{ctx.message.author.mention}" not in groups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
+            groups["Settings"]["Groups"][f"{CurrentChannel}"]["members"].append(
                 f"{ctx.message.author.mention}")
             await ctx.send(f"{ctx.author.mention}, du wurdest dem Spiel hinzugefügt.")
             logging.info(
                 f"{ctx.author} wurde der Verabredung in {ctx.message.channel.name} hinzugefügt.")
-            _write_json('GROUPS.json', groups)
+            _write_json('Settings.json', groups)
         else:
             await ctx.send("In diesem Channel wurde noch kein Spiel geplant.")
 
@@ -448,9 +461,9 @@ class Meetings(commands.Cog, name="Meetings"):
     @commands.check(_is_gamechannel)
     async def _movegame(self, ctx, timearg):
         CurrentChannel = ctx.message.channel.name
-        groups = _read_json('GROUPS.json')
+        groups = _read_json('Settings.json')
 
-        if ctx.message.channel.name in groups.keys() and ctx.message.author.mention == groups[f"{CurrentChannel}"]["owner"]:
+        if ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention == groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             try:
                 CurrentDate = datetime.now()
                 GameTime = datetime.strptime(timearg, "%H:%M").time()
@@ -462,54 +475,54 @@ class Meetings(commands.Cog, name="Meetings"):
                     f"{ctx.author} hat eine falsche Uhrzeit angegeben!")
                 return
 
-            groups[f"{CurrentChannel}"]["time"] = GameDateTimeTimestamp
-            _write_json('GROUPS.json', groups)
+            groups["Settings"]["Groups"][f"{CurrentChannel}"]["time"] = GameDateTimeTimestamp
+            _write_json('Settings.json', groups)
             await ctx.send(f"Die Uhrzeit der Verabredung wurde auf {timearg} geändert.")
             logging.info(
                 f"{ctx.author} hat seine Verabredung verschoben auf {timearg}.")
-        elif ctx.message.channel.name in groups.keys() and ctx.message.author.mention != groups[f"{CurrentChannel}"]["owner"]:
+        elif ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention != groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             await ctx.send("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er es verschiebt!")
             logging.warning(
                 f"{ctx.author} wollte eine Verabredung verschieben, die nicht Ihm gehört!")
-        elif ctx.message.channel.name not in groups.keys():
+        elif ctx.message.channel.name not in groups["Settings"]["Groups"].keys():
             await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
     @commands.command(name="RemGame", aliases=["remgame"], brief="Löscht die Verabredung")
     @commands.check(_is_gamechannel)
     async def _gameremover(self, ctx):
         CurrentChannel = ctx.message.channel.name
-        groups = _read_json('GROUPS.json')
-        if ctx.message.channel.name in groups.keys() and ctx.message.author.mention == groups[f"{CurrentChannel}"]["owner"]:
-            groups.pop(CurrentChannel)
-            _write_json('GROUPS.json', groups)
+        groups = _read_json('Settings.json')
+        if ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention == groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
+            groups["Settings"]["Groups"].pop(CurrentChannel)
+            _write_json('Settings.json', groups)
             await ctx.send("Die Verabredung in diesem Channel wurde gelöscht.")
             logging.info(f"{ctx.author} hat seine Verabredung gelöscht.")
-        elif ctx.message.channel.name in groups.keys() and ctx.message.author.mention != groups[f"{CurrentChannel}"]["owner"]:
+        elif ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention != groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             await ctx.send("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er diese löscht!")
             logging.warning(
                 f"{ctx.author} wollte eine Verabredung löschen, die nicht Ihm gehört!")
-        elif ctx.message.channel.name not in groups.keys():
+        elif ctx.message.channel.name not in groups["Settings"]["Groups"].keys():
             await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
     @commands.command(name="LeaveGame", aliases=["leavegame", "lvgame", "qGame", "QuitGame"], brief="Verlässt die aktuelle Verabredung")
     @commands.check(_is_gamechannel)
     async def _leavegame(self, ctx):
         CurrentChannel = ctx.message.channel.name
-        StartedGroups = _read_json('GROUPS.json')
-        if ctx.message.channel.name in StartedGroups.keys() and ctx.message.author.mention == StartedGroups[f"{CurrentChannel}"]["owner"]:
-            StartedGroups.pop(CurrentChannel)
-            _write_json('GROUPS.json', StartedGroups)
+        StartedGroups = _read_json('Settings.json')
+        if ctx.message.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.message.author.mention == StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
+            StartedGroups["Settings"]["Groups"].pop(CurrentChannel)
+            _write_json('Settings.json', StartedGroups)
             await ctx.send(f"{ctx.author.mention}, die Verabredung in diesem Channel wurde gelöscht, da du der Besitzer warst.")
             logging.info(
                 f"{ctx.author} hat seine Verabredung verlassen, daher wurde sie gelöscht.")
-        elif ctx.message.channel.name in StartedGroups.keys() and ctx.message.author.mention in StartedGroups[f"{CurrentChannel}"]["members"]:
-            StartedGroups[f"{CurrentChannel}"]["members"].remove(
+        elif ctx.message.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.message.author.mention in StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
+            StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"].remove(
                 ctx.message.author.mention)
             await ctx.send(f"{ctx.author.mention}, du wurdest aus der Verabredung entfernt.")
             logging.info(
                 f"{ctx.author} wurde aus der Verabredung in {ctx.message.channel.name} entfernt.")
-            _write_json('GROUPS.json', StartedGroups)
-        elif ctx.message.channel.name in StartedGroups.keys() and ctx.message.author.mention not in StartedGroups[f"{CurrentChannel}"]["members"]:
+            _write_json('Settings.json', StartedGroups)
+        elif ctx.message.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.message.author.mention not in StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             await ctx.send(f"{ctx.author.mention}, du bist der Verabredung nicht beigetreten und wurdest daher auch nicht entfernt.")
             logging.info(
                 f"{ctx.author} wollte die Verabredung in {ctx.message.channel.name} verlassen, war aber kein Mitglied.")
@@ -704,10 +717,10 @@ class Administration(commands.Cog, name="Administration"):
 
         if ChangeArg in ["add", "+"]:
             try:
-                with open('TWITCHUSER.json', 'r+') as TwitchFile:
+                with open('Settings.json', 'r+') as TwitchFile:
                     TwitchUser = json.load(TwitchFile)
                     TwitchMember = {f"{Member}": False}
-                    TwitchUser.update(TwitchMember)
+                    TwitchUser['TwitchUser'].update(TwitchMember)
                     # Seek is enough since the new String is longer otherwise TwitchFile.truncate() would be needed
                     TwitchFile.seek(0)
                     json.dump(TwitchUser, TwitchFile)
@@ -719,9 +732,9 @@ class Administration(commands.Cog, name="Administration"):
                     f"User {Member} could not be added.", exc_info=True)
         elif ChangeArg in ["del", "-"]:
             try:
-                TwitchUser = _read_json('TWITCHUSER.json')
-                TwitchUser.pop(f"{Member}")
-                _write_json('TWITCHUSER.json', TwitchUser)
+                TwitchUser = _read_json('Settings.json')
+                TwitchUser['TwitchUser'].pop(f"{Member}")
+                _write_json('Settings.json', TwitchUser)
                 await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
                 logging.info(f"User {Member} was removed from Twitchlist.")
             except:
@@ -818,9 +831,9 @@ async def TwitchLiveCheck():
     if datetime.timestamp(datetime.now()) > TWITCH_TOKEN_EXPIRES:
         RequestTwitchToken()
 
-    TWITCHUSERNAMES = _read_json('TWITCHUSER.json')
+    TWITCHUSERNAMES = _read_json('Settings.json')
 
-    for USER, LASTSTATE in TWITCHUSERNAMES.items():
+    for USER, LASTSTATE in TWITCHUSERNAMES['Settings']['TwitchUser'].items():
 
         try:
             rUserData = requests.get(f'https://api.twitch.tv/helix/search/channels?query={USER}',
@@ -885,8 +898,8 @@ async def TwitchLiveCheck():
                         f"{Displayname} ging live auf Twitch! Twitch Benachrichtigung gesendet!")
 
         if LASTSTATE is not data['is_live']:
-            TWITCHUSERNAMES[USER] = data['is_live']
-            _write_json('TWITCHUSER.json', TWITCHUSERNAMES)
+            TWITCHUSERNAMES['Settings']['TwitchUser'][USER] = data['is_live']
+            _write_json('Settings.json', TWITCHUSERNAMES)
 
 
 @tasks.loop(seconds=60)
@@ -897,19 +910,21 @@ async def GameReminder():
     """
 
     CurrentTime = datetime.timestamp(datetime.now())
-    groups = _read_json('GROUPS.json')
+    groups = _read_json('Settings.json')
     FoundList = []
-    for reminder in groups.keys():
-        if CurrentTime > groups[f"{reminder}"]["time"]:
-            Remindchannel = bot.get_channel(groups[f"{reminder}"]["id"])
-            ReminderMembers = ", ".join(groups[f"{reminder}"]["members"])
+    for reminder in groups["Settings"]["Groups"].keys():
+        if CurrentTime > groups["Settings"]["Groups"][f"{reminder}"]["time"]:
+            Remindchannel = bot.get_channel(
+                groups["Settings"]["Groups"][f"{reminder}"]["id"])
+            ReminderMembers = ", ".join(
+                groups["Settings"]["Groups"][f"{reminder}"]["members"])
             await Remindchannel.send(f" Das Spiel geht los! Mit dabei sind: {ReminderMembers}")
             logging.info(f"Treffen im Channel {reminder} gestartet!")
             FoundList.append(reminder)
     if FoundList:
         for reminder in FoundList:
-            groups.pop(f'{reminder}')
-        _write_json('GROUPS.json', groups)
+            groups["Settings"]["Groups"].pop(f'{reminder}')
+        _write_json('Settings.json', groups)
 
 
 @tasks.loop(minutes=30)
@@ -952,23 +967,23 @@ async def MuellReminder():
 @tasks.loop(hours=3)
 async def GetFreeEpicGames():
 
-    FreeGamesList = _read_json('FreeEpicGames.json')
+    FreeGamesList = _read_json('Settings.json')
     CurrentTime = datetime.now(timezone.utc)
     EndedOffers = []
 
-    for FreeGameEntry in FreeGamesList.keys():
+    for FreeGameEntry in FreeGamesList['Settings']['FreeEpicGames'].keys():
 
         GameEndDate = parser.parse(
-            FreeGamesList[f"{FreeGameEntry}"]["endDate"])
+            FreeGamesList['Settings']['FreeEpicGames'][f"{FreeGameEntry}"]["endDate"])
         if CurrentTime > GameEndDate:
             EndedOffers.append(FreeGameEntry)
 
     if EndedOffers:
         for EndedOffer in EndedOffers:
-            FreeGamesList.pop(EndedOffer)
+            FreeGamesList['Settings']['FreeEpicGames'].pop(EndedOffer)
             logging.info(
                 f"{EndedOffer} aus den gratis Epic Games entfernt, da abgelaufen!")
-        _write_json('FreeEpicGames.json', FreeGamesList)
+        _write_json('Settings.json', FreeGamesList)
 
     EpicStoreURL = 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
 
@@ -991,19 +1006,21 @@ async def GetFreeEpicGames():
                 try:
 
                     if not FreeGamesList:
-                        FreeGamesList.update(FreeGameObject)
-                        _write_json('FreeEpicGames.json', FreeGameObject)
+                        FreeGamesList['Settings']['FreeEpicGames'].update(
+                            FreeGameObject)
+                        _write_json('Settings.json', FreeGameObject)
                         EndOfOffer = offer['promotionalOffers'][0]['endDate']
                         EndDateOfOffer = parser.parse(EndOfOffer).date()
                         await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
                         logging.info(
                             f"{FreeGame['title']} wurde zu den gratis Epic Games hinzugefügt!")
                     else:
-                        if FreeGame['title'] in FreeGamesList.keys():
+                        if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
                             pass
                         else:
-                            FreeGamesList.update(FreeGameObject)
-                            _write_json('FreeEpicGames.json', FreeGamesList)
+                            FreeGamesList['Settings']['FreeEpicGames'].update(
+                                FreeGameObject)
+                            _write_json('Settings.json', FreeGamesList)
                             EndOfOffer = offer['promotionalOffers'][0]['endDate']
                             EndDateOfOffer = parser.parse(
                                 EndOfOffer, dayfirst=True).date()
@@ -1012,9 +1029,10 @@ async def GetFreeEpicGames():
                                 f"{FreeGame['title']} wurde der Liste der gratis Epic Games hinzugefügt!")
 
                 except json.decoder.JSONDecodeError:
-                    FreeGamesList = {}
-                    FreeGamesList.update(FreeGameObject)
-                    _write_json('FreeEpicGames.json', FreeGamesList)
+                    FreeGamesList['Settings']['FreeEpicGames'] = {}
+                    FreeGamesList['Settings']['FreeEpicGames'].update(
+                        FreeGameObject)
+                    _write_json('Settings.json', FreeGamesList)
 
 ### Bot Events ###
 
