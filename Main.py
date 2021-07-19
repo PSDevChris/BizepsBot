@@ -720,7 +720,7 @@ class Administration(commands.Cog, name="Administration"):
                 with open('Settings.json', 'r+') as TwitchFile:
                     TwitchUser = json.load(TwitchFile)
                     TwitchMember = {f"{Member}": False}
-                    TwitchUser['TwitchUser'].update(TwitchMember)
+                    TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
                     # Seek is enough since the new String is longer otherwise TwitchFile.truncate() would be needed
                     TwitchFile.seek(0)
                     json.dump(TwitchUser, TwitchFile)
@@ -733,7 +733,7 @@ class Administration(commands.Cog, name="Administration"):
         elif ChangeArg in ["del", "-"]:
             try:
                 TwitchUser = _read_json('Settings.json')
-                TwitchUser['TwitchUser'].pop(f"{Member}")
+                TwitchUser['Settings']['TwitchUser'].pop(f"{Member}")
                 _write_json('Settings.json', TwitchUser)
                 await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
                 logging.info(f"User {Member} was removed from Twitchlist.")
