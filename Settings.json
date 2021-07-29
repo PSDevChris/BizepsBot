@@ -41,13 +41,13 @@
             ]
         },
         "FreeEpicGames": {
-            "Offworld Trading Company": {
-                "startDate": "2021-07-15T15:00:00.000Z",
-                "endDate": "2021-07-22T15:00:00.000Z"
+            "Defense Grid: The Awakening": {
+                "startDate": "2021-07-22T15:00:00.000Z",
+                "endDate": "2021-07-29T15:00:00.000Z"
             },
-            "Obduction": {
-                "startDate": "2021-07-15T15:00:00.000Z",
-                "endDate": "2021-07-22T15:00:00.000Z"
+            "Verdun": {
+                "startDate": "2021-07-22T15:00:00.000Z",
+                "endDate": "2021-07-29T15:00:00.000Z"
             }
         }
     }

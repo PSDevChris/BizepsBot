@@ -268,7 +268,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 if random.randint(0, 75) == 1:
                     LastMessageContent = message.content
                     flags = uwuify.SMILEY | uwuify.YU
-                    await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} UwU")
+                    await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
                     logging.info(
                         f"Die Nachricht [{LastMessageContent}] wurde UwUt.")
 
