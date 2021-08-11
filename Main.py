@@ -717,13 +717,10 @@ class Administration(commands.Cog, name="Administration"):
 
         if ChangeArg in ["add", "+"]:
             try:
-                with open('Settings.json', 'r+') as TwitchFile:
-                    TwitchUser = json.load(TwitchFile)
-                    TwitchMember = {f"{Member}": False}
-                    TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
-                    # Seek is enough since the new String is longer otherwise TwitchFile.truncate() would be needed
-                    TwitchFile.seek(0)
-                    json.dump(TwitchUser, TwitchFile)
+                TwitchUser = _read_json('Settings.json')
+                TwitchMember = {f"{Member}": False}
+                TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
+                _write_json('Settings.json', TwitchUser)
                 await ctx.send(f"{Member} zur Twitchliste hinzugefügt!")
                 logging.info(f"User {Member} was added to Twitchlist.")
             except:
