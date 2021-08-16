@@ -985,49 +985,49 @@ async def GetFreeEpicGames():
     RequestFromEpic = requests.get(EpicStoreURL)
 
     JSONFromEpicStore = RequestFromEpic.json()
+    if JSONFromEpicStore:
+        for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
+            if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
+                offers = FreeGame['promotions']['promotionalOffers']
+                for offer in offers:
 
-    for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
-        if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
-            offers = FreeGame['promotions']['promotionalOffers']
-            for offer in offers:
-
-                FreeGameObject = {
-                    f"{FreeGame['title']}": {
-                        "startDate": offer['promotionalOffers'][0]['startDate'],
-                        "endDate": offer['promotionalOffers'][0]['endDate'],
+                    FreeGameObject = {
+                        f"{FreeGame['title']}": {
+                            "startDate": offer['promotionalOffers'][0]['startDate'],
+                            "endDate": offer['promotionalOffers'][0]['endDate'],
+                        }
                     }
-                }
 
-                try:
+                    try:
 
-                    if not FreeGamesList:
-                        FreeGamesList['Settings']['FreeEpicGames'].update(
-                            FreeGameObject)
-                        _write_json('Settings.json', FreeGameObject)
-                        EndOfOffer = offer['promotionalOffers'][0]['endDate']
-                        EndDateOfOffer = parser.parse(EndOfOffer).date()
-                        await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
-                        logging.info(
-                            f"{FreeGame['title']} wurde zu den gratis Epic Games hinzugefügt!")
-                    else:
-                        if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
-                            pass
-                        else:
+                        if not FreeGamesList:
                             FreeGamesList['Settings']['FreeEpicGames'].update(
                                 FreeGameObject)
-                            _write_json('Settings.json', FreeGamesList)
+                            _write_json('Settings.json', FreeGameObject)
                             EndOfOffer = offer['promotionalOffers'][0]['endDate']
-                            EndDateOfOffer = parser.parse(
-                                EndOfOffer, dayfirst=True).date()
+                            EndDateOfOffer = parser.parse(EndOfOffer).date()
                             await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
                             logging.info(
-                                f"{FreeGame['title']} wurde der Liste der gratis Epic Games hinzugefügt!")
+                                f"{FreeGame['title']} wurde zu den gratis Epic Games hinzugefügt!")
+                        else:
+                            if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
+                                pass
+                            else:
+                                FreeGamesList['Settings']['FreeEpicGames'].update(
+                                    FreeGameObject)
+                                _write_json('Settings.json', FreeGamesList)
+                                EndOfOffer = offer['promotionalOffers'][0]['endDate']
+                                EndDateOfOffer = parser.parse(
+                                    EndOfOffer, dayfirst=True).date()
+                                await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
+                                logging.info(
+                                    f"{FreeGame['title']} wurde der Liste der gratis Epic Games hinzugefügt!")
 
-                except json.decoder.JSONDecodeError:
-                    FreeGamesList['Settings']['FreeEpicGames'] = {}
-                    FreeGamesList['Settings']['FreeEpicGames'].update(
-                        FreeGameObject)
-                    _write_json('Settings.json', FreeGamesList)
+                    except json.decoder.JSONDecodeError:
+                        FreeGamesList['Settings']['FreeEpicGames'] = {}
+                        FreeGamesList['Settings']['FreeEpicGames'].update(
+                            FreeGameObject)
+                        _write_json('Settings.json', FreeGamesList)
 
 ### Bot Events ###
 
