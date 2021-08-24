@@ -50,6 +50,7 @@ def RequestTwitchToken():
         data['TWITCH_TOKEN_EXPIRES'] = TWITCH_TOKEN_EXPIRES
     with open('TOKEN.json', 'w') as write_file:
         json.dump(data, write_file)
+    logging.info("Neues Twitch Token wurde erfolgreich angefordert.")
 
 
 def _is_mcsu(ctx: context.Context):
@@ -97,7 +98,6 @@ with open("TOKEN.json", "r") as TOKENFILE:
         TWITCH_TOKEN_EXPIRES = TOKENDATA['TWITCH_TOKEN_EXPIRES']
     else:
         RequestTwitchToken()
-        logging.info("Neues Twitch Token wurde erfolgreich angefordert.")
     logging.info("Token successfully loaded.")
 
 ### Commands and Cogs Section ###
