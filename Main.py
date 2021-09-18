@@ -1020,8 +1020,11 @@ async def GetFreeEpicGames():
                                 EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
                                 with open(f'epic/{EpicImagePath}', 'wb') as write_file:
                                     write_file.write(EpicImage.content)
+                            if EpicImagePath:
+                                await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
+                            else:
+                                await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
 
-                            await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
                             logging.info(
                                 f"{FreeGame['title']} wurde zu den gratis Epic Games hinzugefügt!")
                         else:
@@ -1046,7 +1049,10 @@ async def GetFreeEpicGames():
                                     with open(f'epic/{EpicImagePath}', 'wb') as write_file:
                                         write_file.write(EpicImage.content)
 
-                                await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
+                                if EpicImagePath:
+                                    await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
+                                else:
+                                    await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
                                 logging.info(
                                     f"{FreeGame['title']} wurde der Liste der gratis Epic Games hinzugefügt!")
 
