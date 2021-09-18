@@ -1013,6 +1013,7 @@ async def GetFreeEpicGames():
                             for index in range(len(FreeGame['keyImages'])):
                                 if FreeGame['keyImages'][index]['type'] == "Thumbnail":
                                     EpicImageURL = FreeGame['keyImages'][index]['url']
+                                    break
 
                             EpicImage = requests.get(EpicImageURL)
                             if EpicImage.status_code == 200:
@@ -1037,6 +1038,7 @@ async def GetFreeEpicGames():
                                 for index in range(len(FreeGame['keyImages'])):
                                     if FreeGame['keyImages'][index]['type'] == "Thumbnail":
                                         EpicImageURL = FreeGame['keyImages'][index]['url']
+                                        break
 
                                 EpicImage = requests.get(EpicImageURL)
                                 if EpicImage.status_code == 200:
