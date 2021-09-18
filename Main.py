@@ -93,7 +93,7 @@ with open("TOKEN.json", "r") as TOKENFILE:
     TOKEN = TOKENDATA['DISCORD_TOKEN']
     TWITCH_CLIENT_ID = TOKENDATA['TWITCH_CLIENT_ID']
     TWITCH_CLIENT_SECRET = TOKENDATA['TWITCH_CLIENT_SECRET']
-    if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys() and datetime.timestamp(datetime.now()) < TWITCH_TOKEN_EXPIRES:
+    if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys() and datetime.timestamp(datetime.now()) < TOKENDATA['TWITCH_TOKEN_EXPIRES']:
         TWITCH_TOKEN = TOKENDATA['TWITCH_TOKEN']
         TWITCH_TOKEN_EXPIRES = TOKENDATA['TWITCH_TOKEN_EXPIRES']
     else:
@@ -962,6 +962,9 @@ async def MuellReminder():
 @tasks.loop(hours=3)
 async def GetFreeEpicGames():
 
+    AllEpicFiles = next(os.walk("epic/"))[2]
+    NumberOfEpicFiles = len(AllEpicFiles)
+
     FreeGamesList = _read_json('Settings.json')
     CurrentTime = datetime.now(timezone.utc)
     EndedOffers = []
@@ -1006,7 +1009,18 @@ async def GetFreeEpicGames():
                             _write_json('Settings.json', FreeGameObject)
                             EndOfOffer = offer['promotionalOffers'][0]['endDate']
                             EndDateOfOffer = parser.parse(EndOfOffer).date()
-                            await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
+
+                            for index in range(len(FreeGame['keyImages'])):
+                                if FreeGame['keyImages'][index]['type'] == "Thumbnail":
+                                    EpicImageURL = FreeGame['keyImages'][index]['url']
+
+                            EpicImage = requests.get(EpicImageURL)
+                            if EpicImage.status_code == 200:
+                                EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
+                                with open(f'epic/{EpicImagePath}', 'wb') as write_file:
+                                    write_file.write(EpicImage.content)
+
+                            await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
                             logging.info(
                                 f"{FreeGame['title']} wurde zu den gratis Epic Games hinzugefügt!")
                         else:
@@ -1019,7 +1033,18 @@ async def GetFreeEpicGames():
                                 EndOfOffer = offer['promotionalOffers'][0]['endDate']
                                 EndDateOfOffer = parser.parse(
                                     EndOfOffer, dayfirst=True).date()
-                                await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
+
+                                for index in range(len(FreeGame['keyImages'])):
+                                    if FreeGame['keyImages'][index]['type'] == "Thumbnail":
+                                        EpicImageURL = FreeGame['keyImages'][index]['url']
+
+                                EpicImage = requests.get(EpicImageURL)
+                                if EpicImage.status_code == 200:
+                                    EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
+                                    with open(f'epic/{EpicImagePath}', 'wb') as write_file:
+                                        write_file.write(EpicImage.content)
+
+                                await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
                                 logging.info(
                                     f"{FreeGame['title']} wurde der Liste der gratis Epic Games hinzugefügt!")
 
