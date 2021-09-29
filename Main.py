@@ -62,7 +62,17 @@ def _write_json(FileName, Content):
     with open(f'{FileName}', 'w', encoding='utf-8') as JsonWrite:
         json.dump(Content, JsonWrite, indent=4)
 
+
+def RefreshMemes():
+    global AllFiles
+    AllFiles = next(os.walk("memes/"))[2]
+    return AllFiles
+
+### Permission Checks ###
+
 ### Prüft ob der Minecraft Superuser ist laut Settings.json Datei ###
+
+
 def _is_mcsu(ctx: context.Context):
     MCSUs = _read_json('Settings.json')
     return ctx.author.id in MCSUs['Settings']['ManagementGroups']['MCSUs']
@@ -83,6 +93,8 @@ def _is_gamechannel(ctx):
         return ctx.message.channel.category_id == 539553136222666792
 
 ### Prüft ob der User ein Admin ist laut Settings.json Datei ###
+
+
 def _is_admin(ctx):
     AdminGroup = _read_json('Settings.json')
     return ctx.author.id == AdminGroup['Settings']['ManagementGroups']['Admins']
@@ -217,18 +229,15 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _ehrenmann(self, ctx, user: commands.MemberConverter):
         await ctx.send(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
 
-    @commands.command(name="testgeheim", aliases=["latestmsgtest"], brief="Super geheim")
-    async def _latestmsgtest(self, ctx):
-        LastMessages = await ctx.message.channel.history(limit=2).flatten()
-        LastMessages.reverse()
-        await ctx.send(f"{ctx.author.mention}, die letzte Nachricht hier war {LastMessages[0].content}.")
-
     @commands.group(name="meme", aliases=["Meme"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
     async def _memearchiv(self, ctx):
-        RandomMeme = random.choice(next(os.walk("memes/"))[2])
+        if len(AllFiles) == 0:
+            RefreshMemes()
+        RandomMeme = random.choice(AllFiles)
         await ctx.send("Zufalls-Meme!", file=discord.File(f"memes/{RandomMeme}"))
+        AllFiles.remove(RandomMeme)
         logging.info(f"{ctx.author} hat ein Zufallsmeme angefordert.")
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
@@ -240,10 +249,12 @@ class Fun(commands.Cog, name="Schabernack"):
         for index, meme in enumerate(LastMessages[0].attachments):
             if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
                 await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
+                await ctx.send("Memes hinzugefügt.")
+                logging.info(
+                    f"{ctx.author} hat ein Meme erfolgreich hinzugefügt.")
+                RefreshMemes()
             else:
                 pass
-            await ctx.send("Memes hinzugefügt.")
-            logging.info(f"{ctx.author} hat ein Meme erfolgreich hinzugefügt.")
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     async def _collmeme(self, ctx, Message: commands.MessageConverter):
@@ -252,11 +263,12 @@ class Fun(commands.Cog, name="Schabernack"):
         for index, meme in enumerate(Message.attachments):
             if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
                 await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
+                await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
+                logging.info(
+                    f"{ctx.author} hat ein Meme erfolgreich eingesammelt.")
+                RefreshMemes()
             else:
                 pass
-            await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
-            logging.info(
-                f"{ctx.author} hat ein Meme erfolgreich eingesammelt.")
 
     @commands.Cog.listener("on_message")
     @commands.check(_is_nouwuchannel)
@@ -1088,6 +1100,7 @@ async def on_ready():
         MuellReminder.start()
     if not GetFreeEpicGames.is_running():
         GetFreeEpicGames.start()
+    RefreshMemes()
 
 
 @bot.event
