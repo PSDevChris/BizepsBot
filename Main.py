@@ -53,8 +53,19 @@ def RequestTwitchToken():
     logging.info("Neues Twitch Token wurde erfolgreich angefordert.")
 
 
+def _read_json(FileName):
+    with open(f'{FileName}', 'r', encoding='utf-8') as JsonRead:
+        return json.load(JsonRead)
+
+
+def _write_json(FileName, Content):
+    with open(f'{FileName}', 'w', encoding='utf-8') as JsonWrite:
+        json.dump(Content, JsonWrite, indent=4)
+
+### Prüft ob der Minecraft Superuser ist laut Settings.json Datei ###
 def _is_mcsu(ctx: context.Context):
-    return ctx.author.id in [247117682875432960, 232561052573892608, 257249704872509441, 248181624485838849]
+    MCSUs = _read_json('Settings.json')
+    return ctx.author.id in MCSUs['Settings']['ManagementGroups']['MCSUs']
 
 
 def _is_owchannel(ctx):
@@ -71,19 +82,10 @@ def _is_gamechannel(ctx):
     else:
         return ctx.message.channel.category_id == 539553136222666792
 
-
+### Prüft ob der User ein Admin ist laut Settings.json Datei ###
 def _is_admin(ctx):
-    return ctx.author.id == 248181624485838849
-
-
-def _read_json(FileName):
-    with open(f'{FileName}', 'r', encoding='utf-8') as JsonRead:
-        return json.load(JsonRead)
-
-
-def _write_json(FileName, Content):
-    with open(f'{FileName}', 'w', encoding='utf-8') as JsonWrite:
-        json.dump(Content, JsonWrite, indent=4)
+    AdminGroup = _read_json('Settings.json')
+    return ctx.author.id == AdminGroup['Settings']['ManagementGroups']['Admins']
 
 ### General Settings ###
 

@@ -1,8 +1,7 @@
 {
     "Settings": {
         "TwitchUser": {
-            "w3bba": false,
-            "dota_joker": false,
+            "dota_joker": true,
             "desschnabeltier": false,
             "metasmiths": false,
             "patti2plays": false,
@@ -12,15 +11,25 @@
             "zuckerprinzessin": false,
             "hanseichlp": false,
             "schnenko": false,
-            "dedge": false
+            "dedge": false,
+            "w3bba": false
+        },
+        "ManagementGroups": {
+            "MCSUs": [
+                247117682875432960,
+                232561052573892608,
+                257249704872509441,
+                248181624485838849
+            ],
+            "Admins": 248181624485838849
         },
         "Groups": {},
         "Counter": {
             "Puns": 0,
             "Leak": 2,
-            "Mobbing": 10,
-            "Salz": 6,
-            "Lieferando": 190,
+            "Mobbing": 11,
+            "Salz": 9,
+            "Lieferando": 230,
             "Pipi": 1
         },
         "HansTask": {
@@ -35,19 +44,34 @@
                 "M\u00f6vius anbeten",
                 "schneidne, renderne, hochladne",
                 "an M\u00f6vius schrauben",
-                "eine Switch erwerben",
+                "Breath of the Wild spielen",
                 "sich gut erholen",
-                "Doto beim debuggen helfen"
+                "Doto beim debuggen helfen",
+                "Foxmeister in Mario Kart besiegen",
+                "an seinen chinesischen Nachbarn denken",
+                "den bot mit neuen Aufgaben f\u00fcr Hans f\u00fcttern",
+                "seine Bonit\u00e4t unter Beweis stellen",
+                "Man of Medan mit Schnenk und Doto gucken",
+                "den Flammenwerfer holen",
+                "sich definitiv erschrecken",
+                "Foxmeister bei Wizard zerst\u00f6ren",
+                "ein Tablett Bier f\u00fcr die Band bestellen",
+                "Fuffies durch den Club schmei\u00dfen https://tenor.com/view/money-rain-money-cash-sunglasses-smile-gif-17149896 ",
+                "Doto f\u00fcr seine Shinys mobben",
+                "Phasmophobia mit uns spielen",
+                "50 Meter Cat5-Kabel aus alten Wohnungen klauen",
+                "auf seiner Switch zocken",
+                "muss f\u00fcr die Damen aus der Verwaltung mal wieder eine Spinne klatschen",
+                "mal ganz dringend aufn Pott",
+                "erstmal die Fuffies in Richtung Ordnungsamt schmei\u00dfen, weil er geblitzt wurde",
+                "dem indischen Nachbarn beim Support-Scam zuh\u00f6ren",
+                "telefonieren"
             ]
         },
         "FreeEpicGames": {
-            "Defense Grid: The Awakening": {
-                "startDate": "2021-07-22T15:00:00.000Z",
-                "endDate": "2021-07-29T15:00:00.000Z"
-            },
-            "Verdun": {
-                "startDate": "2021-07-22T15:00:00.000Z",
-                "endDate": "2021-07-29T15:00:00.000Z"
+            "The Escapists": {
+                "startDate": "2021-09-23T15:00:00.000Z",
+                "endDate": "2021-09-30T15:00:00.000Z"
             }
         }
     }
