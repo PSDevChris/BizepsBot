@@ -6,7 +6,6 @@ import random
 import logging
 import discord
 from discord.ext import commands, tasks
-from discord.ext.commands import context
 from dateutil import parser
 import requests
 from bs4 import BeautifulSoup
@@ -73,7 +72,7 @@ def RefreshMemes():
 ### Prüft ob der Minecraft Superuser ist laut Settings.json Datei ###
 
 
-def _is_mcsu(ctx: context.Context):
+def _is_mcsu(ctx: commands.context.Context):
     MCSUs = _read_json('Settings.json')
     return ctx.author.id in MCSUs['Settings']['ManagementGroups']['MCSUs']
 
