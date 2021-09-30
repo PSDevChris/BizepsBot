@@ -327,7 +327,7 @@ class Fun(commands.Cog, name="Schabernack"):
             AnimeSeries = AnimeJSON['anime']
             AnimeCharacter = AnimeJSON['character']
             AnimeQuote = AnimeJSON['quote']
-            await ctx.send(f"```{AnimeQuote}```{AnimeSeries} - {AnimeCharacter}")
+            await ctx.send(f"```{uwuify.uwu(AnimeQuote, flags=uwuify.YU)}```{AnimeSeries} - {AnimeCharacter}")
         else:
             await ctx.send("API ist gerade nicht erreichbar TwT")
 
