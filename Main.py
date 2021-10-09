@@ -321,20 +321,30 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _schnabiuwu(self, ctx):
-        AnimeElement = requests.get('https://animechan.vercel.app/api/random')
+        AnimeElement = requests.get('https://api.waifu.pics/sfw/waifu')
         if AnimeElement.status_code == 200:
             AnimeJSON = json.loads(AnimeElement.content)
-            AnimeSeries = AnimeJSON['anime']
-            AnimeCharacter = AnimeJSON['character']
-            AnimeQuote = AnimeJSON['quote']
-            await ctx.send(f"```{uwuify.uwu(AnimeQuote, flags=uwuify.YU)}```{AnimeSeries} - {AnimeCharacter}")
+            AnimeURL = AnimeJSON['url']
+            await ctx.send(f"{AnimeURL}")
         else:
             await ctx.send("API ist gerade nicht erreichbar TwT")
 
     @commands.command(name="Zucker", aliases=["zucker", "Zuggi", "zuggi"], brief="Zuckersüß")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _zuggishow(self, ctx):
-        await ctx.send("(◕‿◕✿)")
+        RandomIndex = random.randrange(0, 990, 30)
+        RecipURL = requests.get(
+            f"https://www.chefkoch.de/rs/s{RandomIndex}/kartoffel/Rezepte.html")
+        if RecipURL.status_code == 200:
+            RecipHTML = BeautifulSoup(RecipURL.text, "html.parser")
+            RecipJSON = json.loads("".join(RecipHTML.find_all(
+                "script", {"type": "application/ld+json"})[1]))
+            RandomRecipIndex = random.randint(0, 30)
+            RecipElementName = RecipJSON['itemListElement'][RandomRecipIndex]['name']
+            RecipElementURL = RecipJSON['itemListElement'][RandomRecipIndex]['url']
+            await ctx.send(f"{RecipElementName}\n{RecipElementURL}")
+        else:
+            await ctx.send("Kartoffel API ist leider down T_T")
 
     @commands.command(name="Feiertag", aliases=["feiertag", "holiday", "Holiday"], brief="Zeigt den nächsten Feiertag an")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -801,7 +811,9 @@ class Administration(commands.Cog, name="Administration"):
     @_mcreboot.error
     async def _mcreboot_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("Na na, das darfst du nicht! <@248181624485838849> guck dir diesen Schelm an!")
+            AdminGroup = _read_json('Settings.json')
+            AdminToNotify = AdminGroup['Settings']['ManagementGroups']['Admins']
+            await ctx.send(f"Na na, das darfst du nicht! <@{AdminToNotify}> guck dir diesen Schelm an!")
             logging.warning(
                 f"{ctx.author} wollte den Minecraftserver dabei darf er oder sie das nicht!")
         elif isinstance(error, commands.CommandOnCooldown):
@@ -812,7 +824,9 @@ class Administration(commands.Cog, name="Administration"):
     @_twitchmanagement.error
     async def _twitchmanagement_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("Na na, das darf nur der Admin! <@248181624485838849>, hier möchte jemand in die Twitchliste oder aus der Twitchliste entfernt werden!")
+            AdminGroup = _read_json('Settings.json')
+            AdminToNotify = AdminGroup['Settings']['ManagementGroups']['Admins']
+            await ctx.send(f"Na na, das darf nur der Admin! <@{AdminToNotify}>, hier möchte jemand in die Twitchliste oder aus der Twitchliste entfernt werden!")
             logging.warning(f"{ctx.author} wollte die Twitchliste bearbeiten!")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Hier fehlte der User oder der Parameter!")
@@ -944,18 +958,19 @@ async def GameReminder():
 
 
 @tasks.loop(minutes=30)
-async def MuellReminder():
+async def TrashReminder():
     """
     Prüft alle 30min ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
     dabei wird eine CSV Datei eingelesen und durchiteriert.
     """
-
-    MyDiscordUser = await bot.fetch_user(248181624485838849)
     TodayAtFivePM = datetime.now().replace(
         hour=17, minute=00, second=00, microsecond=00)
     TodayAtFiveAndAHalfPM = datetime.now().replace(
         hour=17, minute=32, second=00, microsecond=00)
     if datetime.now() >= TodayAtFivePM and datetime.now() <= TodayAtFiveAndAHalfPM:
+        AdminGroup = _read_json('Settings.json')
+        AdminToNotify = AdminGroup['Settings']['ManagementGroups']['Admins']
+        MyDiscordUser = await bot.fetch_user(AdminToNotify)
         tomorrowNow = datetime.today() + timedelta(days=1)
         tomorrowClean = tomorrowNow.replace(
             hour=00, minute=00, second=00, microsecond=00)
@@ -1103,8 +1118,8 @@ async def on_ready():
         TwitchLiveCheck.start()
     if not GameReminder.is_running():
         GameReminder.start()
-    if not MuellReminder.is_running():
-        MuellReminder.start()
+    if not TrashReminder.is_running():
+        TrashReminder.start()
     if not GetFreeEpicGames.is_running():
         GetFreeEpicGames.start()
     RefreshMemes()
