@@ -1072,7 +1072,7 @@ async def GetFreeEpicGames():
                                 _write_json('Settings.json', FreeGamesList)
                                 EndOfOffer = offer['promotionalOffers'][0]['endDate']
                                 EndDateOfOffer = parser.parse(
-                                    EndOfOffer, dayfirst=True).date()
+                                    EndOfOffer).date()
 
                                 for index in range(len(FreeGame['keyImages'])):
                                     if FreeGame['keyImages'][index]['type'] == "Thumbnail":
