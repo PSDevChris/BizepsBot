@@ -49,7 +49,7 @@ def RequestTwitchToken():
         data['TWITCH_TOKEN_EXPIRES'] = TWITCH_TOKEN_EXPIRES
     with open('TOKEN.json', 'w') as write_file:
         json.dump(data, write_file)
-    logging.info("Neues Twitch Token wurde erfolgreich angefordert.")
+    logging.info("New Twitch Token requested.")
 
 
 def _read_json(FileName):
@@ -211,7 +211,7 @@ class Counter(commands.Cog, name="Counter"):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
             logging.warning(
-                f"{ctx.author} wollte den Schnenkcounter stark nach oben drücken!")
+                f"{ctx.author} wanted to raise the schnenkcounter massively!")
 
 
 class Fun(commands.Cog, name="Schabernack"):
@@ -237,7 +237,7 @@ class Fun(commands.Cog, name="Schabernack"):
         RandomMeme = random.choice(AllFiles)
         await ctx.send("Zufalls-Meme!", file=discord.File(f"memes/{RandomMeme}"))
         AllFiles.remove(RandomMeme)
-        logging.info(f"{ctx.author} hat ein Zufallsmeme angefordert.")
+        logging.info(f"{ctx.author} wanted a random meme.")
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
     async def _addmeme(self, ctx):
@@ -250,7 +250,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
                 await ctx.send("Memes hinzugefügt.")
                 logging.info(
-                    f"{ctx.author} hat ein Meme erfolgreich hinzugefügt.")
+                    f"{ctx.author} has added a meme")
                 RefreshMemes()
             else:
                 pass
@@ -264,7 +264,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 await meme.save(f"memes/{NumberOfFiles + index}_{meme.filename}")
                 await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
                 logging.info(
-                    f"{ctx.author} hat ein Meme erfolgreich eingesammelt.")
+                    f"{ctx.author} has collected a meme.")
                 RefreshMemes()
             else:
                 pass
@@ -283,7 +283,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     flags = uwuify.SMILEY | uwuify.YU
                     await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
                     logging.info(
-                        f"Die Nachricht [{LastMessageContent}] wurde UwUt.")
+                        f"The message [{LastMessageContent}] was UwUed.")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -364,31 +364,31 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _memearchiv_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wollte Random Memes spammen!")
+            logging.warning(f"{ctx.author} wanted to spam random memes!")
 
     @_uwuthis.error
     async def _uwuthis_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wollte den Uwubefehl spammen!")
+            logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
 
     @_hansworks.error
     async def _zuggishow_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wollte den Hansbefehl spammen!")
+            logging.warning(f"{ctx.author} wanted to spam the hanscommand!")
 
     @_zuggishow.error
     async def _zuggishow_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wollte den Zuggibefehl spammen!")
+            logging.warning(f"{ctx.author} wanted to spam the zuggicommand!")
 
     @_schnabiuwu.error
     async def _schnabiuwu_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wollte den Schnabibefehl spammen!")
+            logging.warning(f"{ctx.author} wanted to spam the schnabicommand!")
 
 
 class Corona(commands.Cog, name="Corona"):
@@ -407,7 +407,7 @@ class Corona(commands.Cog, name="Corona"):
         CORONA_CASES_WEEK = CORONA_ROWS[3].text
         await ctx.send(f"Seit gestern gab es {CORONA_CASES_YESTERDAY} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {CORONA_CASES_WEEK} Fälle\U0001F637")
         logging.info(
-            f"User {ctx.author} hat die heutigen Coronazahlen abgefragt.")
+            f"User {ctx.author} has requested the COVID numbers.")
 
 
 class Meetings(commands.Cog, name="Meetings"):
@@ -432,7 +432,7 @@ class Meetings(commands.Cog, name="Meetings"):
         except ValueError:
             await ctx.send("Na na, das ist keine Uhrzeit!")
             logging.warning(
-                f"{ctx.author} hat eine falsche Uhrzeit angegeben!")
+                f"{ctx.author} entered a wrong time for the gamecommand!")
             return
 
         group = {
@@ -452,7 +452,7 @@ class Meetings(commands.Cog, name="Meetings"):
                 _write_json('Settings.json', groups)
                 await ctx.send("Die Spielrunde wurde eröffnet!")
                 logging.info(
-                    f"Verabredung in {ctx.message.channel.name} eröffnet.")
+                    f"Meeting started in {ctx.message.channel.name}.")
             else:
                 if ctx.message.channel.name in groups["Settings"]["Groups"].keys():
                     await ctx.send(f"{ctx.author.name}, hier ist schon eine Spielrunde geplant. Joine einfach mit !join")
@@ -461,14 +461,14 @@ class Meetings(commands.Cog, name="Meetings"):
                     _write_json('Settings.json', groups)
                     await ctx.send("Die Spielrunde wurde eröffnet!")
                     logging.info(
-                        f"Verabredung in {ctx.message.channel.name} eröffnet.")
+                        f"Meeting started in {ctx.message.channel.name}.")
         except json.decoder.JSONDecodeError:
             groups = {}
             groups["Settings"]["Groups"].update(group)
             _write_json('Settings.json', groups)
             await ctx.send("Die Spielrunde wurde eröffnet!")
             logging.warning(
-                f"Das Settings.json File war nicht lesbar, Verabredung in {ctx.message.channel.name} trotzdem eröffnet!")
+                f"The settingsfile is corrupted, overwrote the file and started meeting in {ctx.message.channel.name}!")
 
     @commands.command(name="join", aliases=["Join"], brief="Tritt einer Verabredung bei")
     @commands.check(_is_gamechannel)
@@ -483,7 +483,7 @@ class Meetings(commands.Cog, name="Meetings"):
                 f"{ctx.message.author.mention}")
             await ctx.send(f"{ctx.author.mention}, du wurdest dem Spiel hinzugefügt.")
             logging.info(
-                f"{ctx.author} wurde der Verabredung in {ctx.message.channel.name} hinzugefügt.")
+                f"{ctx.author} joined the meeting in {ctx.message.channel.name}.")
             _write_json('Settings.json', groups)
         else:
             await ctx.send("In diesem Channel wurde noch kein Spiel geplant.")
@@ -503,18 +503,18 @@ class Meetings(commands.Cog, name="Meetings"):
             except ValueError:
                 await ctx.send("Na na, das ist keine Uhrzeit!")
                 logging.warning(
-                    f"{ctx.author} hat eine falsche Uhrzeit angegeben!")
+                    f"{ctx.author} entered a wrong time for the updategamecommand!")
                 return
 
             groups["Settings"]["Groups"][f"{CurrentChannel}"]["time"] = GameDateTimeTimestamp
             _write_json('Settings.json', groups)
             await ctx.send(f"Die Uhrzeit der Verabredung wurde auf {timearg} geändert.")
             logging.info(
-                f"{ctx.author} hat seine Verabredung verschoben auf {timearg}.")
+                f"{ctx.author} moved the meeting in {CurrentChannel} to {timearg}.")
         elif ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention != groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             await ctx.send("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er es verschiebt!")
             logging.warning(
-                f"{ctx.author} wollte eine Verabredung verschieben, die nicht Ihm gehört!")
+                f"{ctx.author} tried to move the meeting in {CurrentChannel} but is not the owner!")
         elif ctx.message.channel.name not in groups["Settings"]["Groups"].keys():
             await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
@@ -527,11 +527,11 @@ class Meetings(commands.Cog, name="Meetings"):
             groups["Settings"]["Groups"].pop(CurrentChannel)
             _write_json('Settings.json', groups)
             await ctx.send("Die Verabredung in diesem Channel wurde gelöscht.")
-            logging.info(f"{ctx.author} hat seine Verabredung gelöscht.")
+            logging.info(f"{ctx.author} deleted the meeting in {CurrentChannel}.")
         elif ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention != groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             await ctx.send("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er diese löscht!")
             logging.warning(
-                f"{ctx.author} wollte eine Verabredung löschen, die nicht Ihm gehört!")
+                f"{ctx.author} tried to delete a meeting in {CurrentChannel} but is not the owner!")
         elif ctx.message.channel.name not in groups["Settings"]["Groups"].keys():
             await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
@@ -545,22 +545,22 @@ class Meetings(commands.Cog, name="Meetings"):
             _write_json('Settings.json', StartedGroups)
             await ctx.send(f"{ctx.author.mention}, die Verabredung in diesem Channel wurde gelöscht, da du der Besitzer warst.")
             logging.info(
-                f"{ctx.author} hat seine Verabredung verlassen, daher wurde sie gelöscht.")
+                f"{ctx.author} left the meeting in {CurrentChannel} and was the owner. Meeting deleted.")
         elif ctx.message.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.message.author.mention in StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"].remove(
                 ctx.message.author.mention)
             await ctx.send(f"{ctx.author.mention}, du wurdest aus der Verabredung entfernt.")
             logging.info(
-                f"{ctx.author} wurde aus der Verabredung in {ctx.message.channel.name} entfernt.")
+                f"{ctx.author} removed from meeting in {CurrentChannel}")
             _write_json('Settings.json', StartedGroups)
         elif ctx.message.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.message.author.mention not in StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             await ctx.send(f"{ctx.author.mention}, du bist der Verabredung nicht beigetreten und wurdest daher auch nicht entfernt.")
             logging.info(
-                f"{ctx.author} wollte die Verabredung in {ctx.message.channel.name} verlassen, war aber kein Mitglied.")
+                f"{ctx.author} wanted to leave the meeting in {CurrentChannel}, but was not a member.")
         else:
             await ctx.send(f"{ctx.author.mention}, hier gibt es keine Verabredung, die du verlassen könntest.")
             logging.info(
-                f"{ctx.author} wollte eine Verabredung in {ctx.message.channel.name} verlassen, aber es gab keine.")
+                f"{ctx.author} wanted to leave a meeting in {CurrentChannel}, but there was none.")
 
     ## Error Handling for Meetings Cog ###
 
@@ -572,21 +572,21 @@ class Meetings(commands.Cog, name="Meetings"):
         elif isinstance(error, commands.CheckFailure):
             await ctx.send("Das hier ist kein Unterhaltungschannel, hier kann man sich nicht verabreden.")
             logging.warning(
-                f"{ctx.author} wollte sich in keinem Unterhaltungschannel verabreden!")
+                f"{ctx.author} wanted to meet outside of an entertainment channel!")
 
     @_joingame.error
     async def _joingame_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send("Das hier ist kein Unterhaltungschannel, hier kann man sich nicht verabreden.")
             logging.warning(
-                f"{ctx.author} wollte sich in keinem Unterhaltungschannel verabreden!")
+                f"{ctx.author} wanted to meet outside of an entertainment channel!")
 
     @_leavegame.error
     async def _leavegame_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send("Das hier ist kein Unterhaltungschannel, hier gibt es keine Verabredungen.")
             logging.warning(
-                f"{ctx.author} wollte eine Verabredung abseits eines Unterhaltungschannels verlassen!")
+                f"{ctx.author} wanted to leave a meeting outside of an entertainment channel!")
 
 
 class Games(commands.Cog, name="Games"):
@@ -615,12 +615,12 @@ class Games(commands.Cog, name="Games"):
                 game = {"name": "Irgendwas"}
 
             await ctx.send(f"Bei ESA wird gerade {game['name']} gespielt!")
-            logging.info(f"{ctx.author} hat das ESA Game abgefragt.")
+            logging.info(f"{ctx.author} invoked the ESA command")
         except IndexError:
             # Username does not exist or Username is wrong, greetings to Schnabeltier
-            logging.error("ESA Channel nicht gefunden. Wurde er gelöscht?!")
+            logging.error("ESA Channel not found. Was it deleted or banned?!")
         except json.decoder.JSONDecodeError:
-            logging.error("Die Twitch API ist nicht erreichbar.")
+            logging.error("Twitch API not available.")
 
     @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "RndOwHeld", "RndOWHeld", "rndowheld"], brief="Weißt einen zufälligen Helden zu")
     @commands.check(_is_owchannel)
@@ -656,7 +656,7 @@ class Games(commands.Cog, name="Games"):
                 SelectedHerosString = ", ".join(SelectedHeros)
             await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
             logging.info(
-                f"User {ctx.author} hat sich einen Support aus OW zuweisen lassen.")
+                f"User {ctx.author} raffled a support hero from Overwatch.")
         elif role in ["DAMAGE", "DPS", "DMG", "Damage", "dmg", "dps", "Dps"] and number < len(ListOfDPS):
             for _ in range(0, number):
                 SelectedHero = random.choice(ListOfDPS)
@@ -665,7 +665,7 @@ class Games(commands.Cog, name="Games"):
                 SelectedHerosString = ", ".join(SelectedHeros)
             await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
             logging.info(
-                f"User {ctx.author} hat sich einen DPS aus OW zuweisen lassen.")
+                f"User {ctx.author} raffled a dps hero from Overwatch.")
         elif role in ["TANK", "tank", "Tank"] and number < len(ListOfTanks):
             for _ in range(0, number):
                 SelectedHero = random.choice(ListOfTanks)
@@ -674,7 +674,7 @@ class Games(commands.Cog, name="Games"):
                 SelectedHerosString = ", ".join(SelectedHeros)
             await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
             logging.info(
-                f"User {ctx.author} hat sich einen Tank aus OW zuweisen lassen.")
+                f"User {ctx.author} raffled a tank hero from Overwatch.")
         elif role in ["all", "All", "ALL", "alle", "Alle"] and number < len(ListOfAllHeros):
             for _ in range(0, number):
                 SelectedHero = random.choice(ListOfAllHeros)
@@ -683,7 +683,7 @@ class Games(commands.Cog, name="Games"):
                 SelectedHerosString = ", ".join(SelectedHeros)
             await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
             logging.info(
-                f"User {ctx.author} hat sich einen Helden aus OW zuweisen lassen.")
+                f"User {ctx.author} raffled a general hero from Overwatch.")
 
 
 class Administration(commands.Cog, name="Administration"):
@@ -728,7 +728,7 @@ class Administration(commands.Cog, name="Administration"):
             ssh.close()
 
             await ctx.send(f"{ctx.author.name} hat den Minecraft Server neugestartet.")
-            logging.info(f"User {ctx.author} rebooted the Minecraftserver.")
+            logging.info(f"User {ctx.author} rebooted the minecraftserver.")
 
         except json.JSONDecodeError:
             logging.error("Could not load JSON File!", exc_info=True)
@@ -753,7 +753,7 @@ class Administration(commands.Cog, name="Administration"):
                 TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
                 _write_json('Settings.json', TwitchUser)
                 await ctx.send(f"{Member} zur Twitchliste hinzugefügt!")
-                logging.info(f"User {Member} was added to Twitchlist.")
+                logging.info(f"User {Member} was added to twitchlist.")
             except:
                 await ctx.send("Konnte User nicht hinzufügen.")
                 logging.error(
@@ -764,11 +764,11 @@ class Administration(commands.Cog, name="Administration"):
                 TwitchUser['Settings']['TwitchUser'].pop(f"{Member}")
                 _write_json('Settings.json', TwitchUser)
                 await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
-                logging.info(f"User {Member} was removed from Twitchlist.")
+                logging.info(f"User {Member} was removed from twitchlist.")
             except:
                 await ctx.send("Konnte User nicht entfernen.")
                 logging.error(
-                    f"User {Member} could not be removed.", exc_info=True)
+                    f"User {Member} could not be removed from twitchlist.", exc_info=True)
 
     @commands.command(name="ext", aliases=["Ext", "Extension", "extension"], brief="Verwaltet Extensions")
     @commands.check(_is_admin)
@@ -815,11 +815,11 @@ class Administration(commands.Cog, name="Administration"):
             AdminToNotify = AdminGroup['Settings']['ManagementGroups']['Admins']
             await ctx.send(f"Na na, das darfst du nicht! <@{AdminToNotify}> guck dir diesen Schelm an!")
             logging.warning(
-                f"{ctx.author} wollte den Minecraftserver dabei darf er oder sie das nicht!")
+                f"{ctx.author} wanted to reboot the minecraftserver but is not allowed!")
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Der Befehl ist aktuell noch im Cooldown.")
             logging.warning(
-                f"{ctx.author} wollte den Minecraftserver in 3 Stunden mehrfach neustarten!")
+                f"{ctx.author} wanted to reboot the minecraftserver multiple times in three hours!")
 
     @_twitchmanagement.error
     async def _twitchmanagement_error(self, ctx, error):
@@ -827,7 +827,7 @@ class Administration(commands.Cog, name="Administration"):
             AdminGroup = _read_json('Settings.json')
             AdminToNotify = AdminGroup['Settings']['ManagementGroups']['Admins']
             await ctx.send(f"Na na, das darf nur der Admin! <@{AdminToNotify}>, hier möchte jemand in die Twitchliste oder aus der Twitchliste entfernt werden!")
-            logging.warning(f"{ctx.author} wollte die Twitchliste bearbeiten!")
+            logging.warning(f"{ctx.author} wanted to edit the twitchlist!")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Hier fehlte der User oder der Parameter!")
 
@@ -877,7 +877,7 @@ async def TwitchLiveCheck():
             # Username does not exist or Username is wrong, greetings to Schnabeltier
             continue
         except json.decoder.JSONDecodeError:
-            logging.error("Die Twitch API ist nicht erreichbar.")
+            logging.error("Twitch API not available.")
             break
 
         if LASTSTATE is False and data['is_live'] and USER == data['broadcaster_login']:
@@ -980,19 +980,19 @@ async def TrashReminder():
             if tomorrowClean == EntryDate:
                 await MyDiscordUser.send(f"Die nächste schwarze Tonne ist morgen am: {entry}")
                 logging.info(
-                    f"Reminder für die schwarze Tonne am {entry} gesendet!")
+                    f"Reminder for black garbage can which is collected on {entry} sent!")
         for entry in MuellListe["Blaue Tonne"].dropna():
             EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
             if tomorrowClean == EntryDate:
                 await MyDiscordUser.send(f"Die nächste blaue Tonne ist morgen am: {entry}")
                 logging.info(
-                    f"Reminder für die blaue Tonne am {entry} gesendet!")
+                    f"Reminder for blue garbage can which is collected on {entry} sent!")
         for entry in MuellListe["Gelbe Saecke"].dropna():
             EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
             if tomorrowClean == EntryDate:
                 await MyDiscordUser.send(f"Die nächsten gelben Säcke sind morgen am: {entry}")
                 logging.info(
-                    f"Reminder für den gelben Sack am {entry} gesendet!")
+                    f"Reminder for yellow trashbag which is collected on {entry} sent!")
 
 
 @tasks.loop(hours=3)
@@ -1016,7 +1016,7 @@ async def GetFreeEpicGames():
         for EndedOffer in EndedOffers:
             FreeGamesList['Settings']['FreeEpicGames'].pop(EndedOffer)
             logging.info(
-                f"{EndedOffer} aus den gratis Epic Games entfernt, da abgelaufen!")
+                f"{EndedOffer} removed from free Epic Games, since it expired!")
         _write_json('Settings.json', FreeGamesList)
 
     EpicStoreURL = 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
@@ -1062,7 +1062,7 @@ async def GetFreeEpicGames():
                                 await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
 
                             logging.info(
-                                f"{FreeGame['title']} wurde zu den gratis Epic Games hinzugefügt!")
+                                f"{FreeGame['title']} was added to the free Epic Games!")
                         else:
                             if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
                                 pass
@@ -1090,7 +1090,7 @@ async def GetFreeEpicGames():
                                 else:
                                     await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
                                 logging.info(
-                                    f"{FreeGame['title']} wurde der Liste der gratis Epic Games hinzugefügt!")
+                                    f"{FreeGame['title']} was added to free Epic Games!")
 
                     except json.decoder.JSONDecodeError:
                         FreeGamesList['Settings']['FreeEpicGames'] = {}
@@ -1146,6 +1146,6 @@ async def on_command_error(ctx, error):
 
     if isinstance(error, commands.CommandNotFound):
         logging.warning(
-            f"{error}, {ctx.author} möchte wohl einen neuen Befehl.")
+            f"{error}, {ctx.author} wants a new command.")
 
 bot.run(TOKEN)
