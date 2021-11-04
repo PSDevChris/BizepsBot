@@ -12,7 +12,9 @@ Most of the settings are configurable via the Settings.json, an example is provi
 There are a few hardcoded checks, if you want your bot to work in every channel, you can just delete them.  
 For some functionality like Twitch notifications, tokens are needed, this is also provided via an example file.  
 Some stuff like the trash reminder is only for my personal use, the functionality is pretty simple but you will need to provide the file yourself.  
-This is by all means a **fun** project and should not be considered for production enviroments.  
+This is by all means a **fun** project and should not be considered for production environments.  
+Since this was a learning-by-doing projects there will be multiple code snippets which will do the same.  
+Feel free to open an issue thread or a pull request.  
 
 **THIS IS BY NO MEANS AN "OUT OF THE BOX" BOT, YOU SHOULD BE FAMILIAR HOW TO SET UP A DISCORD BOT TO USE THIS**  
 
