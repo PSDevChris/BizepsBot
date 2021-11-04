@@ -908,7 +908,7 @@ async def TwitchLiveCheck():
             if USER == 'dota_joker':
                 await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
                 logging.info(
-                    f"{Displayname} ging live auf Twitch! Twitch Benachrichtigung gesendet!")
+                    f"{Displayname} went live on Twitch! Twitch Notification sent!")
             else:
                 channel = bot.get_channel(703530328836407327)
                 NotificationTime = datetime.utcnow() - timedelta(minutes=60)
@@ -921,11 +921,11 @@ async def TwitchLiveCheck():
                     else:
                         await bot.get_channel(703530328836407327).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
                         logging.info(
-                            f"{Displayname} ging live auf Twitch! Twitch Benachrichtigung gesendet, da älter als 60min oder nicht vorhanden!")
+                            f"{Displayname} went live on Twitch! Twitch Twitch Notification sent, because the last Notification is older than 60min!")
                 else:
                     await bot.get_channel(703530328836407327).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
                     logging.info(
-                        f"{Displayname} ging live auf Twitch! Twitch Benachrichtigung gesendet!")
+                        f"{Displayname} went live on Twitch! Twitch Notification sent!")
 
         if LASTSTATE is not data['is_live']:
             TWITCHUSERNAMES['Settings']['TwitchUser'][USER] = data['is_live']
@@ -949,7 +949,7 @@ async def GameReminder():
             ReminderMembers = ", ".join(
                 groups["Settings"]["Groups"][f"{reminder}"]["members"])
             await Remindchannel.send(f" Das Spiel geht los! Mit dabei sind: {ReminderMembers}")
-            logging.info(f"Treffen im Channel {reminder} gestartet!")
+            logging.info(f"Meeting in {reminder} started!")
             FoundList.append(reminder)
     if FoundList:
         for reminder in FoundList:

@@ -23,5 +23,6 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 + Create command which shows the people in a game 
 + Reduce code for counters
 + If GDQ Table is not found default to posting that the schedule is not live
++ Translate all logging events to English
 
 
