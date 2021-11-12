@@ -229,7 +229,7 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
 
     @commands.group(name="meme", aliases=["Meme"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
-    @commands.cooldown(3, 30, commands.BucketType.user)
+    @commands.cooldown(2, 180, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
     async def _memearchiv(self, ctx):
         if len(AllFiles) == 0:
@@ -286,7 +286,7 @@ class Fun(commands.Cog, name="Schabernack"):
                         f"The message [{LastMessageContent}] was UwUed.")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.check(_is_nouwuchannel)
     async def _uwuthis(self, ctx):
         if ctx.message.author == bot.user:
@@ -621,6 +621,8 @@ class Games(commands.Cog, name="Games"):
             logging.error("ESA Channel not found. Was it deleted or banned?!")
         except json.decoder.JSONDecodeError:
             logging.error("Twitch API not available.")
+        except KeyError:
+            logging.error("Twitch API not available.")
 
     @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "RndOwHeld", "RndOWHeld", "rndowheld"], brief="Weißt einen zufälligen Helden zu")
     @commands.check(_is_owchannel)
@@ -738,6 +740,7 @@ class Administration(commands.Cog, name="Administration"):
 
     @commands.command(name="tw", aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File")
     @commands.check(_is_admin)
+    @commands.cooldown(3, 900, commands.BucketType.user)
     async def _twitchmanagement(self, ctx, ChangeArg, Member):
         """
         Verwaltet die Twitch Benachrichtigungen.
@@ -830,6 +833,8 @@ class Administration(commands.Cog, name="Administration"):
             logging.warning(f"{ctx.author} wanted to edit the twitchlist!")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Hier fehlte der User oder der Parameter!")
+        elif isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Der Befehl ist aktuell noch im Cooldown.")
 
 ### Add Cogs in bot file ###
 
@@ -877,6 +882,9 @@ async def TwitchLiveCheck():
             # Username does not exist or Username is wrong, greetings to Schnabeltier
             continue
         except json.decoder.JSONDecodeError:
+            logging.error("Twitch API not available.")
+            break
+        except KeyError:
             logging.error("Twitch API not available.")
             break
 
