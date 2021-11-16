@@ -224,6 +224,13 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _pubtypo(self, ctx):
         await ctx.send(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
 
+    @commands.command(name="Orangensaft", aliases=["orangensaft", "OrangenSaft"], brief="Frag nicht was für Saft...")
+    async def _orangejuice(self, ctx):
+        if str(ctx.author) != "Schnenko#9944":
+            await ctx.send(f"Frag nicht was für Saft, einfach Orangensaft! Tuuuuuuuurn up! Fassen Sie mich nicht an!")
+        else:
+            await ctx.send(f"https://tenor.com/view/nerd-moneyboy-money-boy-hau-gif-16097814")
+
     @commands.command(name="Ehrenmann", aliases=["ehrenmann"], brief="Der erwähnte User ist ein Ehrenmann!")
     async def _ehrenmann(self, ctx, user: commands.MemberConverter):
         await ctx.send(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
@@ -405,7 +412,8 @@ class Corona(commands.Cog, name="Corona"):
         CORONA_ROWS = CORONA_TABLE.find_all("strong")
         CORONA_CASES_YESTERDAY = CORONA_ROWS[2].text
         CORONA_CASES_WEEK = CORONA_ROWS[3].text
-        await ctx.send(f"Seit gestern gab es {CORONA_CASES_YESTERDAY} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {CORONA_CASES_WEEK} Fälle\U0001F637")
+        CORONA_INZ_WEEK = CORONA_ROWS[4].text
+        await ctx.send(f"Seit gestern gab es {CORONA_CASES_YESTERDAY} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {CORONA_CASES_WEEK} Fälle. Die Inzidenz liegt bei {CORONA_INZ_WEEK}\U0001F637")
         logging.info(
             f"User {ctx.author} has requested the COVID numbers.")
 
