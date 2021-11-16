@@ -555,7 +555,7 @@ class Meetings(commands.Cog, name="Meetings"):
         elif ctx.message.channel.name not in groups["Settings"]["Groups"].keys():
             await ctx.send("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
-    @commands.command(name="LeaveGame", aliases=["leavegame", "lvgame", "qGame", "QuitGame"], brief="Verlässt die aktuelle Verabredung")
+    @commands.command(name="LeaveGame", aliases=["leavegame", "lvgame", "qGame", "QuitGame", "leave", "Leave"], brief="Verlässt die aktuelle Verabredung")
     @commands.check(_is_gamechannel)
     async def _leavegame(self, ctx):
         CurrentChannel = ctx.message.channel.name
@@ -607,6 +607,13 @@ class Meetings(commands.Cog, name="Meetings"):
             await ctx.send("Das hier ist kein Unterhaltungschannel, hier gibt es keine Verabredungen.")
             logging.warning(
                 f"{ctx.author} wanted to leave a meeting outside of an entertainment channel!")
+    
+    @_showgame.error
+    async def _showgame_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Der Befehl ist noch im Cooldown.")
+            logging.warning(
+                f"{ctx.author} wanted to spam the members of a game in {ctx.message.channel.name}!")
 
 
 class Games(commands.Cog, name="Games"):
