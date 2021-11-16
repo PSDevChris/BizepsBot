@@ -478,6 +478,18 @@ class Meetings(commands.Cog, name="Meetings"):
             logging.warning(
                 f"The settingsfile is corrupted, overwrote the file and started meeting in {ctx.message.channel.name}!")
 
+    @commands.command(name="ShowGame", aliases=["showgame", "Showgame"], brief="Zeigt die Mitglieder der Verabredung")
+    @commands.check(_is_gamechannel)
+    @commands.cooldown(1, 300, commands.BucketType.user)
+    async def _showgame(self, ctx):
+        CurrentChannel = ctx.message.channel.name
+        GameSettings = _read_json('Settings.json')
+        if ctx.message.channel.name in GameSettings["Settings"]["Groups"].keys():
+            GameMembersString = "\n".join(GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["members"])
+            await ctx.send(f"Folgende Personen sind verabredet:\n{GameMembersString}")
+        else:
+            await ctx.send("Hier gibt es noch keine Verabredung.")
+
     @commands.command(name="join", aliases=["Join"], brief="Tritt einer Verabredung bei")
     @commands.check(_is_gamechannel)
     async def _joingame(self, ctx):
@@ -746,18 +758,27 @@ class Administration(commands.Cog, name="Administration"):
             logging.error(
                 "Something went wrong, is the Pi reachable?", exc_info=True)
 
-    @commands.command(name="tw", aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File")
+    @commands.group(name="tw", invoke_without_command=False, aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File") 
     @commands.check(_is_admin)
     @commands.cooldown(3, 900, commands.BucketType.user)
-    async def _twitchmanagement(self, ctx, ChangeArg, Member):
+    async def _twitchmanagement(self, ctx):
         """
         Verwaltet die Twitch Benachrichtigungen.
 
         Add: Fügt den User hinzu
         Del: Entfernt den User
         """
+        pass
 
-        if ChangeArg in ["add", "+"]:
+    @_twitchmanagement.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt die Twitchmember")
+    async def _showtwitchmembers (self, ctx):
+        TwitchSettings = _read_json('Settings.json')
+        TwitchUserString = "\n".join(TwitchSettings["Settings"]["TwitchUser"].keys())
+        await ctx.send(f"Folgende User sind hinterlegt:\n```{TwitchUserString}```")
+        logging.info(f"Twitchlist was posted.")
+    
+    @_twitchmanagement.command(name="add", aliases=["+"], brief="Fügt den Twitchuser der Liste hinzu")
+    async def _addtwitchmembers (self, ctx, Member):
             try:
                 TwitchUser = _read_json('Settings.json')
                 TwitchMember = {f"{Member}": False}
@@ -769,17 +790,19 @@ class Administration(commands.Cog, name="Administration"):
                 await ctx.send("Konnte User nicht hinzufügen.")
                 logging.error(
                     f"User {Member} could not be added.", exc_info=True)
-        elif ChangeArg in ["del", "-"]:
-            try:
-                TwitchUser = _read_json('Settings.json')
-                TwitchUser['Settings']['TwitchUser'].pop(f"{Member}")
-                _write_json('Settings.json', TwitchUser)
-                await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
-                logging.info(f"User {Member} was removed from twitchlist.")
-            except:
-                await ctx.send("Konnte User nicht entfernen.")
-                logging.error(
-                    f"User {Member} could not be removed from twitchlist.", exc_info=True)
+
+    @_twitchmanagement.command(name="del", aliases=["-"], brief="Löscht den Twitchuser aus der Liste")      
+    async def _deltwitchmember(self, ctx, Member):
+        try:
+            TwitchUser = _read_json('Settings.json')
+            TwitchUser['Settings']['TwitchUser'].pop(f"{Member}")
+            _write_json('Settings.json', TwitchUser)
+            await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
+            logging.info(f"User {Member} was removed from twitchlist.")
+        except:
+            await ctx.send("Konnte User nicht entfernen.")
+            logging.error(
+                f"User {Member} could not be removed from twitchlist.", exc_info=True)
 
     @commands.command(name="ext", aliases=["Ext", "Extension", "extension"], brief="Verwaltet Extensions")
     @commands.check(_is_admin)
