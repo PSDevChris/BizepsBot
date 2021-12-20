@@ -1095,15 +1095,18 @@ async def GetFreeEpicGames():
                                 for index in range(len(FreeGame['keyImages'])):
                                     if FreeGame['keyImages'][index]['type'] == "Thumbnail":
                                         EpicImageURL = FreeGame['keyImages'][index]['url']
+                                        EpicImage = requests.get(EpicImageURL)
                                         break
+                                    else:
+                                        EpicImage = ""
 
-                                EpicImage = requests.get(EpicImageURL)
-                                if EpicImage.status_code == 200:
+                                
+                                if EpicImage != "" and EpicImage.status_code == 200:
                                     EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
                                     with open(f'epic/{EpicImagePath}', 'wb') as write_file:
                                         write_file.write(EpicImage.content)
-                                if EpicImagePath:
-                                    await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
+                                    if EpicImagePath:
+                                        await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
                                 else:
                                     await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
 
