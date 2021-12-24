@@ -367,6 +367,29 @@ class Fun(commands.Cog, name="Schabernack"):
         else:
             await ctx.send("Die API für den nächsten Feiertag ist nicht erreichbar :(")
 
+    @commands.group(name="Doto", invoke_without_command=True, aliases=["doto", "DotoJokes", "dotojokes", "dotoJokes"], brief="Gute Witze, schlechte Witze")
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.check(_is_admin)
+    async def _dotojokes(self, ctx):
+        DotoJokesJSON = _read_json('Settings.json')
+        DotoJoke = random.choice(
+            DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+        await ctx.send(f"{DotoJoke}")
+
+    @_dotojokes.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
+    async def _add_dotojoke(self, ctx, joke):
+        DotoJokesJSON = _read_json('Settings.json')
+        DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
+        _write_json('Settings.json', DotoJokesJSON)
+        await ctx.send(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
+
+    @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
+    async def _show_dotojokes(self, ctx):
+        DotoJokesJSON = _read_json('Settings.json')
+        DotoJokesString = "\n".join(
+            DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+        await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n```{DotoJokesString}```")
+
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
@@ -380,10 +403,19 @@ class Fun(commands.Cog, name="Schabernack"):
             logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
 
     @_hansworks.error
-    async def _zuggishow_error(self, ctx, error):
+    async def _hanstasks_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
             logging.warning(f"{ctx.author} wanted to spam the hanscommand!")
+
+    @_dotojokes.error
+    async def _dotojoke_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
+            logging.warning(f"{ctx.author} wanted to spam Doto-Jokes!")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("Nur Doto darf so schlechte Witze machen und hinzufügen.")
+            logging.warning(f"{ctx.author} wanted to add Doto-Jokes!")
 
     @_zuggishow.error
     async def _zuggishow_error(self, ctx, error):
