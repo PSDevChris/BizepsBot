@@ -485,7 +485,8 @@ class Meetings(commands.Cog, name="Meetings"):
         CurrentChannel = ctx.message.channel.name
         GameSettings = _read_json('Settings.json')
         if ctx.message.channel.name in GameSettings["Settings"]["Groups"].keys():
-            GameMembersString = "\n".join(GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["members"])
+            GameMembersString = "\n".join(
+                GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["members"])
             await ctx.send(f"Folgende Personen sind verabredet:\n{GameMembersString}")
         else:
             await ctx.send("Hier gibt es noch keine Verabredung.")
@@ -547,7 +548,8 @@ class Meetings(commands.Cog, name="Meetings"):
             groups["Settings"]["Groups"].pop(CurrentChannel)
             _write_json('Settings.json', groups)
             await ctx.send("Die Verabredung in diesem Channel wurde gelöscht.")
-            logging.info(f"{ctx.author} deleted the meeting in {CurrentChannel}.")
+            logging.info(
+                f"{ctx.author} deleted the meeting in {CurrentChannel}.")
         elif ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention != groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             await ctx.send("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er diese löscht!")
             logging.warning(
@@ -607,7 +609,7 @@ class Meetings(commands.Cog, name="Meetings"):
             await ctx.send("Das hier ist kein Unterhaltungschannel, hier gibt es keine Verabredungen.")
             logging.warning(
                 f"{ctx.author} wanted to leave a meeting outside of an entertainment channel!")
-    
+
     @_showgame.error
     async def _showgame_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
@@ -765,7 +767,7 @@ class Administration(commands.Cog, name="Administration"):
             logging.error(
                 "Something went wrong, is the Pi reachable?", exc_info=True)
 
-    @commands.group(name="tw", invoke_without_command=False, aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File") 
+    @commands.group(name="tw", invoke_without_command=False, aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File")
     @commands.check(_is_admin)
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def _twitchmanagement(self, ctx):
@@ -778,27 +780,28 @@ class Administration(commands.Cog, name="Administration"):
         pass
 
     @_twitchmanagement.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt die Twitchmember")
-    async def _showtwitchmembers (self, ctx):
+    async def _showtwitchmembers(self, ctx):
         TwitchSettings = _read_json('Settings.json')
-        TwitchUserString = "\n".join(TwitchSettings["Settings"]["TwitchUser"].keys())
+        TwitchUserString = "\n".join(
+            TwitchSettings["Settings"]["TwitchUser"].keys())
         await ctx.send(f"Folgende User sind hinterlegt:\n```{TwitchUserString}```")
         logging.info(f"Twitchlist was posted.")
-    
-    @_twitchmanagement.command(name="add", aliases=["+"], brief="Fügt den Twitchuser der Liste hinzu")
-    async def _addtwitchmembers (self, ctx, Member):
-            try:
-                TwitchUser = _read_json('Settings.json')
-                TwitchMember = {f"{Member}": False}
-                TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
-                _write_json('Settings.json', TwitchUser)
-                await ctx.send(f"{Member} zur Twitchliste hinzugefügt!")
-                logging.info(f"User {Member} was added to twitchlist.")
-            except:
-                await ctx.send("Konnte User nicht hinzufügen.")
-                logging.error(
-                    f"User {Member} could not be added.", exc_info=True)
 
-    @_twitchmanagement.command(name="del", aliases=["-"], brief="Löscht den Twitchuser aus der Liste")      
+    @_twitchmanagement.command(name="add", aliases=["+"], brief="Fügt den Twitchuser der Liste hinzu")
+    async def _addtwitchmembers(self, ctx, Member):
+        try:
+            TwitchUser = _read_json('Settings.json')
+            TwitchMember = {f"{Member}": False}
+            TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
+            _write_json('Settings.json', TwitchUser)
+            await ctx.send(f"{Member} zur Twitchliste hinzugefügt!")
+            logging.info(f"User {Member} was added to twitchlist.")
+        except:
+            await ctx.send("Konnte User nicht hinzufügen.")
+            logging.error(
+                f"User {Member} could not be added.", exc_info=True)
+
+    @_twitchmanagement.command(name="del", aliases=["-"], brief="Löscht den Twitchuser aus der Liste")
     async def _deltwitchmember(self, ctx, Member):
         try:
             TwitchUser = _read_json('Settings.json')
@@ -1090,7 +1093,8 @@ async def GetFreeEpicGames():
                                     FreeGameObject)
                                 _write_json('Settings.json', FreeGameObject)
                                 EndOfOffer = offer['promotionalOffers'][0]['endDate']
-                                EndDateOfOffer = parser.parse(EndOfOffer).date()
+                                EndDateOfOffer = parser.parse(
+                                    EndOfOffer).date()
 
                                 for index in range(len(FreeGame['keyImages'])):
                                     if FreeGame['keyImages'][index]['type'] == "Thumbnail":
@@ -1100,7 +1104,6 @@ async def GetFreeEpicGames():
                                     else:
                                         EpicImage = ""
 
-                                
                                 if EpicImage != "" and EpicImage.status_code == 200:
                                     EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
                                     with open(f'epic/{EpicImagePath}', 'wb') as write_file:
@@ -1126,12 +1129,17 @@ async def GetFreeEpicGames():
                                     for index in range(len(FreeGame['keyImages'])):
                                         if FreeGame['keyImages'][index]['type'] == "Thumbnail":
                                             EpicImageURL = FreeGame['keyImages'][index]['url']
-                                            EpicImage = requests.get(EpicImageURL)
+                                            EpicImage = requests.get(
+                                                EpicImageURL)
+                                            break
+                                        elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
+                                            EpicImageURL = FreeGame['keyImages'][index]['url']
+                                            EpicImage = requests.get(
+                                                EpicImageURL)
                                             break
                                         else:
                                             EpicImage = ""
 
-                                    
                                     if EpicImage != "" and EpicImage.status_code == 200:
                                         EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
                                         with open(f'epic/{EpicImagePath}', 'wb') as write_file:
