@@ -376,14 +376,14 @@ class Fun(commands.Cog, name="Schabernack"):
             DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
         await ctx.send(f"{DotoJoke}")
 
-    @_dotojokes.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
+    @_dotojokes.command(name="add", aliases=['+', 'Add'], brief="Fügt einen Doto-Joke hinzu")
     async def _add_dotojoke(self, ctx, joke):
         DotoJokesJSON = _read_json('Settings.json')
         DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
         _write_json('Settings.json', DotoJokesJSON)
         await ctx.send(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
 
-    @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
+    @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt alle Doto-Jokes")
     async def _show_dotojokes(self, ctx):
         DotoJokesJSON = _read_json('Settings.json')
         DotoJokesString = "\n".join(
