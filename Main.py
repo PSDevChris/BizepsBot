@@ -375,7 +375,6 @@ class Fun(commands.Cog, name="Schabernack"):
 
     @commands.group(name="Doto", invoke_without_command=True, aliases=["doto", "DotoJokes", "dotojokes", "dotoJokes"], brief="Gute Witze, schlechte Witze")
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.check(_is_admin)
     async def _dotojokes(self, ctx):
         if len(DotoJokes) == 0:
             RefreshJokes()
@@ -384,6 +383,7 @@ class Fun(commands.Cog, name="Schabernack"):
         DotoJokes.remove(DotoJoke)
 
     @_dotojokes.command(name="add", aliases=['+', 'Add'], brief="Fügt einen Doto-Joke hinzu")
+    @commands.check(_is_admin)
     async def _add_dotojoke(self, ctx, joke):
         DotoJokesJSON = _read_json('Settings.json')
         DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
