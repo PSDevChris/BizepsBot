@@ -67,6 +67,12 @@ def RefreshMemes():
     AllFiles = next(os.walk("memes/"))[2]
     return AllFiles
 
+
+def RefreshJokes():
+    global DotoJokes
+    DotoJokesJSON = _read_json('Settings.json')
+    DotoJokes = list(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+    return DotoJokes
 ### Permission Checks ###
 
 ### Prüft ob der Minecraft Superuser ist laut Settings.json Datei ###
@@ -371,10 +377,11 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.check(_is_admin)
     async def _dotojokes(self, ctx):
-        DotoJokesJSON = _read_json('Settings.json')
-        DotoJoke = random.choice(
-            DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+        if len(DotoJokes) == 0:
+            RefreshJokes()
+        DotoJoke = random.choice(DotoJokes)
         await ctx.send(f"{DotoJoke}")
+        DotoJokes.remove(DotoJoke)
 
     @_dotojokes.command(name="add", aliases=['+', 'Add'], brief="Fügt einen Doto-Joke hinzu")
     async def _add_dotojoke(self, ctx, joke):
@@ -382,6 +389,7 @@ class Fun(commands.Cog, name="Schabernack"):
         DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
         _write_json('Settings.json', DotoJokesJSON)
         await ctx.send(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
+        RefreshJokes()
 
     @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt alle Doto-Jokes")
     async def _show_dotojokes(self, ctx):
@@ -1216,6 +1224,7 @@ async def on_ready():
     if not GetFreeEpicGames.is_running():
         GetFreeEpicGames.start()
     RefreshMemes()
+    RefreshJokes()
 
 
 @bot.event
