@@ -415,7 +415,7 @@ class Fun(commands.Cog, name="Schabernack"):
         try:
             TVEGRow = TVTableCleaned[TVTableCleaned["EG"]
                                      == f"{eggroup}"][f"{step}"]
-            if TVEGRow.empty == False and TVEGRow.values[0] != "NaN":
+            if TVEGRow.empty == False and pd.isna(TVEGRow.values[0]) == False:
                 await ctx.send(f"Dies entspricht: {TVEGRow.values[0]}€ Brutto laut Entgeldtabelle des TVöD.")
                 logging.info(f"{ctx.author} calculated a TVoeD group.")
             else:
