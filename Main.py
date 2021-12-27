@@ -402,7 +402,8 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _calctvoed(self, ctx, eggroup: str, step):
         CurrentYear = datetime.now().year
-        TVSiteHTML = requests.get(f"https://oeffentlicher-dienst.info/c/t/rechner/tvoed/vka?id=tvoed-vka-{CurrentYear}&matrix=1")
+        TVSiteHTML = requests.get(
+            f"https://oeffentlicher-dienst.info/c/t/rechner/tvoed/vka?id=tvoed-vka-{CurrentYear}&matrix=1")
         TVSiteText = TVSiteHTML.text.replace("100%", "100")
         TVTableData = pd.read_html(TVSiteText)
         TVTable = TVTableData[1]
@@ -412,14 +413,20 @@ class Fun(commands.Cog, name="Schabernack"):
         TVTableCleaned = TVTableCleaned["Entgelttabelle TVÖD VKA 2021"]
         TVTableCleaned["EG"] = TVTableCleaned["EG"].str.replace(u'\xa0', u' ')
         try:
-            TVEGRow = TVTableCleaned[TVTableCleaned["EG"] == f"{eggroup}"][f"{step}"]
+            TVEGRow = TVTableCleaned[TVTableCleaned["EG"]
+                                     == f"{eggroup}"][f"{step}"]
             if TVEGRow.empty == False and TVEGRow.values[0] != "NaN":
                 await ctx.send(f"Dies entspricht: {TVEGRow.values[0]}€ Brutto laut Entgeldtabelle des TVöD.")
+                logging.info(f"{ctx.author} calculated a TVoeD group.")
             else:
                 await ctx.send("Diese Kombination aus EG Gruppe und Stufe gibt es im TVöD nicht.")
+                logging.info(
+                    f"{ctx.author} tried to calculate a combination of TVoeD group and step that does not exist.")
         except KeyError:
             await ctx.send("Diese Entgeldgruppe oder Stufe gibt es im TVöD nicht.")
-    
+            logging.info(
+                f"{ctx.author} tried to calculate a TVoeD group that does not exist.")
+
     @_calctvoed.error
     async def _calctvoed_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
