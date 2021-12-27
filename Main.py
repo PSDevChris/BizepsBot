@@ -411,11 +411,22 @@ class Fun(commands.Cog, name="Schabernack"):
         TVTableCleaned = TVTableCleaned.sort_index(ascending=False)
         TVTableCleaned = TVTableCleaned["Entgelttabelle TVÖD VKA 2021"]
         TVTableCleaned["EG"] = TVTableCleaned["EG"].str.replace(u'\xa0', u' ')
-        TVEGRow = TVTableCleaned[TVTableCleaned["EG"] == f"{eggroup}"][f"{step}"]
-        if TVEGRow.empty == False and TVEGRow.values[0] != "NaN":
-            await ctx.send(f"Dies entspricht: {TVEGRow.values[0]}€ Brutto laut Entgeldtabelle des TVöD.")
-        else:
-            await ctx.send("Diese Kombination aus EG Gruppe und Stufe gibt es im TVöD nicht.")
+        try:
+            TVEGRow = TVTableCleaned[TVTableCleaned["EG"] == f"{eggroup}"][f"{step}"]
+            if TVEGRow.empty == False and TVEGRow.values[0] != "NaN":
+                await ctx.send(f"Dies entspricht: {TVEGRow.values[0]}€ Brutto laut Entgeldtabelle des TVöD.")
+            else:
+                await ctx.send("Diese Kombination aus EG Gruppe und Stufe gibt es im TVöD nicht.")
+        except KeyError:
+            await ctx.send("Diese Entgeldgruppe oder Stufe gibt es im TVöD nicht.")
+    
+    @_calctvoed.error
+    async def _calctvoed_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Dieser Befehl ist noch im Cooldown.")
+            logging.warning(f"{ctx.author} wanted to spam the TVoeD-command!")
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("Es fehlt ein Parameter. Bitte !tvoed 'E X'[Leerzeichen] Stufe eingeben.")
 
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
