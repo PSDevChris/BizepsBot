@@ -398,6 +398,25 @@ class Fun(commands.Cog, name="Schabernack"):
             DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
         await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n```{DotoJokesString}```")
 
+    @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def _calctvoed(self, ctx, eggroup: str, step):
+        CurrentYear = datetime.now().year
+        TVSiteHTML = requests.get(f"https://oeffentlicher-dienst.info/c/t/rechner/tvoed/vka?id=tvoed-vka-{CurrentYear}&matrix=1")
+        TVSiteText = TVSiteHTML.text.replace("100%", "100")
+        TVTableData = pd.read_html(TVSiteText)
+        TVTable = TVTableData[1]
+        TVTableCleaned = TVTable.drop(index=[19, 20]).iloc[:, 0:7]
+        TVTableCleaned = TVTableCleaned.rename(columns={"€": "EG"})
+        TVTableCleaned = TVTableCleaned.sort_index(ascending=False)
+        TVTableCleaned = TVTableCleaned["Entgelttabelle TVÖD VKA 2021"]
+        TVTableCleaned["EG"] = TVTableCleaned["EG"].str.replace(u'\xa0', u' ')
+        TVEGRow = TVTableCleaned[TVTableCleaned["EG"] == f"{eggroup}"][f"{step}"]
+        if TVEGRow.empty == False and TVEGRow.values[0] != "NaN":
+            await ctx.send(f"Dies entspricht: {TVEGRow.values[0]}€ Brutto laut Entgeldtabelle des TVöD.")
+        else:
+            await ctx.send("Diese Kombination aus EG Gruppe und Stufe gibt es im TVöD nicht.")
+
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
