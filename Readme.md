@@ -4,7 +4,7 @@
 
 This bot was created as my first project in Python.  
 Before that I mostly scripted in PowerShell which is still my main language.  
-Since discord.py is discontinued this only works for now (04.11.2021) and in the future, the bot will be ported to a new lib and slash commands.  
+Since discord.py is discontinued, the bot was ported to py-cord and slash commands will be implemented when needed.  
 
 ## About the bot ## 
 
@@ -21,9 +21,10 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 
 ## To Dos ## 
 
-+ Create command which shows the people in a game 
++ Add a banned user so users can't abuse commands
 + Reduce code for counters
 + If GDQ Table is not found default to posting that the schedule is not live
-+ Translate all logging events to English
++ Show FreeGames
++ Add more free Games from other vendors
 
 

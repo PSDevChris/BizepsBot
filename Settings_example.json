@@ -1,7 +1,7 @@
 {
     "Settings": {
         "TwitchUser": {
-            "dota_joker": true,
+            "dota_joker": false,
             "desschnabeltier": false,
             "metasmiths": false,
             "patti2plays": false,
@@ -27,10 +27,10 @@
         "Counter": {
             "Puns": 0,
             "Leak": 2,
-            "Mobbing": 11,
-            "Salz": 9,
-            "Lieferando": 230,
-            "Pipi": 1
+            "Mobbing": 12,
+            "Salz": 12,
+            "Lieferando": 270,
+            "Pipi": 2
         },
         "HansTask": {
             "Tasks": [
@@ -65,13 +65,75 @@
                 "mal ganz dringend aufn Pott",
                 "erstmal die Fuffies in Richtung Ordnungsamt schmei\u00dfen, weil er geblitzt wurde",
                 "dem indischen Nachbarn beim Support-Scam zuh\u00f6ren",
-                "telefonieren"
+                "telefonieren",
+                "PC Building Simulator spielen",
+                "Geld f\u00fcrs n\u00e4chste Swagbook ranschaffen",
+                "seinem chinesischen Nachbarn noch ne Flasche Wein vorbeibringen",
+                "sich beim Weintasting von einer korpulenten Mid-40er Dame anmaulen lassen",
+                "garnix machen. Hans braucht Hilfe!",
+                "schreiend zuschauen, wie ein Kerbal fast in der Atmosph\u00e4re vergl\u00fcht",
+                "das BSI anrufen",
+                "morgen in den Baumarkt fahren",
+                "Dotos Witze ertragen",
+                "\u00fcber den Bann Button bei Doto hovern",
+                "sich Lyrics f\u00fcr Capital Krah ausdenken",
+                "die Farbe wechseln",
+                "sich die Netzhaut wegbrennen lassen",
+                "Orangensaft im Ritz-Carlton aufwischen",
+                "endlich mal die 50 Meter Cat5-Kabel aus seinem Kofferraum holen und in seiner eigenen Wohnung verlegen",
+                "neuen Wein kaufen",
+                "Festplatten f\u00fcr sein Leak-NAS kaufen",
+                "Rechnungen nachreichen",
+                "einen neuen Boomer-Tweet verfassen",
+                "wieder so tun als w\u00e4re er \u00fcbelst busy"
+            ]
+        },
+        "DotoJokes": {
+            "Jokes": [
+                "Wenn ich Rinderz\u00fcchter in Deutschland bin, bin ich dann automatisch ein DE-Kuh H\u00e4ndler?",
+                "Ich habe neulich einen Tesla mit Autopilot gekauft und dann war der nicht mal steuerfrei...",
+                "W\u00fcrde ja gerne Grasjokes machen, aber die sind mir zu Ott.",
+                "Wenn Rinder studieren w\u00fcrden, h\u00e4tten sie dann Kuh-militonen?",
+                "Auch wenn ich Chrome benutze, bin ich beim Surfen meist Edge-y unterwegs.",
+                "Bei Schnittstellen bin ich wie der Vater aus Heavy Rain: \n\nIch will nur JSON finden.",
+                "Gute Chefs sind wie KC Rebell Songs, sie ber\u00fchren einen nicht. #Reichelt",
+                "Die Motivation am Montag h\u00e4lt sich in Grenzen, wie Sumoringer.",
+                "Warum nennt man die japanischen Vorfahren eigentlich nicht UwUreinwohner?",
+                "Wie nennt man den Vampir, der immer dieselbe Frau besucht? \n\nGraf Regular.",
+                "Ich bin zwar nicht Westeuropa, aber ein 1/16 russischer Stream w\u00fcrde mir den Tag retten.",
+                "Wer Epona sagt, muss auch Eponb sagen, sag ich immer. #ExtremZeldaFan",
+                "Sind wir auf einem Shahak Shapira Standup oder wieso gibt es so wenig zu lachen?",
+                "Ich suche einen Koiboy, denn der ist immer fl\u00fcssig.",
+                "Wenn Aquaman mit allen Meereslebewesen reden kann, ist er dann ein Multilingu-Aal?",
+                "Nach der Luca App wurde aus Smudo sehr schnell Smudon't.",
+                "Mit Hasenchars konnte ich nie viel anfangen... Die waren mir zu... sprunghaft. #FFXIV",
+                "Lass uns aus dem Schnabeltier ein Schnabel-Wir machen. #Schnabi",
+                "Wie nennt man den Zustand, in dem sich ein Fahrgast befindet, wenn die Bahn ohne Info mal wieder nicht kommt? \n\nDer Fahrgast war dann... bahnungslos.",
+                "Welches Tier stellt sich immer wieder die Frage:'Warum?' \n\nEin W-Hai.",
+                "Ich gr\u00fcnde eine t\u00fcrkische Airline und nenne sie: D\u00f6n-Air.",
+                "Ich habe zwar keinen CPL Filter, aber handle oft unreflektiert."
             ]
         },
         "FreeEpicGames": {
-            "The Escapists": {
-                "startDate": "2021-09-23T15:00:00.000Z",
-                "endDate": "2021-09-30T15:00:00.000Z"
+            "The Spectrum Retreat": {
+                "startDate": "2021-12-16T16:00:00.000Z",
+                "endDate": "2022-01-06T16:00:00.000Z"
+            },
+            "Train Sim World\u00ae 2": {
+                "startDate": "2021-12-16T16:00:00.000Z",
+                "endDate": "2022-01-06T16:00:00.000Z"
+            },
+            "Void Bastards": {
+                "startDate": "2021-12-16T16:00:00.000Z",
+                "endDate": "2022-01-06T16:00:00.000Z"
+            },
+            "Yooka-Laylee": {
+                "startDate": "2021-12-16T16:00:00.000Z",
+                "endDate": "2022-01-06T16:00:00.000Z"
+            },
+            "Salt and Sanctuary": {
+                "startDate": "2021-12-29T16:00:00.000Z",
+                "endDate": "2021-12-30T16:00:00.000Z"
             }
         }
     }
