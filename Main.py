@@ -1152,7 +1152,7 @@ async def GetFreeEpicGames():
         JSONFromEpicStore = RequestFromEpic.json()
         if JSONFromEpicStore:
             for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
-                if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
+                if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != [] and FreeGame['promotions']['upcomingPromotionalOffers'] == []:
                     offers = FreeGame['promotions']['promotionalOffers']
                     for offer in offers:
 
