@@ -394,7 +394,7 @@ class Fun(commands.Cog, name="Schabernack"):
     @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt alle Doto-Jokes")
     async def _show_dotojokes(self, ctx):
         DotoJokesJSON = _read_json('Settings.json')
-        DotoJokesString = "\n".join(
+        DotoJokesString = "\n\n".join(
             DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
         await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n```{DotoJokesString}```")
 
