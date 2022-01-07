@@ -1,0 +1,10 @@
+﻿*
+!Main.py
+!cogs
+!cogs/ddc.py
+!cogs/gdq.py
+!logs/
+!TOKEN_example.json
+!Readme.md
+!requirements.txt
+!.gitignore
