@@ -230,6 +230,13 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _pubtypo(self, ctx):
         await ctx.send(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
 
+    @commands.command(name="nein", aliases=["Nein", "NEIN"], brief="Nein.")
+    async def _zuggisaysno(self, ctx):
+        LastMessages = await ctx.message.channel.history(limit=2).flatten()
+        LastMessages.reverse()
+        LastMessage = LastMessages[0]
+        await LastMessage.reply(f"Zuggi sagt nein.")
+
     @commands.command(name="Orangensaft", aliases=["orangensaft", "OrangenSaft"], brief="Frag nicht was für Saft...")
     async def _orangejuice(self, ctx):
         if str(ctx.author) != "Schnenko#9944":
