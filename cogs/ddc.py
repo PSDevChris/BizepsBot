@@ -9,7 +9,7 @@ class DDC(commands.Cog):
         self.bot = bot
 
     async def cog_check(self, ctx):
-        _is_banned(ctx)
+        return _is_banned(ctx)
 
     # Events
     @commands.Cog.listener()

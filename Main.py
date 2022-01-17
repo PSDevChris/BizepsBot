@@ -123,7 +123,7 @@ class Counter(commands.Cog, name="Counter"):
     """
 
     async def cog_check(self, ctx):
-        _is_banned(ctx)
+        return _is_banned(ctx)
 
     @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Erhöht den Pun Counter")
     async def _puncounter(self, ctx):
@@ -224,7 +224,7 @@ class Fun(commands.Cog, name="Schabernack"):
     """
 
     async def cog_check(self, ctx):
-        _is_banned(ctx)
+        return _is_banned(ctx)
 
     @commands.command(name="Pub", aliases=["pub"], brief="Typos...")
     async def _pubtypo(self, ctx):
@@ -488,7 +488,7 @@ class Corona(commands.Cog, name="Corona"):
     """
 
     async def cog_check(self, ctx):
-        _is_banned(ctx)
+        return _is_banned(ctx)
 
     @commands.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"], brief="Gibt aktuelle Coronazahlen aus")
     async def _coronazahlen(self, ctx):
@@ -517,7 +517,7 @@ class Meetings(commands.Cog, name="Meetings"):
     """
 
     async def cog_check(self, ctx):
-        _is_banned(ctx)
+        return _is_banned(ctx)
 
     @commands.command(name="game", aliases=["Game"], brief="Startet eine Verabredung")
     @commands.check(_is_gamechannel)
@@ -717,7 +717,7 @@ class Games(commands.Cog, name="Games"):
     """
 
     async def cog_check(self, ctx):
-        _is_banned(ctx)
+        return _is_banned(ctx)
 
     @commands.command(name="ESAGame", aliases=["esagame"], brief="Gibt das aktuelle ESA Game aus")
     async def _esagame(self, ctx):
@@ -825,7 +825,7 @@ class Administration(commands.Cog, name="Administration"):
         self.bot = bot
 
     async def cog_check(self, ctx):
-        _is_banned(ctx)
+        return _is_banned(ctx)
 
     @commands.command(name="mcreboot", aliases=["MCReboot"], brief="Rebootet den MC Server")
     @commands.cooldown(1, 7200, commands.BucketType.user)
