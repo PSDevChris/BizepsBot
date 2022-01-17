@@ -4,6 +4,7 @@ from discord.ext import commands
 import requests
 import pandas as pd
 from dateutil.parser import parse
+from Main import _is_banned
 
 
 class GDQ(commands.Cog):
@@ -11,13 +12,16 @@ class GDQ(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        _is_banned(ctx)
+
     # Events
     @commands.Cog.listener()
     async def on_ready(self):
         pass
 
     ### Get the GDQ Schedule and show which game is running or next up ###
-    @commands.group(name="gdqgame", aliases=["GDQgame", "GDQGame"], brief="Gibt das aktuelle GDQ Game, Runner und Kategorie aus")
+    @commands.group(name="gdqgame", aliases=["GDQgame", "GDQGame", "gdq", "GDQ", "Gdq"], brief="Gibt das aktuelle GDQ Game, Runner und Kategorie aus")
     async def _gdqgame(self, ctx):
         pass
 

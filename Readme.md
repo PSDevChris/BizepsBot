@@ -21,10 +21,7 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 
 ## To Dos ## 
 
-+ Add a banned user so users can't abuse commands
-+ Reduce code for counters
-+ If GDQ Table is not found default to posting that the schedule is not live
-+ Show FreeGames
++ Show FreeGames (can only be done in py-cord 2.0)
 + Add more free Games from other vendors
 
 

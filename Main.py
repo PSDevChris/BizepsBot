@@ -97,6 +97,14 @@ def _is_gamechannel(ctx):
     else:
         return ctx.message.channel.category_id == 539553136222666792
 
+
+def _is_banned(ctx: commands.context.Context):
+    BannedUsers = _read_json('Settings.json')
+    if ctx.author in BannedUsers['Settings']['BannedUsers']:
+        logging.info(
+            f"User {ctx.author} wanted to use a command but is banned.")
+    return ctx.author not in BannedUsers['Settings']['BannedUsers']
+
 ### Prüft ob der User ein Admin ist laut Settings.json Datei ###
 
 
@@ -104,20 +112,6 @@ def _is_admin(ctx):
     AdminGroup = _read_json('Settings.json')
     return ctx.author.id == AdminGroup['Settings']['ManagementGroups']['Admins']
 
-### General Settings ###
-
-
-with open("TOKEN.json", "r") as TOKENFILE:
-    TOKENDATA = json.load(TOKENFILE)
-    TOKEN = TOKENDATA['DISCORD_TOKEN']
-    TWITCH_CLIENT_ID = TOKENDATA['TWITCH_CLIENT_ID']
-    TWITCH_CLIENT_SECRET = TOKENDATA['TWITCH_CLIENT_SECRET']
-    if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys() and datetime.timestamp(datetime.now()) < TOKENDATA['TWITCH_TOKEN_EXPIRES']:
-        TWITCH_TOKEN = TOKENDATA['TWITCH_TOKEN']
-        TWITCH_TOKEN_EXPIRES = TOKENDATA['TWITCH_TOKEN_EXPIRES']
-    else:
-        RequestTwitchToken()
-    logging.info("Token successfully loaded.")
 
 ### Commands and Cogs Section ###
 
@@ -127,6 +121,9 @@ class Counter(commands.Cog, name="Counter"):
     Die Klasse die alle Counter enthält und diese erhöht oder anzeigt,
     die Counter werden in einem JSON File abgelegt und gespeichert.
     """
+
+    async def cog_check(self, ctx):
+        _is_banned(ctx)
 
     @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Erhöht den Pun Counter")
     async def _puncounter(self, ctx):
@@ -225,6 +222,9 @@ class Fun(commands.Cog, name="Schabernack"):
     Die Klasse für Spaßfunktionen, diverse Textausgaben, eine Funktion um Bilder in die Memegallery zu speichern,
     sie anzuzeigen und eine Textreplace Funktion um Texte zu UwUen wird alles hier abgehandelt.
     """
+
+    async def cog_check(self, ctx):
+        _is_banned(ctx)
 
     @commands.command(name="Pub", aliases=["pub"], brief="Typos...")
     async def _pubtypo(self, ctx):
@@ -487,6 +487,9 @@ class Corona(commands.Cog, name="Corona"):
     Eine Klasse für Corona Funktionen, aktuell werden hier nur aktuelle Zahlen abgerufen.
     """
 
+    async def cog_check(self, ctx):
+        _is_banned(ctx)
+
     @commands.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"], brief="Gibt aktuelle Coronazahlen aus")
     async def _coronazahlen(self, ctx):
         CORONA_URL = "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html"
@@ -512,6 +515,9 @@ class Meetings(commands.Cog, name="Meetings"):
     !LeaveGame              Verlässt die Verabredung, ist man Owner, wird diese gelöscht
     !UpdateGame [Uhrzeit]   Aktualisiert die Verabredung auf die angegebene Uhrzeit
     """
+
+    async def cog_check(self, ctx):
+        _is_banned(ctx)
 
     @commands.command(name="game", aliases=["Game"], brief="Startet eine Verabredung")
     @commands.check(_is_gamechannel)
@@ -710,6 +716,9 @@ class Games(commands.Cog, name="Games"):
     OWHeld:         Generiert einen OW Helden, supported Rollen und Anzahl.
     """
 
+    async def cog_check(self, ctx):
+        _is_banned(ctx)
+
     @commands.command(name="ESAGame", aliases=["esagame"], brief="Gibt das aktuelle ESA Game aus")
     async def _esagame(self, ctx):
         try:
@@ -737,7 +746,7 @@ class Games(commands.Cog, name="Games"):
         except KeyError:
             logging.error("Twitch API not available.")
 
-    @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "RndOwHeld", "RndOWHeld", "rndowheld"], brief="Weißt einen zufälligen Helden zu")
+    @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "rndheld", "ow", "OW", "Ow"], brief="Weißt einen zufälligen Helden zu")
     @commands.check(_is_owchannel)
     async def _randomowhero(self, ctx, *args):
         """
@@ -814,6 +823,9 @@ class Administration(commands.Cog, name="Administration"):
 
     def __init__(self, bot):
         self.bot = bot
+
+    async def cog_check(self, ctx):
+        _is_banned(ctx)
 
     @commands.command(name="mcreboot", aliases=["MCReboot"], brief="Rebootet den MC Server")
     @commands.cooldown(1, 7200, commands.BucketType.user)
@@ -934,6 +946,34 @@ class Administration(commands.Cog, name="Administration"):
             await ctx.send(f"```{LogOutputInString}```")
         logging.info(f"{ctx.author} has called for the log.")
 
+    @commands.command(name="Ban", aliases=["ban", "bann", "Bann"], brief="Hindert den User am verwenden von Commands")
+    @commands.check(_is_admin)
+    async def _banuser(self, ctx, user: commands.MemberConverter):
+        UserString = str(user)
+        BannedUserJSON = _read_json('Settings.json')
+        BannedUsers = BannedUserJSON['Settings']['BannedUsers']
+        if UserString not in BannedUsers:
+            BannedUsers.append(UserString)
+            _write_json('Settings.json', BannedUserJSON)
+            await ctx.send(f"User {UserString} wurde für 24 Stunden für Befehle gebannt.")
+            logging.info(f"User {UserString} was banned from using commands.")
+        else:
+            await ctx.send("Dieser User ist bereits gebannt.")
+
+    @commands.command(name="Unban", aliases=["unban", "entbannen", "UnBan"], brief="Gibt den User für Commands frei")
+    @commands.check(_is_admin)
+    async def _unbanuser(self, ctx, user: commands.MemberConverter):
+        UserString = str(user)
+        BannedUserJSON = _read_json('Settings.json')
+        BannedUsers = BannedUserJSON['Settings']['BannedUsers']
+        if UserString in BannedUsers:
+            BannedUsers.remove(UserString)
+            _write_json('Settings.json', BannedUserJSON)
+            await ctx.send(f"Der User {UserString} wurde entbannt.")
+            logging.info(f"User {UserString} was unbanned.")
+        else:
+            ctx.send(f"Der Benutzer {UserString} ist nicht gebannt.")
+
     ### Error Handling for Administrator Cog ###
 
     @_mcreboot.error
@@ -960,22 +1000,6 @@ class Administration(commands.Cog, name="Administration"):
             await ctx.send("Hier fehlte der User oder der Parameter!")
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Der Befehl ist aktuell noch im Cooldown.")
-
-### Add Cogs in bot file ###
-
-
-bot.add_cog(Counter(bot))
-logging.info(f"Extension {Counter.__name__} loaded.")
-bot.add_cog(Fun(bot))
-logging.info(f"Extension {Fun.__name__} loaded.")
-bot.add_cog(Corona(bot))
-logging.info(f"Extension {Corona.__name__} loaded.")
-bot.add_cog(Meetings(bot))
-logging.info(f"Extension {Meetings.__name__} loaded.")
-bot.add_cog(Games(bot))
-logging.info(f"Extension {Games.__name__} loaded.")
-bot.add_cog(Administration(bot))
-logging.info(f"Extension {Administration.__name__} loaded.")
 
 
 ### Tasks Section ###
@@ -1128,7 +1152,7 @@ async def TrashReminder():
                     f"Reminder for yellow trashbag which is collected on {entry} sent!")
 
 
-@tasks.loop(hours=3)
+@tasks.loop(minutes=5)
 async def GetFreeEpicGames():
 
     AllEpicFiles = next(os.walk("epic/"))[2]
@@ -1279,8 +1303,9 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    # This line needs to be added so the commands are actually processed
-    await bot.process_commands(message)
+    if(_is_banned(message)):
+        # This line needs to be added so the commands are actually processed
+        await bot.process_commands(message)
 
 
 @bot.event
@@ -1294,4 +1319,37 @@ async def on_command_error(ctx, error):
         logging.warning(
             f"{error}, {ctx.author} wants a new command.")
 
-bot.run(TOKEN)
+if __name__ == '__main__':
+
+    ### General Settings ###
+
+    with open("TOKEN.json", "r") as TOKENFILE:
+        TOKENDATA = json.load(TOKENFILE)
+        TOKEN = TOKENDATA['DISCORD_TOKEN']
+        TWITCH_CLIENT_ID = TOKENDATA['TWITCH_CLIENT_ID']
+        TWITCH_CLIENT_SECRET = TOKENDATA['TWITCH_CLIENT_SECRET']
+        if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys() and datetime.timestamp(datetime.now()) < TOKENDATA['TWITCH_TOKEN_EXPIRES']:
+            TWITCH_TOKEN = TOKENDATA['TWITCH_TOKEN']
+            TWITCH_TOKEN_EXPIRES = TOKENDATA['TWITCH_TOKEN_EXPIRES']
+        else:
+            RequestTwitchToken()
+        logging.info("Token successfully loaded.")
+
+    ### Add Cogs in bot file ###
+
+    bot.add_cog(Counter(bot))
+    logging.info(f"Extension {Counter.__name__} loaded.")
+    bot.add_cog(Fun(bot))
+    logging.info(f"Extension {Fun.__name__} loaded.")
+    bot.add_cog(Corona(bot))
+    logging.info(f"Extension {Corona.__name__} loaded.")
+    bot.add_cog(Meetings(bot))
+    logging.info(f"Extension {Meetings.__name__} loaded.")
+    bot.add_cog(Games(bot))
+    logging.info(f"Extension {Games.__name__} loaded.")
+    bot.add_cog(Administration(bot))
+    logging.info(f"Extension {Administration.__name__} loaded.")
+
+    ### Run Bot ###
+
+    bot.run(TOKEN)
