@@ -380,6 +380,10 @@ class Fun(commands.Cog, name="Schabernack"):
             await ctx.send(f"{RecipElementName}\n{RecipElementURL}")
         else:
             await ctx.send("Kartoffel API ist leider down T_T")
+    
+    @commands.command(name="Josch", aliases="josch")
+    async def _blamedevs(self, ctx):
+        await ctx.send(file=discord.File('/memes/josch700#3680/josch.png'))
 
     @commands.command(name="Feiertag", aliases=["feiertag", "holiday", "Holiday"], brief="Zeigt den nächsten Feiertag an")
     @commands.cooldown(1, 10, commands.BucketType.user)
