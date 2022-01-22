@@ -381,7 +381,7 @@ class Fun(commands.Cog, name="Schabernack"):
         else:
             await ctx.send("Kartoffel API ist leider down T_T")
     
-    @commands.command(name="Josch", aliases="josch")
+    @commands.command(name="Josch", aliases=["josch"])
     async def _blamedevs(self, ctx):
         await ctx.send(file=discord.File('/memes/josch700#3680/josch.png'))
 
