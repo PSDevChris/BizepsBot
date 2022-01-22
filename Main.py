@@ -272,15 +272,15 @@ class Fun(commands.Cog, name="Schabernack"):
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
     async def _addmeme(self, ctx):
-        if os.path.exists(f"memes/{ctx.author}") == False:
-            os.mkdir(f"memes/{ctx.author}")
-        NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
-        NumberOfFiles = len(NumberOfMemes)
         LastMessages = await ctx.message.channel.history(limit=2).flatten()
         LastMessages.reverse()
+        if os.path.exists(f"memes/{LastMessages[0].author}") == False:
+            os.mkdir(f"memes/{LastMessages[0].author}")
+        NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
+        NumberOfFiles = len(NumberOfMemes)
         for index, meme in enumerate(LastMessages[0].attachments):
             if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                await meme.save(f"memes/{ctx.author}/{NumberOfFiles + index}_{meme.filename}")
+                await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
                 await ctx.send("Memes hinzugefügt.")
                 logging.info(
                     f"{ctx.author} has added a meme.")
@@ -290,13 +290,13 @@ class Fun(commands.Cog, name="Schabernack"):
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     async def _collmeme(self, ctx, Message: commands.MessageConverter):
-        if os.path.exists(f"memes/{ctx.author}") == False:
-            os.mkdir(f"memes/{ctx.author}")
+        if os.path.exists(f"memes/{Message.author}") == False:
+            os.mkdir(f"memes/{Message.author}")
         NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
         NumberOfFiles = len(NumberOfMemes)
         for index, meme in enumerate(Message.attachments):
             if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                await meme.save(f"memes/{ctx.author}/{NumberOfFiles + index}_{meme.filename}")
+                await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
                 await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
                 logging.info(
                     f"{ctx.author} has collected a meme.")
