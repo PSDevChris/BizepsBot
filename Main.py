@@ -380,7 +380,7 @@ class Fun(commands.Cog, name="Schabernack"):
             await ctx.send(f"{RecipElementName}\n{RecipElementURL}")
         else:
             await ctx.send("Kartoffel API ist leider down T_T")
-    
+
     @commands.command(name="Josch", aliases=["josch"], brief="Entwickler...")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _blamedevs(self, ctx):
@@ -520,7 +520,15 @@ class Corona(commands.Cog, name="Corona"):
         CORONA_CASES_YESTERDAY = CORONA_ROWS[2].text
         CORONA_CASES_WEEK = CORONA_ROWS[3].text
         CORONA_INZ_WEEK = CORONA_ROWS[4].text
-        await ctx.send(f"Seit gestern gab es {CORONA_CASES_YESTERDAY} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {CORONA_CASES_WEEK} Fälle. Die Inzidenz liegt bei {CORONA_INZ_WEEK}\U0001F637")
+
+        HospULR = "https://www.corona-in-zahlen.de/hospitalisierung/"
+        HospHTML = requests.get(HospULR)
+        HospResult = BeautifulSoup(HospHTML.content, "html.parser")
+        HospValues = HospResult.find_all("p", class_="card-title")
+        HospRate = HospValues[0].text
+        HospNum = HospValues[1].text
+        await ctx.send(f"Seit gestern gab es {CORONA_CASES_YESTERDAY} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {CORONA_CASES_WEEK} Fälle. Die Inzidenz liegt bei {CORONA_INZ_WEEK}.\n\n"
+                       f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen\U0001F637")
         logging.info(
             f"User {ctx.author} has requested the COVID numbers.")
 
