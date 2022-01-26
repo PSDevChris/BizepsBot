@@ -972,7 +972,7 @@ class Administration(commands.Cog, name="Administration"):
         logging.info(f"{ctx.author} has called for the log.")
 
     @commands.command(name="Ban", aliases=["ban", "bann", "Bann"], brief="Hindert den User am verwenden von Commands")
-    @commands.check(_is_admin)
+    @commands.has_any_role("Admin", "Moderatoren")
     async def _banuser(self, ctx, user: commands.MemberConverter):
         UserString = str(user)
         BannedUserJSON = _read_json('Settings.json')
@@ -986,7 +986,7 @@ class Administration(commands.Cog, name="Administration"):
             await ctx.send("Dieser User ist bereits gebannt.")
 
     @commands.command(name="Unban", aliases=["unban", "entbannen", "UnBan"], brief="Gibt den User für Commands frei")
-    @commands.check(_is_admin)
+    @commands.has_any_role("Admin", "Moderatoren")
     async def _unbanuser(self, ctx, user: commands.MemberConverter):
         UserString = str(user)
         BannedUserJSON = _read_json('Settings.json')
