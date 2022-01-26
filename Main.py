@@ -524,7 +524,7 @@ class Corona(commands.Cog, name="Corona"):
         HospPerc = CovRate[14].text.strip()
 
        
-        await ctx.send(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {NewAvgWeek} Fälle. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
+        await ctx.send(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es im Schnitt {NewAvgWeek} Fälle pro Tag. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
                        f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
         logging.info(
             f"User {ctx.author} has requested the COVID numbers.")
