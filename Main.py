@@ -512,23 +512,20 @@ class Corona(commands.Cog, name="Corona"):
 
     @commands.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"], brief="Gibt aktuelle Coronazahlen aus")
     async def _coronazahlen(self, ctx):
-        CORONA_URL = "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html"
-        CORONA_PAGE = requests.get(CORONA_URL)
-        CORONA_RESULT = BeautifulSoup(CORONA_PAGE.content, "html.parser")
-        CORONA_TABLE = CORONA_RESULT.find("table")
-        CORONA_ROWS = CORONA_TABLE.find_all("strong")
-        CORONA_CASES_YESTERDAY = CORONA_ROWS[2].text
-        CORONA_CASES_WEEK = CORONA_ROWS[3].text
-        CORONA_INZ_WEEK = CORONA_ROWS[4].text
+        CovURL = "https://www.corona-in-zahlen.de/weltweit/deutschland/"
+        CovHTML = requests.get(CovURL)
+        CovResult = BeautifulSoup(CovHTML.content, "html.parser")
+        CovRate = CovResult.find_all("p", class_="card-title")
+        WeeklyInz = CovRate[3].text.strip()
+        NewCovCases = CovRate[9].text.strip()
+        NewAvgWeek = CovRate[10].text.strip()
+        HospRate = CovRate[12].text.strip()
+        HospNum = CovRate[13].text.strip()
+        HospPerc = CovRate[14].text.strip()
 
-        HospULR = "https://www.corona-in-zahlen.de/hospitalisierung/"
-        HospHTML = requests.get(HospULR)
-        HospResult = BeautifulSoup(HospHTML.content, "html.parser")
-        HospValues = HospResult.find_all("p", class_="card-title")
-        HospRate = HospValues[0].text
-        HospNum = HospValues[1].text
-        await ctx.send(f"Seit gestern gab es {CORONA_CASES_YESTERDAY} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {CORONA_CASES_WEEK} Fälle. Die Inzidenz liegt bei {CORONA_INZ_WEEK}.\n\n"
-                       f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen\U0001F637")
+       
+        await ctx.send(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es {NewAvgWeek} Fälle. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
+                       f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
         logging.info(
             f"User {ctx.author} has requested the COVID numbers.")
 
