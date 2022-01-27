@@ -264,11 +264,23 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _memearchiv(self, ctx):
         if len(AllFiles) == 0:
             RefreshMemes()
-        RandomMeme = random.choice(AllFiles)
-        AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
-        await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
-        AllFiles.remove(RandomMeme)
-        logging.info(f"{ctx.author} wanted a random meme.")
+        if ctx.invoked_with in ["Patti", "patti"]:
+            PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
+            if PattiMemes == []:
+                RefreshMemes()
+                PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
+            else:   
+                RandomPattiMeme = random.choice(PattiMemes)
+                AuthorPatti = RandomPattiMeme.split("/")[1].split("#")[0]
+                await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
+                AllFiles.remove(RandomPattiMeme)
+                logging.info(f"{ctx.author} wanted a patti meme.")
+        else:
+            RandomMeme = random.choice(AllFiles)
+            AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
+            await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
+            AllFiles.remove(RandomMeme)
+            logging.info(f"{ctx.author} wanted a random meme.")
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
     async def _addmeme(self, ctx):
