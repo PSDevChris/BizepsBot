@@ -269,12 +269,11 @@ class Fun(commands.Cog, name="Schabernack"):
             if PattiMemes == []:
                 RefreshMemes()
                 PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
-            else:   
-                RandomPattiMeme = random.choice(PattiMemes)
-                AuthorPatti = RandomPattiMeme.split("/")[1].split("#")[0]
-                await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
-                AllFiles.remove(RandomPattiMeme)
-                logging.info(f"{ctx.author} wanted a patti meme.")
+            RandomPattiMeme = random.choice(PattiMemes)
+            AuthorPatti = RandomPattiMeme.split("/")[1].split("#")[0]
+            await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
+            AllFiles.remove(RandomPattiMeme)
+            logging.info(f"{ctx.author} wanted a patti meme.")
         else:
             RandomMeme = random.choice(AllFiles)
             AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
@@ -535,7 +534,6 @@ class Corona(commands.Cog, name="Corona"):
         HospNum = CovRate[13].text.strip()
         HospPerc = CovRate[14].text.strip()
 
-       
         await ctx.send(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es im Schnitt {NewAvgWeek} Fälle pro Tag. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
                        f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
         logging.info(
