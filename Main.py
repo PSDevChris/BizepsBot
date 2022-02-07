@@ -921,10 +921,10 @@ class Administration(commands.Cog, name="Administration"):
         logging.info(f"Twitchlist was posted.")
 
     @_twitchmanagement.command(name="add", aliases=["+"], brief="Fügt den Twitchuser der Liste hinzu")
-    async def _addtwitchmembers(self, ctx, Member):
+    async def _addtwitchmembers(self, ctx, Member: str):
         try:
             TwitchUser = _read_json('Settings.json')
-            TwitchMember = {f"{Member}": False}
+            TwitchMember = {f"{Member.lower()}": False}
             TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
             _write_json('Settings.json', TwitchUser)
             await ctx.send(f"{Member} zur Twitchliste hinzugefügt!")
@@ -935,10 +935,10 @@ class Administration(commands.Cog, name="Administration"):
                 f"User {Member} could not be added.", exc_info=True)
 
     @_twitchmanagement.command(name="del", aliases=["-"], brief="Löscht den Twitchuser aus der Liste")
-    async def _deltwitchmember(self, ctx, Member):
+    async def _deltwitchmember(self, ctx, Member: str):
         try:
             TwitchUser = _read_json('Settings.json')
-            TwitchUser['Settings']['TwitchUser'].pop(f"{Member}")
+            TwitchUser['Settings']['TwitchUser'].pop(f"{Member.lower()}")
             _write_json('Settings.json', TwitchUser)
             await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
             logging.info(f"User {Member} was removed from twitchlist.")
