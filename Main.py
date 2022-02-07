@@ -78,6 +78,7 @@ def RefreshJokes():
     DotoJokesJSON = _read_json('Settings.json')
     DotoJokes = list(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
     return DotoJokes
+
 ### Permission Checks ###
 
 ### Prüft ob der Minecraft Superuser ist laut Settings.json Datei ###
@@ -549,6 +550,7 @@ class Meetings(commands.Cog, name="Meetings"):
     !RemGame                Löscht die Verabredung
     !LeaveGame              Verlässt die Verabredung, ist man Owner, wird diese gelöscht
     !UpdateGame [Uhrzeit]   Aktualisiert die Verabredung auf die angegebene Uhrzeit
+    !ShowGame               Zeigt die Verabredung in diesem Channel
     """
 
     async def cog_check(self, ctx):
@@ -1008,6 +1010,13 @@ class Administration(commands.Cog, name="Administration"):
             logging.info(f"User {UserString} was unbanned.")
         else:
             ctx.send(f"Der Benutzer {UserString} ist nicht gebannt.")
+
+    @commands.command(name="ip", aliases=["IP", "Ip", "vpnip", "VPNip", "VPNIP"], brief="Gibt die aktuelle public IP aus")
+    @commands.has_any_role("Admin", "Moderatoren")
+    async def _returnpubip(self, ctx):
+        MyIP = requests.get('https://api.ipify.org').content.decode('UTF-8')
+        await ctx.send(f"Die aktuelle IP lautet: {MyIP}")
+        logging.info(f"{ctx.author} requested the public ip.")
 
     ### Error Handling for Administrator Cog ###
 
