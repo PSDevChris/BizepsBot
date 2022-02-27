@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 import paramiko
 import uwuify
 import pandas as pd
+import itertools
 
 logging.getLogger("discord").setLevel(logging.WARNING)
 logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, handlers=[logging.FileHandler(f'./logs/{datetime.now().date()}_bot.log'),
@@ -752,6 +753,33 @@ class Games(commands.Cog, name="Games"):
     ESAGame:        Zeigt das aktuelle ESA Game auf Twitch an.
     OWHeld:         Generiert einen OW Helden, supported Rollen und Anzahl.
     """
+    
+    def __init__(self, bot):
+        self.bot = bot
+        await load_ow_heroes_from_web()
+        
+    async def load_ow_heroes_from_web():
+        self.ow_heroes = {
+            "support": [],
+            "tank": [],
+            "dps": []
+        }
+        
+        try:
+            OWPage = requests.get('https://playoverwatch.com/en-us/heroes/#all')
+            OWContent = BeautifulSoup(OWPage.content, "html.parser")
+            OW_Heros = OWContent.find_all('div', class_='hero-portrait-detailed-container')
+            
+            for hero in OW_Heros:
+                match hero.attrs["data-groups"][2:-2]:
+                    case "SUPPORT":
+                        self.ow_heroes["support"].append(hero.text)
+                    case "TANK":
+                        self.ow_heroes["tank"].append(hero.text)
+                    case "DAMAGE":
+                        self.ow_heroes["dps"].append(hero.text)
+        except Exception as error_info:
+            logging.error(error_info)
 
     async def cog_check(self, ctx):
         return _is_banned(ctx)
@@ -783,7 +811,8 @@ class Games(commands.Cog, name="Games"):
         except KeyError:
             logging.error("Twitch API not available.")
 
-    @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "rndheld", "ow", "OW", "Ow"], brief="Weißt einen zufälligen Helden zu")
+
+    @commands.group(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "rndheld", "ow", "OW", "Ow"], brief="Weist einen zufälligen Helden zu")
     @commands.check(_is_owchannel)
     async def _randomowhero(self, ctx, *args):
         """
@@ -791,60 +820,67 @@ class Games(commands.Cog, name="Games"):
         Unterstützt sowohl Rolle, als auch Anzahl der Helden.
         """
 
-        OWPage = requests.get('https://playoverwatch.com/en-us/heroes/#all')
-        OWContent = BeautifulSoup(OWPage.content, "html.parser")
-        OW_Heros = OWContent.find_all(
-            'div', class_='hero-portrait-detailed-container')
-        ListOfSupports = []
-        ListOfTanks = []
-        ListOfDPS = []
-        SelectedHeros = []
-        role = args[0]
-        number = int(args[1])
-        for hero in OW_Heros:
-            if hero.attrs["data-groups"][2:-2] == "SUPPORT":
-                ListOfSupports.append(hero.text)
-            elif hero.attrs["data-groups"][2:-2] == "TANK":
-                ListOfTanks.append(hero.text)
-            elif hero.attrs["data-groups"][2:-2] == "DAMAGE":
-                ListOfDPS.append(hero.text)
-        ListOfAllHeros = ListOfTanks + ListOfDPS + ListOfSupports
-        if role in ["SUPPORT", "support", "Support", "healer", "Healer"] and number < len(ListOfSupports):
-            for _ in range(0, number):
-                SelectedHero = random.choice(ListOfSupports)
-                ListOfSupports.remove(f"{SelectedHero}")
-                SelectedHeros.append(SelectedHero)
-                SelectedHerosString = ", ".join(SelectedHeros)
-            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
-            logging.info(
-                f"User {ctx.author} raffled a support hero from Overwatch.")
-        elif role in ["DAMAGE", "DPS", "DMG", "Damage", "dmg", "dps", "Dps"] and number < len(ListOfDPS):
-            for _ in range(0, number):
-                SelectedHero = random.choice(ListOfDPS)
-                ListOfDPS.remove(f"{SelectedHero}")
-                SelectedHeros.append(SelectedHero)
-                SelectedHerosString = ", ".join(SelectedHeros)
-            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
-            logging.info(
-                f"User {ctx.author} raffled a dps hero from Overwatch.")
-        elif role in ["TANK", "tank", "Tank"] and number < len(ListOfTanks):
-            for _ in range(0, number):
-                SelectedHero = random.choice(ListOfTanks)
-                ListOfTanks.remove(f"{SelectedHero}")
-                SelectedHeros.append(SelectedHero)
-                SelectedHerosString = ", ".join(SelectedHeros)
-            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
-            logging.info(
-                f"User {ctx.author} raffled a tank hero from Overwatch.")
-        elif role in ["all", "All", "ALL", "alle", "Alle"] and number < len(ListOfAllHeros):
-            for _ in range(0, number):
-                SelectedHero = random.choice(ListOfAllHeros)
-                ListOfAllHeros.remove(f"{SelectedHero}")
-                SelectedHeros.append(SelectedHero)
-                SelectedHerosString = ", ".join(SelectedHeros)
-            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
-            logging.info(
-                f"User {ctx.author} raffled a general hero from Overwatch.")
+        if ctx.invoked_subcommand is None:
+            role = args[0]
+            number = int(args[1])
+            selected_heroes_string = ""
+            
+            try:
+                match role:
+                    case ["SUPPORT", "support", "Support", "healer", "Healer"]:
+                        assert number < len(self.ow_heroes["support"])
+                        selected_heroes_string = ", ".join(random.sample(self.ow_heroes["support"], number))
+                    case ["DAMAGE", "DPS", "DMG", "Damage", "dmg", "dps", "Dps"]:
+                        assert number < len(self.ow_heroes["dps"])
+                        selected_heroes_string = ", ".join(random.sample(self.ow_heroes["dps"], number))
+                    case ["TANK", "tank", "Tank"]:
+                        assert number < len(self.ow_heroes["tanks"])
+                        selected_heroes_string = ", ".join(random.sample(self.ow_heroes["tank"], number))
+                    case ["all", "All", "ALL", "alle", "Alle"]:
+                        all_heroes = list(itertools.chain(*self.ow_heroes.values()))
+                        assert number < len(all_heroes)
+                        selected_heroes_string = ", ".join(random.sample(all_heroes, number))
+                    case _:
+                        await ctx.send("Diese Rolle gibt es anscheinend nicht.")
+                        logging.error(f"Error when trying to raffle {number} Overwatch heroes from role {role}, requested by {ctx.author}. Role not existing?")
+            except AssertionError as error_info:
+                logging.error(f"Error when trying to raffle {number} Overwatch heroes from role {role}, requested by {ctx.author}. Very likely more heroes requested than available in that role. " + error_info)
+
+            if selected_heroes_string:
+                await ctx.send("Folgende Helden wurden ausgewählt:" + {selected_heroes_string})
+                logging.info( f"User {ctx.author} raffled a {role} hero from Overwatch.")
+            else:
+                logging.error(f"Error when trying to raffle {number} Overwatch heroes from role {role}, requested by {ctx.author}")
+              
+    @_randomowhero.command(name="group", aliases=["Group", "team", "Team"], brief="Generiert ein zufälliges Team mit einer vorgegebenen Anzahl an Tank-, DPS- und Support-Heroes")
+    @commands.check(_is_owchannel)
+    async def _randomowhero_group(self, ctx, amount_of_tanks, amount_of_dps, amount_of_supports):
+        try:
+            amounts = {
+                "tank": int(amount_of_tanks),
+                "dps": int(amount_of_dps),
+                "support": int(amount_of_supports)
+            }
+            
+            assert amounts["tank"] < len(self.ow_heroes["tank"])
+            assert amounts["dps"] < len(self.ow_heroes["dps"])
+            assert amounts["support"] < len(self.ow_heroes["support"])
+            assert amounts["tank"] + amounts["dps"] + amounts["support"] <= 6
+            
+            selected_heroes_string = ""
+            selected_heroes_string += ", ".join(random.sample(self.ow_heroes["tank"], amounts["tank"]))
+            selected_heroes_string += ", ".join(random.sample(self.ow_heroes["dps"], amounts["dps"]))
+            selected_heroes_string += ", ".join(random.sample(self.ow_heroes["support"], amounts["support"]))
+            
+            await ctx.send("Folgende Helden wurden ausgewählt:" + {selected_heroes_string})
+        except Exception as error_info:
+            await ctx.send("Bitte gib realistische Anzahlen pro Klasse an: <Tank> <DPS> <Support>")
+            logging.error(error_info)
+
+    @_randomowhero.command(name="refresh", aliases=["Refresh", "reload", "Reload"], brief="Aktualisiert die möglichen Overwatch Heroes im Falle eines Updates")
+    @commands.check(_is_owchannel)
+    async def _randomowhero_refresh(self, ctx):
+        await load_ow_heroes_from_web()
 
 
 class Administration(commands.Cog, name="Administration"):
