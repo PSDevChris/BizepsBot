@@ -756,9 +756,9 @@ class Games(commands.Cog, name="Games"):
     
     def __init__(self, bot):
         self.bot = bot
-        await load_ow_heroes_from_web()
+        self.ow_heroes = None
         
-    async def load_ow_heroes_from_web():
+    async def load_ow_heroes_from_web(self):
         self.ow_heroes = {
             "support": [],
             "tank": [],
@@ -812,7 +812,12 @@ class Games(commands.Cog, name="Games"):
             logging.error("Twitch API not available.")
 
 
-    @commands.group(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "rndheld", "ow", "OW", "Ow"], brief="Weist einen zufälligen Helden zu")
+    @commands.group(
+        name="OwHeld",
+        aliases=["owhero", "owheld", "OWHeld", "RndHeld", "rndheld", "ow", "OW", "Ow"],
+        brief="Weist einen zufälligen Helden zu",
+        invoke_without_command=True
+    )
     @commands.check(_is_owchannel)
     async def _randomowhero(self, ctx, *args):
         """
@@ -820,37 +825,38 @@ class Games(commands.Cog, name="Games"):
         Unterstützt sowohl Rolle, als auch Anzahl der Helden.
         """
 
-        if ctx.invoked_subcommand is None:
-            role = args[0]
-            number = int(args[1])
-            selected_heroes_string = ""
-            
-            try:
-                match role:
-                    case ["SUPPORT", "support", "Support", "healer", "Healer"]:
-                        assert number < len(self.ow_heroes["support"])
-                        selected_heroes_string = ", ".join(random.sample(self.ow_heroes["support"], number))
-                    case ["DAMAGE", "DPS", "DMG", "Damage", "dmg", "dps", "Dps"]:
-                        assert number < len(self.ow_heroes["dps"])
-                        selected_heroes_string = ", ".join(random.sample(self.ow_heroes["dps"], number))
-                    case ["TANK", "tank", "Tank"]:
-                        assert number < len(self.ow_heroes["tanks"])
-                        selected_heroes_string = ", ".join(random.sample(self.ow_heroes["tank"], number))
-                    case ["all", "All", "ALL", "alle", "Alle"]:
-                        all_heroes = list(itertools.chain(*self.ow_heroes.values()))
-                        assert number < len(all_heroes)
-                        selected_heroes_string = ", ".join(random.sample(all_heroes, number))
-                    case _:
-                        await ctx.send("Diese Rolle gibt es anscheinend nicht.")
-                        logging.error(f"Error when trying to raffle {number} Overwatch heroes from role {role}, requested by {ctx.author}. Role not existing?")
-            except AssertionError as error_info:
-                logging.error(f"Error when trying to raffle {number} Overwatch heroes from role {role}, requested by {ctx.author}. Very likely more heroes requested than available in that role. " + error_info)
+        if self.ow_heroes is None:
+            await self.load_ow_heroes_from_web()
 
-            if selected_heroes_string:
-                await ctx.send("Folgende Helden wurden ausgewählt:" + {selected_heroes_string})
-                logging.info( f"User {ctx.author} raffled a {role} hero from Overwatch.")
-            else:
-                logging.error(f"Error when trying to raffle {number} Overwatch heroes from role {role}, requested by {ctx.author}")
+        role = args[0]
+        number = int(args[1])
+        selected_heroes_string = ""
+        
+        try:
+            match role:
+                case ("SUPPORT"|"support"|"Support"|"healer"|"Healer"):
+                    assert number < len(self.ow_heroes["support"])
+                    selected_heroes_string = ", ".join(random.sample(self.ow_heroes["support"], number))
+                case ("DAMAGE"|"DPS"|"DMG"|"Damage"|"dmg"|"dps"|"Dps"):
+                    assert number < len(self.ow_heroes["dps"])
+                    selected_heroes_string = ", ".join(random.sample(self.ow_heroes["dps"], number))
+                case ("TANK"|"tank"|"Tank"):
+                    assert number < len(self.ow_heroes["tanks"])
+                    selected_heroes_string = ", ".join(random.sample(self.ow_heroes["tank"], number))
+                case ("all"|"All"|"ALL"|"alle"|"Alle"):
+                    all_heroes = list(itertools.chain(*self.ow_heroes.values()))
+                    assert number < len(all_heroes)
+                    selected_heroes_string = ", ".join(random.sample(all_heroes, number))
+                case _:
+                    await ctx.send("Diese Rolle gibt es anscheinend nicht.")
+        except AssertionError as error_info:
+            logging.error(f"Error when trying to raffle {number} Overwatch heroes from role {role}, requested by {ctx.author}. Very likely more heroes requested than available in that role. " + error_info)
+
+        if selected_heroes_string:
+            await ctx.send("Folgende Helden wurden ausgewählt: " + selected_heroes_string)
+            logging.info( f"User {ctx.author} raffled a {role} hero from Overwatch.")
+        else:
+            logging.error(f"Error when trying to raffle {number} Overwatch heroes from role {role}, requested by {ctx.author}")
               
     @_randomowhero.command(name="group", aliases=["Group", "team", "Team"], brief="Generiert ein zufälliges Team mit einer vorgegebenen Anzahl an Tank-, DPS- und Support-Heroes")
     @commands.check(_is_owchannel)
@@ -861,18 +867,23 @@ class Games(commands.Cog, name="Games"):
                 "dps": int(amount_of_dps),
                 "support": int(amount_of_supports)
             }
-            
+
+            if self.ow_heroes is None:
+                await self.load_ow_heroes_from_web()
+
             assert amounts["tank"] < len(self.ow_heroes["tank"])
             assert amounts["dps"] < len(self.ow_heroes["dps"])
             assert amounts["support"] < len(self.ow_heroes["support"])
             assert amounts["tank"] + amounts["dps"] + amounts["support"] <= 6
-            
-            selected_heroes_string = ""
-            selected_heroes_string += ", ".join(random.sample(self.ow_heroes["tank"], amounts["tank"]))
-            selected_heroes_string += ", ".join(random.sample(self.ow_heroes["dps"], amounts["dps"]))
-            selected_heroes_string += ", ".join(random.sample(self.ow_heroes["support"], amounts["support"]))
-            
-            await ctx.send("Folgende Helden wurden ausgewählt:" + {selected_heroes_string})
+
+            selected_heroes_array = [
+                *random.sample(self.ow_heroes["tank"], amounts["tank"]),
+                *random.sample(self.ow_heroes["dps"], amounts["dps"]),
+                *random.sample(self.ow_heroes["support"], amounts["support"])
+            ]
+
+            selected_heroes_string = ", ".join(selected_heroes_array)
+            await ctx.send("Folgende Helden wurden ausgewählt: " + selected_heroes_string)
         except Exception as error_info:
             await ctx.send("Bitte gib realistische Anzahlen pro Klasse an: <Tank> <DPS> <Support>")
             logging.error(error_info)
@@ -880,7 +891,7 @@ class Games(commands.Cog, name="Games"):
     @_randomowhero.command(name="refresh", aliases=["Refresh", "reload", "Reload"], brief="Aktualisiert die möglichen Overwatch Heroes im Falle eines Updates")
     @commands.check(_is_owchannel)
     async def _randomowhero_refresh(self, ctx):
-        await load_ow_heroes_from_web()
+        await self.load_ow_heroes_from_web()
 
 
 class Administration(commands.Cog, name="Administration"):
