@@ -362,8 +362,19 @@ class Fun(commands.Cog, name="Schabernack"):
     @_hansworks.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
     async def _show_hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
-        HansTasksString = "\n".join(HansTasks['Settings']['HansTask']['Tasks'])
-        await ctx.send(f"Hans hat folgende Tasks:\n```{HansTasksString}```")
+        HansOutputString = ""
+        HansOutputLength = 0
+        await ctx.send(f"Hans hat folgende Tasks:\n")
+        for HansTaskEntry in HansTasks['Settings']['HansTask']['Tasks']:
+            HansOutputLength += len(HansTaskEntry)
+            if HansOutputLength > 1994:
+                await ctx.send(f"```{HansOutputString}```")
+                HansOutputString = ""
+                HansOutputLength = 0
+            else:
+                HansOutputString += HansTaskEntry + "\n"
+                HansOutputLength = HansOutputLength + len(HansTaskEntry)
+        await ctx.send(f"```{HansOutputString}```")
 
     @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -433,9 +444,19 @@ class Fun(commands.Cog, name="Schabernack"):
     @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt alle Doto-Jokes")
     async def _show_dotojokes(self, ctx):
         DotoJokesJSON = _read_json('Settings.json')
-        DotoJokesString = "\n\n".join(
-            DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
-        await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n```{DotoJokesString}```")
+        DotoOutputString = ""
+        DotoOutputLength = 0
+        await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n")
+        for DotoTaskEntry in DotoJokesJSON['Settings']['DotoJokes']['Jokes']:
+            DotoOutputLength += len(DotoTaskEntry)
+            if DotoOutputLength > 1994:
+                await ctx.send(f"```{DotoOutputString}```")
+                DotoOutputString = ""
+                DotoOutputLength = 0
+            else:
+                DotoOutputString += DotoTaskEntry + "\n\n"
+                DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
+        await ctx.send(f"```{DotoOutputString}```")
 
     @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
     @commands.cooldown(1, 10, commands.BucketType.user)
