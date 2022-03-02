@@ -259,46 +259,71 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _ehrenmann(self, ctx, user: commands.MemberConverter):
         await ctx.send(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
 
-    @commands.group(name="meme", aliases=["Meme", "patti", "Patti"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
+    @commands.group(name="meme", aliases=["Meme", "patti", "Patti", "Mittwoch", "mittwoch"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
     @commands.cooldown(2, 180, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
     async def _memearchiv(self, ctx):
         if len(AllFiles) == 0:
             RefreshMemes()
-        if ctx.invoked_with in ["Patti", "patti"]:
-            PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
-            if PattiMemes == []:
-                RefreshMemes()
+        match (ctx.invoked_with):
+            case ("Patti"|"patti"):
                 PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
-            RandomPattiMeme = random.choice(PattiMemes)
-            AuthorPatti = RandomPattiMeme.split("/")[1].split("#")[0]
-            await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
-            AllFiles.remove(RandomPattiMeme)
-            logging.info(f"{ctx.author} wanted a patti meme.")
-        else:
-            RandomMeme = random.choice(AllFiles)
-            AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
-            await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
-            AllFiles.remove(RandomMeme)
-            logging.info(f"{ctx.author} wanted a random meme.")
+                if PattiMemes == []:
+                    RefreshMemes()
+                    PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
+                RandomPattiMeme = random.choice(PattiMemes)
+                AuthorPatti = RandomPattiMeme.split("/")[1].split("#")[0]
+                await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
+                AllFiles.remove(RandomPattiMeme)
+                logging.info(f"{ctx.author} wanted a patti meme.")
+            case ("Mittwoch"|"mittwoch"):
+                if datetime.now().isoweekday() == 3:
+                    WednesdayMemes = list(filter(lambda x: 'Mittwoch' in x, AllFiles))
+                if WednesdayMemes == []:
+                    RefreshMemes()
+                    WednesdayMemes = list(filter(lambda x: 'Mittwoch' in x, AllFiles))
+                RandomWedMeme = random.choice(WednesdayMemes)
+                WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
+                await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
+                AllFiles.remove(RandomWedMeme)
+                logging.info(f"{ctx.author} wanted a wednesday meme.")
+            case _:
+                RandomMeme = random.choice(AllFiles)
+                AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
+                await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
+                AllFiles.remove(RandomMeme)
+                logging.info(f"{ctx.author} wanted a random meme.")
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
     async def _addmeme(self, ctx):
         LastMessages = await ctx.message.channel.history(limit=2).flatten()
         LastMessages.reverse()
-        if os.path.exists(f"memes/{LastMessages[0].author}") == False:
-            os.mkdir(f"memes/{LastMessages[0].author}")
-        NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
-        NumberOfFiles = len(NumberOfMemes)
-        for index, meme in enumerate(LastMessages[0].attachments):
-            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
-                await ctx.send("Memes hinzugefügt.")
-                logging.info(
-                    f"{ctx.author} has added a meme.")
-                RefreshMemes()
-            else:
-                pass
+        if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
+            NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+            NumberOfFiles = len(NumberOfMemes)
+            for index, meme in enumerate(LastMessages[0].attachments):
+                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                    await ctx.send("Mittwoch Memes hinzugefügt.")
+                    logging.info(
+                        f"{ctx.author} has added a wednesday meme.")
+                    RefreshMemes()
+                else:
+                    pass
+        else:
+            if os.path.exists(f"memes/{LastMessages[0].author}") == False:
+                os.mkdir(f"memes/{LastMessages[0].author}")
+            NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
+            NumberOfFiles = len(NumberOfMemes)
+            for index, meme in enumerate(LastMessages[0].attachments):
+                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
+                    await ctx.send("Memes hinzugefügt.")
+                    logging.info(
+                        f"{ctx.author} has added a meme.")
+                    RefreshMemes()
+                else:
+                    pass
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     async def _collmeme(self, ctx, Message: commands.MessageConverter):
