@@ -266,7 +266,7 @@ class Fun(commands.Cog, name="Schabernack"):
         if len(AllFiles) == 0:
             RefreshMemes()
         match (ctx.invoked_with):
-            case ("Patti"|"patti"):
+            case ("Patti" | "patti"):
                 PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
                 if PattiMemes == []:
                     RefreshMemes()
@@ -276,12 +276,19 @@ class Fun(commands.Cog, name="Schabernack"):
                 await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
                 AllFiles.remove(RandomPattiMeme)
                 logging.info(f"{ctx.author} wanted a patti meme.")
-            case ("Mittwoch"|"mittwoch"):
+            case ("Mittwoch" | "mittwoch"):
                 if datetime.now().isoweekday() == 3:
-                    WednesdayMemes = list(filter(lambda x: 'Mittwoch' in x, AllFiles))
-                if WednesdayMemes == []:
+                    WednesdayMemes = list(
+                        filter(lambda x: 'Mittwoch' in x, AllFiles))
+                else:
+                    WednesdayMemes = AllFiles
+                if WednesdayMemes == [] and datetime.now().isoweekday() == 3:
                     RefreshMemes()
-                    WednesdayMemes = list(filter(lambda x: 'Mittwoch' in x, AllFiles))
+                    WednesdayMemes = list(
+                        filter(lambda x: 'Mittwoch' in x, AllFiles))
+                else:
+                    RefreshMemes()
+                    WednesdayMemes = AllFiles
                 RandomWedMeme = random.choice(WednesdayMemes)
                 WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
                 await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
