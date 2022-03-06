@@ -407,6 +407,13 @@ class Fun(commands.Cog, name="Schabernack"):
                 HansOutputString += HansTaskEntry + "\n"
                 HansOutputLength = HansOutputLength + len(HansTaskEntry)
         await ctx.send(f"```{HansOutputString}```")
+    
+    @_hansworks.command(name="num", aliases=["Number", "count", "Count"], brief="Zeigt, wie beschäftigt Hans ist")
+    async def _count_hansworks(self, ctx):
+        HansTasks = _read_json('Settings.json')
+        HansTaskCount = len(HansTasks['Settings']['HansTask']['Tasks'])
+        await ctx.send(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
+        logging.info(f"{ctx.author} wanted to know how busy hans is.")
 
     @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -489,6 +496,12 @@ class Fun(commands.Cog, name="Schabernack"):
                 DotoOutputString += DotoTaskEntry + "\n\n"
                 DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
         await ctx.send(f"```{DotoOutputString}```")
+    
+    @_dotojokes.command(name="count", aliases=["num", "Number", "Count"], brief="Wie viele Gags hat Doto nochmal gerissen?")
+    async def _count_dotojokes(self, ctx):
+        DotoJokesJSON = _read_json('Settings.json')
+        DotoJokesCount = len(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+        await ctx.send(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
 
     @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
     @commands.cooldown(1, 10, commands.BucketType.user)
