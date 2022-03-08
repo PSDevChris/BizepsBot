@@ -286,14 +286,15 @@ class Fun(commands.Cog, name="Schabernack"):
                     RefreshMemes()
                     WednesdayMemes = list(
                         filter(lambda x: 'Mittwoch' in x, AllFiles))
-                else:
-                    RefreshMemes()
-                    WednesdayMemes = AllFiles
                 RandomWedMeme = random.choice(WednesdayMemes)
                 WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
-                await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
-                AllFiles.remove(RandomWedMeme)
-                logging.info(f"{ctx.author} wanted a wednesday meme.")
+                if datetime.now().isoweekday() == 3:
+                    MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
+                    await ctx.send(f"Es ist Mittwoch, meine {random.choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
+                else:
+                    await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
+                    AllFiles.remove(RandomWedMeme)
+                    logging.info(f"{ctx.author} wanted a wednesday meme.")
             case _:
                 RandomMeme = random.choice(AllFiles)
                 AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
