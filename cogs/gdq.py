@@ -1,11 +1,9 @@
 ﻿from datetime import datetime, timedelta
-import discord
 from discord.ext import commands
 import requests
 import pandas as pd
 from dateutil.parser import parse
 from Main import _is_banned
-
 
 class GDQ(commands.Cog):
 
