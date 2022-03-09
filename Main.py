@@ -289,7 +289,8 @@ class Fun(commands.Cog, name="Schabernack"):
                 RandomWedMeme = random.choice(WednesdayMemes)
                 WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
                 if datetime.now().isoweekday() == 3:
-                    MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
+                    MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
+                                         "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
                     await ctx.send(f"Es ist Mittwoch, meine {random.choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
                 else:
                     await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
@@ -368,15 +369,14 @@ class Fun(commands.Cog, name="Schabernack"):
         if isinstance(message.channel, discord.channel.DMChannel):
             pass
         else:
-            if message.channel.category_id != 539547423782207488 and message.channel.id not in [539549544585756693, 539546796939149334]:
-                if message.author == bot.user:
-                    return
-                if random.randint(0, 75) == 1:
-                    LastMessageContent = message.content
-                    flags = uwuify.SMILEY | uwuify.YU
-                    await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
-                    logging.info(
-                        f"The message [{LastMessageContent}] was UwUed.")
+            if message.author == bot.user:
+                return
+            if random.randint(0, 75) == 1:
+                LastMessageContent = message.content
+                flags = uwuify.SMILEY | uwuify.YU
+                await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
+                logging.info(
+                    f"The message [{LastMessageContent}] was UwUed.")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -421,7 +421,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 HansOutputString += HansTaskEntry + "\n"
                 HansOutputLength = HansOutputLength + len(HansTaskEntry)
         await ctx.send(f"```{HansOutputString}```")
-    
+
     @_hansworks.command(name="num", aliases=["Number", "count", "Count"], brief="Zeigt, wie beschäftigt Hans ist")
     async def _count_hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
@@ -510,7 +510,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 DotoOutputString += DotoTaskEntry + "\n\n"
                 DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
         await ctx.send(f"```{DotoOutputString}```")
-    
+
     @_dotojokes.command(name="count", aliases=["num", "Number", "Count"], brief="Wie viele Gags hat Doto nochmal gerissen?")
     async def _count_dotojokes(self, ctx):
         DotoJokesJSON = _read_json('Settings.json')
