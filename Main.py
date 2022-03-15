@@ -190,7 +190,7 @@ class Counter(commands.Cog, name="Counter"):
         data = _read_json('Settings.json')
         await ctx.send(f"Bisher war es schon {data['Settings']['Counter']['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
 
-    @commands.group(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk"], invoke_without_command=True, brief="Wirtschaft dankt!")
+    @commands.group(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk", "lieferando", "liefernat"], invoke_without_command=True, brief="Wirtschaft dankt!")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _schnenkorder(self, ctx):
         data = _read_json('Settings.json')
@@ -198,7 +198,7 @@ class Counter(commands.Cog, name="Counter"):
             data['Settings']['Counter']['Lieferando']) + 20
         _write_json('Settings.json', data)
         LieferandoNumber = data['Settings']['Counter']['Lieferando']
-        await ctx.send(f"Schnenko hat dieses Jahr bereits für {LieferandoNumber}€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!")
+        await ctx.send(f"Schnenko hat dieses Jahr bereits für {LieferandoNumber}€ bei Liefern.at bestellt. Ein starkes Zeichen für die Wirtschaft!")
 
     @_schnenkorder.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt Schnenkos Bestellfreudigkeit in Euro")
     async def _show_schnenkcounter(self, ctx):

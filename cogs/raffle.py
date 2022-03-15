@@ -7,9 +7,11 @@ import random
 
 ### Checks ###
 
+
 def _raffle_active(self):
     RaffleJSON = _read_json('Settings.json')
     return RaffleJSON['Settings']['Raffle']['Active']
+
 
 class Raffle(commands.Cog, name="Raffle"):
 
@@ -30,7 +32,6 @@ class Raffle(commands.Cog, name="Raffle"):
     async def _raffle(self, ctx):
         pass
 
-
     @_raffle.command(name="active", aliases=["Active"], brief="Aktiviert das Raffle")
     @commands.check(_is_admin)
     async def _setactive(self, ctx, activeval: bool):
@@ -42,9 +43,13 @@ class Raffle(commands.Cog, name="Raffle"):
             await ctx.send(f"Das neue Raffle wurde aktiviert! Teilnehmen könnt ihr über !raffle join, verlost wird {RaffleJSON['Settings']['Raffle']['Title']}!")
         else:
             RaffleJSON = _read_json('Settings.json')
-            EntryList = list(RaffleJSON['Settings']['Raffle']['Entries'].items())
-            Entry = random.choice(EntryList)
-            await ctx.send(f"Das Raffle wurde beendet! Gewonnen hat {Entry[0]}! {Entry[1]}")
+            EntryList = list(RaffleJSON['Settings']
+                             ['Raffle']['Entries'].items())
+            if EntryList == []:
+                await ctx.send("Leider hat niemand teilgenommen. Viel Glück beim nächsten Mal!")
+            else:
+                Entry = random.choice(EntryList)
+                await ctx.send(f"Das Raffle wurde beendet! Gewonnen hat {Entry[0]}! {Entry[1]}")
             RaffleJSON['Settings']['Raffle']['Entries'] = {}
             RaffleJSON['Settings']['Raffle']['Title'] = ""
             _write_json('Settings.json', RaffleJSON)
@@ -61,7 +66,7 @@ class Raffle(commands.Cog, name="Raffle"):
     @commands.check(_raffle_active)
     async def _joinraffle(self, ctx):
         RaffleJSON = _read_json('Settings.json')
-        NewEntry= {
+        NewEntry = {
             f"{ctx.author.name}": ctx.author.mention
         }
         if ctx.author.name not in RaffleJSON['Settings']['Raffle']['Entries'].keys():
