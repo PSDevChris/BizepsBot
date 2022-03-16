@@ -292,10 +292,13 @@ class Fun(commands.Cog, name="Schabernack"):
                     MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
                                          "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
                     await ctx.send(f"Es ist Mittwoch, meine {random.choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
+                    AllFiles.remove(RandomWedMeme)
+                    logging.info(f"{ctx.author} wanted a wednesday meme.")
                 else:
                     await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
-                    logging.info(f"{ctx.author} wanted a wednesday meme.")
+                    logging.info(
+                        f"{ctx.author} wanted a wednesday meme but it is not wednesday.")
             case _:
                 RandomMeme = random.choice(AllFiles)
                 AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
