@@ -300,7 +300,13 @@ class Fun(commands.Cog, name="Schabernack"):
                     logging.info(
                         f"{ctx.author} wanted a wednesday meme but it is not wednesday.")
             case _:
-                RandomMeme = random.choice(AllFiles)
+                NoWednesdayMemes = list(
+                    filter(lambda x: 'Mittwoch' not in x, AllFiles))
+                if NoWednesdayMemes == []:
+                    RefreshMemes()
+                    NoWednesdayMemes = list(
+                        filter(lambda x: 'Mittwoch' not in x, AllFiles))
+                RandomMeme = random.choice(NoWednesdayMemes)
                 AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
                 await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
                 AllFiles.remove(RandomMeme)
