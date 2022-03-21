@@ -191,7 +191,7 @@ class Counter(commands.Cog, name="Counter"):
         data = _read_json('Settings.json')
         await ctx.send(f"Bisher war es schon {data['Settings']['Counter']['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
 
-    @commands.group(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk"], invoke_without_command=True, brief="Wirtschaft dankt!")
+    @commands.group(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk", "lieferando", "Lieferando"], invoke_without_command=True, brief="Wirtschaft dankt!")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _schnenkorder(self, ctx):
         data = _read_json('Settings.json')
@@ -260,62 +260,118 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _ehrenmann(self, ctx, user: commands.MemberConverter):
         await ctx.send(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
 
-    @commands.group(name="meme", aliases=["Meme", "patti", "Patti"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
+    @commands.group(name="meme", aliases=["Meme", "patti", "Patti", "Mittwoch", "mittwoch"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
     @commands.cooldown(2, 180, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
     async def _memearchiv(self, ctx):
         if len(AllFiles) == 0:
             RefreshMemes()
-        if ctx.invoked_with in ["Patti", "patti"]:
-            PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
-            if PattiMemes == []:
-                RefreshMemes()
+        match (ctx.invoked_with):
+            case ("Patti" | "patti"):
                 PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
-            RandomPattiMeme = random.choice(PattiMemes)
-            AuthorPatti = RandomPattiMeme.split("/")[1].split("#")[0]
-            await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
-            AllFiles.remove(RandomPattiMeme)
-            logging.info(f"{ctx.author} wanted a patti meme.")
-        else:
-            RandomMeme = random.choice(AllFiles)
-            AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
-            await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
-            AllFiles.remove(RandomMeme)
-            logging.info(f"{ctx.author} wanted a random meme.")
+                if PattiMemes == []:
+                    RefreshMemes()
+                    PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
+                RandomPattiMeme = random.choice(PattiMemes)
+                AuthorPatti = RandomPattiMeme.split("/")[1].split("#")[0]
+                await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
+                AllFiles.remove(RandomPattiMeme)
+                logging.info(f"{ctx.author} wanted a patti meme.")
+            case ("Mittwoch" | "mittwoch"):
+                if datetime.now().isoweekday() == 3:
+                    WednesdayMemes = list(
+                        filter(lambda x: 'Mittwoch' in x, AllFiles))
+                else:
+                    WednesdayMemes = AllFiles
+                if WednesdayMemes == [] and datetime.now().isoweekday() == 3:
+                    RefreshMemes()
+                    WednesdayMemes = list(
+                        filter(lambda x: 'Mittwoch' in x, AllFiles))
+                RandomWedMeme = random.choice(WednesdayMemes)
+                WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
+                if datetime.now().isoweekday() == 3:
+                    MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
+                                         "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
+                    await ctx.send(f"Es ist Mittwoch, meine {random.choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
+                    AllFiles.remove(RandomWedMeme)
+                    logging.info(f"{ctx.author} wanted a wednesday meme.")
+                else:
+                    await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
+                    AllFiles.remove(RandomWedMeme)
+                    logging.info(
+                        f"{ctx.author} wanted a wednesday meme but it is not wednesday.")
+            case _:
+                NoWednesdayMemes = list(
+                    filter(lambda x: 'Mittwoch' not in x, AllFiles))
+                if NoWednesdayMemes == []:
+                    RefreshMemes()
+                    NoWednesdayMemes = list(
+                        filter(lambda x: 'Mittwoch' not in x, AllFiles))
+                RandomMeme = random.choice(NoWednesdayMemes)
+                AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
+                await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
+                AllFiles.remove(RandomMeme)
+                logging.info(f"{ctx.author} wanted a random meme.")
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
     async def _addmeme(self, ctx):
         LastMessages = await ctx.message.channel.history(limit=2).flatten()
         LastMessages.reverse()
-        if os.path.exists(f"memes/{LastMessages[0].author}") == False:
-            os.mkdir(f"memes/{LastMessages[0].author}")
-        NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
-        NumberOfFiles = len(NumberOfMemes)
-        for index, meme in enumerate(LastMessages[0].attachments):
-            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
-                await ctx.send("Memes hinzugefügt.")
-                logging.info(
-                    f"{ctx.author} has added a meme.")
-                RefreshMemes()
-            else:
-                pass
+        if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
+            NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+            NumberOfFiles = len(NumberOfMemes)
+            for index, meme in enumerate(LastMessages[0].attachments):
+                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                    await ctx.send("Mittwoch Memes hinzugefügt.")
+                    logging.info(
+                        f"{ctx.author} has added a wednesday meme.")
+                    RefreshMemes()
+                else:
+                    pass
+        else:
+            if os.path.exists(f"memes/{LastMessages[0].author}") == False:
+                os.mkdir(f"memes/{LastMessages[0].author}")
+            NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
+            NumberOfFiles = len(NumberOfMemes)
+            for index, meme in enumerate(LastMessages[0].attachments):
+                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
+                    await ctx.send("Memes hinzugefügt.")
+                    logging.info(
+                        f"{ctx.author} has added a meme.")
+                    RefreshMemes()
+                else:
+                    pass
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     async def _collmeme(self, ctx, Message: commands.MessageConverter):
-        if os.path.exists(f"memes/{Message.author}") == False:
-            os.mkdir(f"memes/{Message.author}")
-        NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
-        NumberOfFiles = len(NumberOfMemes)
-        for index, meme in enumerate(Message.attachments):
-            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
-                await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
-                logging.info(
-                    f"{ctx.author} has collected a meme.")
-                RefreshMemes()
-            else:
-                pass
+        if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
+            NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+            NumberOfFiles = len(NumberOfMemes)
+            for index, meme in enumerate(Message.attachments):
+                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                    await ctx.send("Mittwoch Memes hinzugefügt.")
+                    logging.info(
+                        f"{ctx.author} has added a wednesday meme.")
+                    RefreshMemes()
+                else:
+                    pass
+        else:
+            if os.path.exists(f"memes/{Message.author}") == False:
+                os.mkdir(f"memes/{Message.author}")
+                NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(Message.attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
+                        logging.info(
+                            f"{ctx.author} has collected a meme.")
+                        RefreshMemes()
+                    else:
+                        pass
 
     @commands.Cog.listener("on_message")
     @commands.check(_is_nouwuchannel)
@@ -323,15 +379,14 @@ class Fun(commands.Cog, name="Schabernack"):
         if isinstance(message.channel, discord.channel.DMChannel):
             pass
         else:
-            if message.channel.category_id != 539547423782207488 and message.channel.id not in [539549544585756693, 539546796939149334]:
-                if message.author == bot.user:
-                    return
-                if random.randint(0, 75) == 1:
-                    LastMessageContent = message.content
-                    flags = uwuify.SMILEY | uwuify.YU
-                    await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
-                    logging.info(
-                        f"The message [{LastMessageContent}] was UwUed.")
+            if message.author == bot.user:
+                return
+            if random.randint(0, 75) == 1:
+                LastMessageContent = message.content
+                flags = uwuify.SMILEY | uwuify.YU
+                await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
+                logging.info(
+                    f"The message [{LastMessageContent}] was UwUed.")
 
     @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -363,8 +418,26 @@ class Fun(commands.Cog, name="Schabernack"):
     @_hansworks.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
     async def _show_hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
-        HansTasksString = "\n".join(HansTasks['Settings']['HansTask']['Tasks'])
-        await ctx.send(f"Hans hat folgende Tasks:\n```{HansTasksString}```")
+        HansOutputString = ""
+        HansOutputLength = 0
+        await ctx.send(f"Hans hat folgende Tasks:\n")
+        for HansTaskEntry in HansTasks['Settings']['HansTask']['Tasks']:
+            HansOutputLength += len(HansTaskEntry)
+            if HansOutputLength > 1994:
+                await ctx.send(f"```{HansOutputString}```")
+                HansOutputString = ""
+                HansOutputLength = 0
+            else:
+                HansOutputString += HansTaskEntry + "\n"
+                HansOutputLength = HansOutputLength + len(HansTaskEntry)
+        await ctx.send(f"```{HansOutputString}```")
+
+    @_hansworks.command(name="num", aliases=["Number", "count", "Count"], brief="Zeigt, wie beschäftigt Hans ist")
+    async def _count_hansworks(self, ctx):
+        HansTasks = _read_json('Settings.json')
+        HansTaskCount = len(HansTasks['Settings']['HansTask']['Tasks'])
+        await ctx.send(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
+        logging.info(f"{ctx.author} wanted to know how busy hans is.")
 
     @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -434,9 +507,25 @@ class Fun(commands.Cog, name="Schabernack"):
     @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt alle Doto-Jokes")
     async def _show_dotojokes(self, ctx):
         DotoJokesJSON = _read_json('Settings.json')
-        DotoJokesString = "\n\n".join(
-            DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
-        await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n```{DotoJokesString}```")
+        DotoOutputString = ""
+        DotoOutputLength = 0
+        await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n")
+        for DotoTaskEntry in DotoJokesJSON['Settings']['DotoJokes']['Jokes']:
+            DotoOutputLength += len(DotoTaskEntry)
+            if DotoOutputLength > 1994:
+                await ctx.send(f"```{DotoOutputString}```")
+                DotoOutputString = ""
+                DotoOutputLength = 0
+            else:
+                DotoOutputString += DotoTaskEntry + "\n\n"
+                DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
+        await ctx.send(f"```{DotoOutputString}```")
+
+    @_dotojokes.command(name="count", aliases=["num", "Number", "Count"], brief="Wie viele Gags hat Doto nochmal gerissen?")
+    async def _count_dotojokes(self, ctx):
+        DotoJokesJSON = _read_json('Settings.json')
+        DotoJokesCount = len(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+        await ctx.send(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
 
     @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
     @commands.cooldown(1, 10, commands.BucketType.user)

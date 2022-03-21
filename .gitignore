@@ -3,6 +3,7 @@
 !cogs
 !cogs/ddc.py
 !cogs/gdq.py
+!cogs/raffle.py
 !logs/
 !TOKEN_example.json
 !Readme.md
