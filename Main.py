@@ -412,7 +412,7 @@ class Fun(commands.Cog, name="Schabernack"):
         HansTasks = _read_json('Settings.json')
         HansTasks['Settings']['HansTask']['Tasks'].append(task)
         _write_json('Settings.json', HansTasks)
-        await ctx.send(f"Der Task {task} wurde Hans hinzugefügt.")
+        await ctx.send(f"Der Task '{task}' wurde Hans hinzugefügt.")
 
     @_hansworks.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
     async def _show_hansworks(self, ctx):
@@ -1317,7 +1317,7 @@ async def GetFreeEpicGames():
         if JSONFromEpicStore:
             for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
                 LaunchingToday = parser.parse(FreeGame['effectiveDate'])
-                if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != [] and FreeGame['promotions']['upcomingPromotionalOffers'] != [] and LaunchingToday.date() <= datetime.now().date():
+                if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != [] and FreeGame['promotions']['upcomingPromotionalOffers'] == [] and FreeGame['price']['totalPrice']['discountPrice'] == 0 and LaunchingToday.date() <= datetime.now().date():
                     offers = FreeGame['promotions']['promotionalOffers']
                     for offer in offers:
 
