@@ -360,22 +360,23 @@ class Fun(commands.Cog, name="Schabernack"):
         else:
             if os.path.exists(f"memes/{Message.author}") == False:
                 os.mkdir(f"memes/{Message.author}")
-                NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
-                NumberOfFiles = len(NumberOfMemes)
-                for index, meme in enumerate(Message.attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                        await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
-                        await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
-                        logging.info(
-                            f"{ctx.author} has collected a meme.")
-                        RefreshMemes()
-                    else:
-                        pass
+            NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
+            NumberOfFiles = len(NumberOfMemes)
+            for index, meme in enumerate(Message.attachments):
+                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
+                    await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
+                    logging.info(
+                        f"{ctx.author} has collected a meme.")
+                    RefreshMemes()
+                else:
+                    pass
 
     @commands.Cog.listener("on_message")
-    @commands.check(_is_nouwuchannel)
     async def _uwumsg(self, message):
         if isinstance(message.channel, discord.channel.DMChannel):
+            pass
+        elif message.channel.category_id != 539547423782207488 and message.channel.id not in [539549544585756693, 539546796939149334]:
             pass
         else:
             if message.author == bot.user:
