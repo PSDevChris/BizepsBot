@@ -136,6 +136,7 @@ class Counter(commands.Cog, name="Counter"):
         return _is_banned(ctx)
 
     @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Erhöht den Pun Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _puncounter(self, ctx):
         data = _read_json('Settings.json')
         data['Settings']['Counter']['Puns'] = data['Settings']['Counter']['Puns'] + 1
@@ -144,11 +145,13 @@ class Counter(commands.Cog, name="Counter"):
         await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
 
     @_puncounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Puncount")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_puncounter(self, ctx):
         data = _read_json('Settings.json')
         await ctx.send(f"Bereits {data['Settings']['Counter']['Puns']} Gagfeuerwerke wurden gezündet!")
 
     @commands.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True, brief="Erhöht Hasssprech Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _mobbingcounter(self, ctx):
         data = _read_json('Settings.json')
         data['Settings']['Counter']['Mobbing'] = int(
@@ -158,11 +161,13 @@ class Counter(commands.Cog, name="Counter"):
         await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
 
     @_mobbingcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Hasssprech Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_mobbingcounter(self, ctx):
         data = _read_json('Settings.json')
         await ctx.send(f"Auf dem Discord wurde bereits {data['Settings']['Counter']['Mobbing']} Mal Hasssprech betrieben! Pfui!")
 
     @commands.group(name="leak", aliases=["Leak"], invoke_without_command=True, brief="Erhöht den Leak Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _leakcounter(self, ctx):
         data = _read_json('Settings.json')
         data['Settings']['Counter']['Leak'] = int(
@@ -172,11 +177,13 @@ class Counter(commands.Cog, name="Counter"):
         await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
 
     @_leakcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Leak Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_leakcounter(self, ctx):
         data = _read_json('Settings.json')
         await ctx.send(f"Bisher wurden {data['Settings']['Counter']['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
 
     @commands.group(name="salz", aliases=["Salz"], invoke_without_command=True, brief="Erhöht den Salz Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _salzcounter(self, ctx):
         data = _read_json('Settings.json')
         data['Settings']['Counter']['Salz'] = int(
@@ -186,6 +193,7 @@ class Counter(commands.Cog, name="Counter"):
         await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
 
     @_salzcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Salz Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_salzcounter(self, ctx):
         data = _read_json('Settings.json')
         await ctx.send(f"Bisher war es schon {data['Settings']['Counter']['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
@@ -201,20 +209,23 @@ class Counter(commands.Cog, name="Counter"):
         await ctx.send(f"Schnenko hat dieses Jahr bereits für {LieferandoNumber}€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!")
 
     @_schnenkorder.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt Schnenkos Bestellfreudigkeit in Euro")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_schnenkcounter(self, ctx):
         data = _read_json('Settings.json')
         await ctx.send(f"Schnenko hat dieses Jahr bereits {data['Settings']['Counter']['Lieferando']}€ in Lieferando investiert. Ist das der neue Bitcoin?!")
 
     @commands.group(name="Pipi", aliases=["pipi"], invoke_without_command=True, brief="Erhöht den Pipi Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _pipicounter(self, ctx):
         data = _read_json('Settings.json')
         data['Settings']['Counter']['Pipi'] = int(
             data['Settings']['Counter']['Pipi']) + 1
         _write_json('Settings.json', data)
         PipiNumber = data['Settings']['Counter']['Pipi']
-        await ctx.send(f"Dotas Babyblase hat ihn schon {PipiNumber} auf das stille Örtchen getrieben!")
+        await ctx.send(f"Dotas Babyblase hat ihn schon {PipiNumber} Mal auf das stille Örtchen getrieben!")
 
     @_pipicounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Pipi Counter")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_pipicounter(self, ctx):
         data = _read_json('Settings.json')
         await ctx.send(f"Bisher war Dota schon {data['Settings']['Counter']['Pipi']} Mal auf dem stillen Örtchen!")
@@ -313,64 +324,71 @@ class Fun(commands.Cog, name="Schabernack"):
                 logging.info(f"{ctx.author} wanted a random meme.")
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
+    @commands.cooldown(2, 180, commands.BucketType.user)
     async def _addmeme(self, ctx):
         LastMessages = await ctx.message.channel.history(limit=2).flatten()
         LastMessages.reverse()
-        if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
-            NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
-            NumberOfFiles = len(NumberOfMemes)
-            for index, meme in enumerate(LastMessages[0].attachments):
-                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                    await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
-                    await ctx.send("Mittwoch Memes hinzugefügt.")
-                    logging.info(
-                        f"{ctx.author} has added a wednesday meme.")
-                    RefreshMemes()
-                else:
-                    pass
-        else:
-            if os.path.exists(f"memes/{LastMessages[0].author}") == False:
-                os.mkdir(f"memes/{LastMessages[0].author}")
-            NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
-            NumberOfFiles = len(NumberOfMemes)
-            for index, meme in enumerate(LastMessages[0].attachments):
-                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                    await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
-                    await ctx.send("Memes hinzugefügt.")
-                    logging.info(
-                        f"{ctx.author} has added a meme.")
-                    RefreshMemes()
-                else:
-                    pass
+        if LastMessages.author != bot.user:
+            if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
+                NumberOfMemes = next(
+                    os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(LastMessages[0].attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Mittwoch Memes hinzugefügt.")
+                        logging.info(
+                            f"{ctx.author} has added a wednesday meme.")
+                        RefreshMemes()
+                    else:
+                        pass
+            else:
+                if os.path.exists(f"memes/{LastMessages[0].author}") == False:
+                    os.mkdir(f"memes/{LastMessages[0].author}")
+                NumberOfMemes = next(
+                    os.walk(f"memes/{LastMessages[0].author}"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(LastMessages[0].attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Memes hinzugefügt.")
+                        logging.info(
+                            f"{ctx.author} has added a meme.")
+                        RefreshMemes()
+                    else:
+                        pass
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
+    @commands.cooldown(2, 180, commands.BucketType.user)
     async def _collmeme(self, ctx, Message: commands.MessageConverter):
-        if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
-            NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
-            NumberOfFiles = len(NumberOfMemes)
-            for index, meme in enumerate(Message.attachments):
-                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                    await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
-                    await ctx.send("Mittwoch Memes hinzugefügt.")
-                    logging.info(
-                        f"{ctx.author} has added a wednesday meme.")
-                    RefreshMemes()
-                else:
-                    pass
-        else:
-            if os.path.exists(f"memes/{Message.author}") == False:
-                os.mkdir(f"memes/{Message.author}")
-            NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
-            NumberOfFiles = len(NumberOfMemes)
-            for index, meme in enumerate(Message.attachments):
-                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                    await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
-                    await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
-                    logging.info(
-                        f"{ctx.author} has collected a meme.")
-                    RefreshMemes()
-                else:
-                    pass
+        if Message.author != bot.user:
+            if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
+                NumberOfMemes = next(
+                    os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(Message.attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Mittwoch Memes hinzugefügt.")
+                        logging.info(
+                            f"{ctx.author} has added a wednesday meme.")
+                        RefreshMemes()
+                    else:
+                        pass
+            else:
+                if os.path.exists(f"memes/{Message.author}") == False:
+                    os.mkdir(f"memes/{Message.author}")
+                NumberOfMemes = next(os.walk(f"memes/{Message.author}"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(Message.attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
+                        logging.info(
+                            f"{ctx.author} has collected a meme.")
+                        RefreshMemes()
+                    else:
+                        pass
 
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
@@ -409,6 +427,7 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"Hans muss {HansTask}...")
 
     @_hansworks.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _add_hansworks(self, ctx, task):
         HansTasks = _read_json('Settings.json')
         HansTasks['Settings']['HansTask']['Tasks'].append(task)
@@ -416,6 +435,7 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"Der Task '{task}' wurde Hans hinzugefügt.")
 
     @_hansworks.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
+    @commands.cooldown(1, 180, commands.BucketType.user)
     async def _show_hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
         HansOutputString = ""
@@ -433,6 +453,7 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"```{HansOutputString}```")
 
     @_hansworks.command(name="num", aliases=["Number", "count", "Count"], brief="Zeigt, wie beschäftigt Hans ist")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _count_hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
         HansTaskCount = len(HansTasks['Settings']['HansTask']['Tasks'])
