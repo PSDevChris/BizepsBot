@@ -104,12 +104,17 @@ def _is_gamechannel(ctx):
         return ctx.message.channel.category_id == 539553136222666792
 
 
-def _is_banned(ctx: commands.context.Context):
-    BannedUsers = _read_json('Settings.json')
-    if ctx.author in BannedUsers['Settings']['BannedUsers']:
+def _get_banned_users():
+    global BannedUsers
+    BannedUsers = _read_json('Settings.json')['Settings']['BannedUsers']
+    return BannedUsers
+
+
+def _is_banned(ctx: commands.context.Context, BannedUsers):
+    if ctx.author in BannedUsers:
         logging.info(
             f"User {ctx.author} wanted to use a command but is banned.")
-    return ctx.author not in BannedUsers['Settings']['BannedUsers']
+    return str(ctx.author) not in BannedUsers
 
 
 def _is_zuggi(ctx):
@@ -133,7 +138,7 @@ class Counter(commands.Cog, name="Counter"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return _is_banned(ctx, BannedUsers)
 
     @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Erhöht den Pun Counter")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -245,7 +250,7 @@ class Fun(commands.Cog, name="Schabernack"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return _is_banned(ctx, BannedUsers)
 
     @commands.command(name="Pub", aliases=["pub"], brief="Typos...")
     async def _pubtypo(self, ctx):
@@ -631,7 +636,7 @@ class Corona(commands.Cog, name="Corona"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return _is_banned(ctx, BannedUsers)
 
     @commands.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"], brief="Gibt aktuelle Coronazahlen aus")
     async def _coronazahlen(self, ctx):
@@ -665,7 +670,7 @@ class Meetings(commands.Cog, name="Meetings"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return _is_banned(ctx, BannedUsers)
 
     @commands.command(name="game", aliases=["Game"], brief="Startet eine Verabredung")
     @commands.check(_is_gamechannel)
@@ -865,7 +870,7 @@ class Games(commands.Cog, name="Games"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return _is_banned(ctx, BannedUsers)
 
     @commands.command(name="ESAGame", aliases=["esagame"], brief="Gibt das aktuelle ESA Game aus")
     async def _esagame(self, ctx):
@@ -973,7 +978,7 @@ class Administration(commands.Cog, name="Administration"):
         self.bot = bot
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return _is_banned(ctx, BannedUsers)
 
     @commands.command(name="mcreboot", aliases=["MCReboot"], brief="Rebootet den MC Server")
     @commands.cooldown(1, 7200, commands.BucketType.user)
@@ -1105,6 +1110,7 @@ class Administration(commands.Cog, name="Administration"):
             _write_json('Settings.json', BannedUserJSON)
             await ctx.send(f"User {UserString} wurde für 24 Stunden für Befehle gebannt.")
             logging.info(f"User {UserString} was banned from using commands.")
+            _get_banned_users()
         else:
             await ctx.send("Dieser User ist bereits gebannt.")
 
@@ -1119,6 +1125,7 @@ class Administration(commands.Cog, name="Administration"):
             _write_json('Settings.json', BannedUserJSON)
             await ctx.send(f"Der User {UserString} wurde entbannt.")
             logging.info(f"User {UserString} was unbanned.")
+            _get_banned_users()
         else:
             ctx.send(f"Der Benutzer {UserString} ist nicht gebannt.")
 
@@ -1449,6 +1456,7 @@ async def on_ready():
         GetFreeEpicGames.start()
     RefreshMemes()
     RefreshJokes()
+    _get_banned_users()
 
 
 @bot.event
@@ -1459,7 +1467,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    if(_is_banned(message)):
+    if(_is_banned(message, BannedUsers)):
         # This line needs to be added so the commands are actually processed
         await bot.process_commands(message)
 
