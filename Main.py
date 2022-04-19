@@ -313,64 +313,68 @@ class Fun(commands.Cog, name="Schabernack"):
                 logging.info(f"{ctx.author} wanted a random meme.")
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
+    @commands.cooldown(2, 180, commands.BucketType.user)
     async def _addmeme(self, ctx):
         LastMessages = await ctx.message.channel.history(limit=2).flatten()
         LastMessages.reverse()
-        if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
-            NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
-            NumberOfFiles = len(NumberOfMemes)
-            for index, meme in enumerate(LastMessages[0].attachments):
-                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                    await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
-                    await ctx.send("Mittwoch Memes hinzugefügt.")
-                    logging.info(
-                        f"{ctx.author} has added a wednesday meme.")
-                    RefreshMemes()
-                else:
-                    pass
-        else:
-            if os.path.exists(f"memes/{LastMessages[0].author}") == False:
-                os.mkdir(f"memes/{LastMessages[0].author}")
-            NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
-            NumberOfFiles = len(NumberOfMemes)
-            for index, meme in enumerate(LastMessages[0].attachments):
-                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                    await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
-                    await ctx.send("Memes hinzugefügt.")
-                    logging.info(
-                        f"{ctx.author} has added a meme.")
-                    RefreshMemes()
-                else:
-                    pass
+        if LastMessages.author != bot.user:
+            if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
+                NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(LastMessages[0].attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Mittwoch Memes hinzugefügt.")
+                        logging.info(
+                            f"{ctx.author} has added a wednesday meme.")
+                        RefreshMemes()
+                    else:
+                        pass
+            else:
+                if os.path.exists(f"memes/{LastMessages[0].author}") == False:
+                    os.mkdir(f"memes/{LastMessages[0].author}")
+                NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(LastMessages[0].attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Memes hinzugefügt.")
+                        logging.info(
+                            f"{ctx.author} has added a meme.")
+                        RefreshMemes()
+                    else:
+                        pass
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
+    @commands.cooldown(2, 180, commands.BucketType.user)
     async def _collmeme(self, ctx, Message: commands.MessageConverter):
-        if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
-            NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
-            NumberOfFiles = len(NumberOfMemes)
-            for index, meme in enumerate(Message.attachments):
-                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                    await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
-                    await ctx.send("Mittwoch Memes hinzugefügt.")
-                    logging.info(
-                        f"{ctx.author} has added a wednesday meme.")
-                    RefreshMemes()
-                else:
-                    pass
-        else:
-            if os.path.exists(f"memes/{Message.author}") == False:
-                os.mkdir(f"memes/{Message.author}")
-            NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
-            NumberOfFiles = len(NumberOfMemes)
-            for index, meme in enumerate(Message.attachments):
-                if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                    await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
-                    await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
-                    logging.info(
-                        f"{ctx.author} has collected a meme.")
-                    RefreshMemes()
-                else:
-                    pass
+        if Message.author != bot.user:
+            if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
+                NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(Message.attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Mittwoch Memes hinzugefügt.")
+                        logging.info(
+                            f"{ctx.author} has added a wednesday meme.")
+                        RefreshMemes()
+                    else:
+                        pass
+            else:
+                if os.path.exists(f"memes/{Message.author}") == False:
+                    os.mkdir(f"memes/{Message.author}")
+                NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
+                NumberOfFiles = len(NumberOfMemes)
+                for index, meme in enumerate(Message.attachments):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                        await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
+                        await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
+                        logging.info(
+                            f"{ctx.author} has collected a meme.")
+                        RefreshMemes()
+                    else:
+                        pass
 
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
@@ -409,6 +413,7 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"Hans muss {HansTask}...")
 
     @_hansworks.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _add_hansworks(self, ctx, task):
         HansTasks = _read_json('Settings.json')
         HansTasks['Settings']['HansTask']['Tasks'].append(task)
@@ -416,6 +421,7 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"Der Task '{task}' wurde Hans hinzugefügt.")
 
     @_hansworks.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
+    @commands.cooldown(1, 180, commands.BucketType.user)
     async def _show_hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
         HansOutputString = ""
@@ -433,6 +439,7 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"```{HansOutputString}```")
 
     @_hansworks.command(name="num", aliases=["Number", "count", "Count"], brief="Zeigt, wie beschäftigt Hans ist")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _count_hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
         HansTaskCount = len(HansTasks['Settings']['HansTask']['Tasks'])
