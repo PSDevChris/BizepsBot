@@ -319,7 +319,8 @@ class Fun(commands.Cog, name="Schabernack"):
         LastMessages.reverse()
         if LastMessages.author != bot.user:
             if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
-                NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+                NumberOfMemes = next(
+                    os.walk(f"memes/Mittwoch meine Kerle#"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(LastMessages[0].attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
@@ -333,7 +334,8 @@ class Fun(commands.Cog, name="Schabernack"):
             else:
                 if os.path.exists(f"memes/{LastMessages[0].author}") == False:
                     os.mkdir(f"memes/{LastMessages[0].author}")
-                NumberOfMemes = next(os.walk(f"memes/{LastMessages[0].author}"))[2]
+                NumberOfMemes = next(
+                    os.walk(f"memes/{LastMessages[0].author}"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(LastMessages[0].attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
@@ -350,7 +352,8 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _collmeme(self, ctx, Message: commands.MessageConverter):
         if Message.author != bot.user:
             if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
-                NumberOfMemes = next(os.walk(f"memes/Mittwoch meine Kerle#"))[2]
+                NumberOfMemes = next(
+                    os.walk(f"memes/Mittwoch meine Kerle#"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(Message.attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
@@ -364,7 +367,7 @@ class Fun(commands.Cog, name="Schabernack"):
             else:
                 if os.path.exists(f"memes/{Message.author}") == False:
                     os.mkdir(f"memes/{Message.author}")
-                NumberOfMemes = next(os.walk(f"memes/{ctx.author}"))[2]
+                NumberOfMemes = next(os.walk(f"memes/{Message.author}"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(Message.attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
