@@ -3,6 +3,7 @@ from Main import _is_banned
 from Main import _read_json
 from Main import _write_json
 from Main import _is_admin
+from Main import _get_banned_users
 import random
 
 ### Checks ###
@@ -17,9 +18,10 @@ class Raffle(commands.Cog, name="Raffle"):
 
     def __init__(self, bot):
         self.bot = bot
+        self.BannedUsers = _get_banned_users()
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return _is_banned(ctx, self.BannedUsers)
 
     # Events
     @commands.Cog.listener()
