@@ -55,7 +55,7 @@ class GDQ(commands.Cog):
         for Entry in GDQ_DATAFRAME:
             for index in range(0, len(Entry["Run"]), 2):
                 runEntry = Entry["Run"]
-                timeEntry = Entry["Time & Length"]
+                timeEntry = Entry["Time & Length"].fillna("0:00:00")
                 GameTime = parse(timeEntry[index])
                 GameDuration = datetime.strptime(
                     timeEntry[index+1], "%H:%M:%S")
