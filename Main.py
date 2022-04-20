@@ -333,7 +333,7 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _addmeme(self, ctx):
         LastMessages = await ctx.message.channel.history(limit=2).flatten()
         LastMessages.reverse()
-        if LastMessages.author != bot.user:
+        if LastMessages[0].author != bot.user:
             if ctx.invoked_parents[0] in ['Mittwoch', 'mittwoch']:
                 NumberOfMemes = next(
                     os.walk(f"memes/Mittwoch meine Kerle#"))[2]
