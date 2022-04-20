@@ -448,13 +448,12 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"Hans hat folgende Tasks:\n")
         for HansTaskEntry in HansTasks['Settings']['HansTask']['Tasks']:
             HansOutputLength += len(HansTaskEntry)
-            if HansOutputLength > 1994:
+            if HansOutputLength >= 1994:
                 await ctx.send(f"```{HansOutputString}```")
                 HansOutputString = ""
                 HansOutputLength = 0
-            else:
-                HansOutputString += HansTaskEntry + "\n"
-                HansOutputLength = HansOutputLength + len(HansTaskEntry)
+            HansOutputString += HansTaskEntry + "\n"
+            HansOutputLength = HansOutputLength + len(HansTaskEntry)
         await ctx.send(f"```{HansOutputString}```")
 
     @_hansworks.command(name="num", aliases=["Number", "count", "Count"], brief="Zeigt, wie beschäftigt Hans ist")
@@ -538,13 +537,12 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n")
         for DotoTaskEntry in DotoJokesJSON['Settings']['DotoJokes']['Jokes']:
             DotoOutputLength += len(DotoTaskEntry)
-            if DotoOutputLength > 1994:
+            if DotoOutputLength >= 1994:
                 await ctx.send(f"```{DotoOutputString}```")
                 DotoOutputString = ""
                 DotoOutputLength = 0
-            else:
-                DotoOutputString += DotoTaskEntry + "\n\n"
-                DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
+            DotoOutputString += DotoTaskEntry + "\n\n"
+            DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
         await ctx.send(f"```{DotoOutputString}```")
 
     @_dotojokes.command(name="count", aliases=["num", "Number", "Count"], brief="Wie viele Gags hat Doto nochmal gerissen?")
