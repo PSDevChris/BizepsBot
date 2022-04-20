@@ -111,7 +111,7 @@ def _get_banned_users():
 
 
 def _is_banned(ctx: commands.context.Context, BannedUsers):
-    if ctx.author in BannedUsers:
+    if str(ctx.author) in BannedUsers:
         logging.info(
             f"User {ctx.author} wanted to use a command but is banned.")
     return str(ctx.author) not in BannedUsers

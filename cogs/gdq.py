@@ -4,14 +4,17 @@ import requests
 import pandas as pd
 from dateutil.parser import parse
 from Main import _is_banned
+from Main import _get_banned_users
+
 
 class GDQ(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.BannedUsers = _get_banned_users()
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return _is_banned(ctx, self.BannedUsers)
 
     # Events
     @commands.Cog.listener()
