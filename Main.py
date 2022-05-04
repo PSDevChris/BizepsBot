@@ -340,7 +340,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(LastMessages[0].attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                         await ctx.send("Mittwoch Memes hinzugefügt.")
                         logging.info(
                             f"{ctx.author} has added a wednesday meme.")
@@ -355,7 +355,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(LastMessages[0].attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                        await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + index}_{meme.filename}")
+                        await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                         await ctx.send("Memes hinzugefügt.")
                         logging.info(
                             f"{ctx.author} has added a meme.")
@@ -373,7 +373,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(Message.attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + index}_{meme.filename}")
+                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                         await ctx.send("Mittwoch Memes hinzugefügt.")
                         logging.info(
                             f"{ctx.author} has added a wednesday meme.")
@@ -387,7 +387,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(Message.attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
-                        await meme.save(f"memes/{Message.author}/{NumberOfFiles + index}_{meme.filename}")
+                        await meme.save(f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                         await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
                         logging.info(
                             f"{ctx.author} has collected a meme.")

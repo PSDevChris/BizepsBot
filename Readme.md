@@ -30,6 +30,6 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 + ID Checks auf Rollen anpassen 
 + Add free steam games
 + Hinzufügen von Memes auch per URL
-+ Settingsdatei global laden und bei Änderung nachladen?
++ Settingsdatei global laden und bei Änderung nachladen
 
 
