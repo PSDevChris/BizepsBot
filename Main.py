@@ -563,7 +563,7 @@ class Fun(commands.Cog, name="Schabernack"):
         TVTableCleaned = TVTable.drop(index=[19, 20]).iloc[:, 0:7]
         TVTableCleaned = TVTableCleaned.rename(columns={"€": "EG"})
         TVTableCleaned = TVTableCleaned.sort_index(ascending=False)
-        TVTableCleaned = TVTableCleaned["Entgelttabelle TVÖD VKA 2021"]
+        TVTableCleaned = TVTableCleaned[f"Entgelttabelle TVÖD VKA {CurrentYear}"]
         TVTableCleaned["EG"] = TVTableCleaned["EG"].str.replace(u'\xa0', u' ')
         try:
             TVEGRow = TVTableCleaned[TVTableCleaned["EG"]
