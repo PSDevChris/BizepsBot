@@ -425,19 +425,22 @@ class Fun(commands.Cog, name="Schabernack"):
             f"{ctx.message.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
 
     @commands.group(name="Hans", invoke_without_command=True, aliases=["hans"], brief="Er muss arbeiten...?")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     async def _hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
         HansTask = random.choice(HansTasks['Settings']['HansTask']['Tasks'])
         await ctx.send(f"Hans muss {HansTask}...")
 
     @_hansworks.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 20, commands.BucketType.user)
     async def _add_hansworks(self, ctx, task):
-        HansTasks = _read_json('Settings.json')
-        HansTasks['Settings']['HansTask']['Tasks'].append(task)
-        _write_json('Settings.json', HansTasks)
-        await ctx.send(f"Der Task '{task}' wurde Hans hinzugefügt.")
+        if "```" not in  task:
+            HansTasks = _read_json('Settings.json')
+            HansTasks['Settings']['HansTask']['Tasks'].append(task)
+            _write_json('Settings.json', HansTasks)
+            await ctx.send(f"Der Task '{task}' wurde Hans hinzugefügt.")
+        else:
+            await ctx.send("Das füge ich nicht hinzu.")
 
     @_hansworks.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
     @commands.cooldown(1, 180, commands.BucketType.user)
@@ -465,7 +468,7 @@ class Fun(commands.Cog, name="Schabernack"):
         logging.info(f"{ctx.author} wanted to know how busy hans is.")
 
     @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def _schnabiuwu(self, ctx):
         AnimeElement = requests.get('https://api.waifu.pics/sfw/waifu')
         if AnimeElement.status_code == 200:
@@ -476,7 +479,7 @@ class Fun(commands.Cog, name="Schabernack"):
             await ctx.send("API ist gerade nicht erreichbar TwT")
 
     @commands.command(name="Zucker", aliases=["zucker", "Zuggi", "zuggi"], brief="Zuckersüß")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def _zuggishow(self, ctx):
         RandomIndex = random.randrange(0, 990, 30)
         RecipURL = requests.get(
@@ -493,12 +496,12 @@ class Fun(commands.Cog, name="Schabernack"):
             await ctx.send("Kartoffel API ist leider down T_T")
 
     @commands.command(name="Josch", aliases=["josch", "fullstack"], brief="Entwickler...")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def _blamedevs(self, ctx):
         await ctx.send(file=discord.File('memes/josch700#3680/josch.png'))
 
     @commands.command(name="Feiertag", aliases=["feiertag", "holiday", "Holiday"], brief="Zeigt den nächsten Feiertag an")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def _nextholiday(self, ctx):
         NextHolidayElement = requests.get(
             f'https://date.nager.at/api/v3/nextpublicholidays/DE')
