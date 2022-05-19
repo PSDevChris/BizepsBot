@@ -235,6 +235,15 @@ class Counter(commands.Cog, name="Counter"):
         data = _read_json('Settings.json')
         await ctx.send(f"Bisher war Dota schon {data['Settings']['Counter']['Pipi']} Mal auf dem stillen Örtchen!")
 
+    @commands.command(name="Dedge", aliases=["dedge", "splatoon3", "Splatoon3", "Splatoon3FuerDedge", "splatoon3fuerdedge"], brief="Er wird mitspielen!")
+    async def _sp3dedge(self, ctx):
+        StreamLabsURL = f"https://streamlabs.com/api/v5/donation-goal/data/?token={STREAMLABS_TOKEN}"
+        StreamLabsRequest = requests.get(StreamLabsURL)
+
+        if StreamLabsRequest.status_code == 200:
+            StreamLabsData = json.loads(StreamLabsRequest.content)['data']
+            await ctx.send(f"Es wurden bereits {StreamLabsData['amount']['current']}€ von {StreamLabsData['amount']['target']}€ gesammelt, damit Dedge mit uns Splatoon 3 spielt!")
+
     @_schnenkorder.error
     async def _schnenkorder_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
@@ -434,7 +443,7 @@ class Fun(commands.Cog, name="Schabernack"):
     @_hansworks.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def _add_hansworks(self, ctx, task):
-        if "```" not in  task:
+        if "```" not in task:
             HansTasks = _read_json('Settings.json')
             HansTasks['Settings']['HansTask']['Tasks'].append(task)
             _write_json('Settings.json', HansTasks)
@@ -1493,6 +1502,7 @@ if __name__ == '__main__':
         TOKEN = TOKENDATA['DISCORD_TOKEN']
         TWITCH_CLIENT_ID = TOKENDATA['TWITCH_CLIENT_ID']
         TWITCH_CLIENT_SECRET = TOKENDATA['TWITCH_CLIENT_SECRET']
+        STREAMLABS_TOKEN = TOKENDATA['STREAMLABS_TOKEN']
         if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys() and datetime.timestamp(datetime.now()) < TOKENDATA['TWITCH_TOKEN_EXPIRES']:
             TWITCH_TOKEN = TOKENDATA['TWITCH_TOKEN']
             TWITCH_TOKEN_EXPIRES = TOKENDATA['TWITCH_TOKEN_EXPIRES']
