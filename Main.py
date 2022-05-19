@@ -1357,69 +1357,34 @@ async def GetFreeEpicGames():
         if JSONFromEpicStore:
             for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
                 if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
-                    if FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate']:
-                        PromotionalStartDate = parser.parse(FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
-                    else:
-                        PromotionalStartDate = datetime.date(2099, 12, 31)
-                LaunchingToday = parser.parse(FreeGame['effectiveDate'])
-                if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.now().date() or PromotionalStartDate.date() <= datetime.now().date()):
-                    offers = FreeGame['promotions']['promotionalOffers']
-                    for offer in offers:
+                    PromotionalStartDate = parser.parse(
+                        FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
+                    LaunchingToday = parser.parse(FreeGame['effectiveDate'])
 
-                        FreeGameObject = {
-                            f"{FreeGame['title']}": {
-                                "startDate": offer['promotionalOffers'][0]['startDate'],
-                                "endDate": offer['promotionalOffers'][0]['endDate'],
+                    if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.now().date() or PromotionalStartDate.date() <= datetime.now().date()):
+                        offers = FreeGame['promotions']['promotionalOffers']
+                        for offer in offers:
+
+                            FreeGameObject = {
+                                f"{FreeGame['title']}": {
+                                    "startDate": offer['promotionalOffers'][0]['startDate'],
+                                    "endDate": offer['promotionalOffers'][0]['endDate'],
+                                }
                             }
-                        }
 
-                        try:
+                            try:
 
-                            if not FreeGamesList:
-                                FreeGamesList['Settings']['FreeEpicGames'].update(
-                                    FreeGameObject)
-                                _write_json('Settings.json', FreeGameObject)
-                                EndOfOffer = offer['promotionalOffers'][0]['endDate']
-                                EndDateOfOffer = parser.parse(
-                                    EndOfOffer).date()
-
-                                for index in range(len(FreeGame['keyImages'])):
-                                    if FreeGame['keyImages'][index]['type'] == "Thumbnail":
-                                        EpicImageURL = FreeGame['keyImages'][index]['url']
-                                        EpicImage = requests.get(EpicImageURL)
-                                        break
-                                    else:
-                                        EpicImage = ""
-
-                                if EpicImage != "" and EpicImage.status_code == 200:
-                                    EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
-                                    with open(f'epic/{EpicImagePath}', 'wb') as write_file:
-                                        write_file.write(EpicImage.content)
-                                    if EpicImagePath:
-                                        await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
-                                else:
-                                    await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
-
-                                logging.info(
-                                    f"{FreeGame['title']} was added to the free Epic Games!")
-                            else:
-                                if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
-                                    pass
-                                else:
+                                if not FreeGamesList:
                                     FreeGamesList['Settings']['FreeEpicGames'].update(
                                         FreeGameObject)
-                                    _write_json('Settings.json', FreeGamesList)
+                                    _write_json('Settings.json',
+                                                FreeGameObject)
                                     EndOfOffer = offer['promotionalOffers'][0]['endDate']
                                     EndDateOfOffer = parser.parse(
                                         EndOfOffer).date()
 
                                     for index in range(len(FreeGame['keyImages'])):
                                         if FreeGame['keyImages'][index]['type'] == "Thumbnail":
-                                            EpicImageURL = FreeGame['keyImages'][index]['url']
-                                            EpicImage = requests.get(
-                                                EpicImageURL)
-                                            break
-                                        elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
                                             EpicImageURL = FreeGame['keyImages'][index]['url']
                                             EpicImage = requests.get(
                                                 EpicImageURL)
@@ -1435,14 +1400,52 @@ async def GetFreeEpicGames():
                                             await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
                                     else:
                                         await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
-                                    logging.info(
-                                        f"{FreeGame['title']} was added to free Epic Games!")
 
-                        except json.decoder.JSONDecodeError:
-                            FreeGamesList['Settings']['FreeEpicGames'] = {}
-                            FreeGamesList['Settings']['FreeEpicGames'].update(
-                                FreeGameObject)
-                            _write_json('Settings.json', FreeGamesList)
+                                    logging.info(
+                                        f"{FreeGame['title']} was added to the free Epic Games!")
+                                else:
+                                    if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
+                                        pass
+                                    else:
+                                        FreeGamesList['Settings']['FreeEpicGames'].update(
+                                            FreeGameObject)
+                                        _write_json(
+                                            'Settings.json', FreeGamesList)
+                                        EndOfOffer = offer['promotionalOffers'][0]['endDate']
+                                        EndDateOfOffer = parser.parse(
+                                            EndOfOffer).date()
+
+                                        for index in range(len(FreeGame['keyImages'])):
+                                            if FreeGame['keyImages'][index]['type'] == "Thumbnail":
+                                                EpicImageURL = FreeGame['keyImages'][index]['url']
+                                                EpicImage = requests.get(
+                                                    EpicImageURL)
+                                                break
+                                            elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
+                                                EpicImageURL = FreeGame['keyImages'][index]['url']
+                                                EpicImage = requests.get(
+                                                    EpicImageURL)
+                                                break
+                                            else:
+                                                EpicImage = ""
+
+                                        if EpicImage != "" and EpicImage.status_code == 200:
+                                            EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
+                                            with open(f'epic/{EpicImagePath}', 'wb') as write_file:
+                                                write_file.write(
+                                                    EpicImage.content)
+                                            if EpicImagePath:
+                                                await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
+                                        else:
+                                            await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
+                                        logging.info(
+                                            f"{FreeGame['title']} was added to free Epic Games!")
+
+                            except json.decoder.JSONDecodeError:
+                                FreeGamesList['Settings']['FreeEpicGames'] = {}
+                                FreeGamesList['Settings']['FreeEpicGames'].update(
+                                    FreeGameObject)
+                                _write_json('Settings.json', FreeGamesList)
     else:
         logging.error("Epic Store is not available!")
 
