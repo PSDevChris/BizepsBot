@@ -236,6 +236,7 @@ class Counter(commands.Cog, name="Counter"):
         await ctx.send(f"Bisher war Dota schon {data['Settings']['Counter']['Pipi']} Mal auf dem stillen Örtchen!")
 
     @commands.command(name="Dedge", aliases=["dedge", "splatoon3", "Splatoon3", "Splatoon3FuerDedge", "splatoon3fuerdedge"], brief="Er wird mitspielen!")
+    @commands.cooldown(1, 60, commands.BucketType.user)
     async def _sp3dedge(self, ctx):
         StreamLabsURL = f"https://streamlabs.com/api/v5/donation-goal/data/?token={STREAMLABS_TOKEN}"
         StreamLabsRequest = requests.get(StreamLabsURL)
