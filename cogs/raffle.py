@@ -2,7 +2,6 @@ from discord.ext import commands
 from Main import _is_banned
 from Main import _read_json
 from Main import _write_json
-from Main import _is_admin
 from Main import _get_banned_users
 import random
 
@@ -30,12 +29,12 @@ class Raffle(commands.Cog, name="Raffle"):
 
     # Commands
     @commands.group(name="Raffle", aliases=["raffle"], brief="Startet ein Raffle oder beendet es.")
-    @commands.check(_is_admin)
+    @commands.has_role("Admin")
     async def _raffle(self, ctx):
         pass
 
     @_raffle.command(name="active", aliases=["Active"], brief="Aktiviert das Raffle")
-    @commands.check(_is_admin)
+    @commands.has_role("Admin")
     async def _setactive(self, ctx, activeval: bool):
         activeval = bool(activeval)
         RaffleJSON = _read_json('Settings.json')
@@ -57,7 +56,7 @@ class Raffle(commands.Cog, name="Raffle"):
             _write_json('Settings.json', RaffleJSON)
 
     @_raffle.command(name="price", aliases=["Price"], brief="Setzt den Preis fest")
-    @commands.check(_is_admin)
+    @commands.has_role("Admin")
     async def _setprize(self, ctx, title: str):
         RaffleJSON = _read_json('Settings.json')
         RaffleJSON['Settings']['Raffle']['Title'] = title

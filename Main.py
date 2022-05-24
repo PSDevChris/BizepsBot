@@ -81,20 +81,13 @@ def RefreshJokes():
 
 ### Permission Checks ###
 
-### Prüft ob der Minecraft Superuser ist laut Settings.json Datei ###
-
-
-def _is_mcsu(ctx: commands.context.Context):
-    MCSUs = _read_json('Settings.json')
-    return ctx.author.id in MCSUs['Settings']['ManagementGroups']['MCSUs']
-
 
 def _is_owchannel(ctx):
     return ctx.message.channel.id == 554390037811167363
 
 
 def _is_nouwuchannel(ctx):
-    return ctx.message.channel.category_id != 539547423782207488 and ctx.message.channel.id not in [539549544585756693, 539546796939149334]
+    return ctx.message.channel.category_id != 539547423782207488 and ctx.message.channel.id != 539549544585756693
 
 
 def _is_gamechannel(ctx):
@@ -120,14 +113,6 @@ def _is_banned(ctx: commands.context.Context, BannedUsers):
 def _is_zuggi(ctx):
     return ctx.author.id == 232561052573892608
 
-### Prüft ob der User ein Admin ist laut Settings.json Datei ###
-
-
-def _is_admin(ctx):
-    AdminGroup = _read_json('Settings.json')
-    return ctx.author.id == AdminGroup['Settings']['ManagementGroups']['Admins']
-
-
 ### Commands and Cogs Section ###
 
 
@@ -140,100 +125,67 @@ class Counter(commands.Cog, name="Counter"):
     async def cog_check(self, ctx):
         return _is_banned(ctx, BannedUsers)
 
-    @commands.group(name="pun",  aliases=["Pun"], invoke_without_command=True, brief="Erhöht den Pun Counter")
+    @commands.group(name="pun",  aliases=["Pun", "salz", "Salz", "mobbing", "Mobbing", "Hasssprech", "hasssprech", "Leak", "leak", "Schnenko", "schnenko", "Schnenk", "schnenk", "lieferando", "Lieferando", "Pipi", "pipi"], invoke_without_command=True, brief="Erhöht diverse Counter")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _puncounter(self, ctx):
+    async def _counter(self, ctx):
+        IncNum = 1
+        match (ctx.invoked_with):
+            case ("Pun" | "pun"):
+                InvokedVar = "Puns"
+                ReplyTxt = "Es wurde bereits ###REPLACE### Mal ein Gagfeuerwerk gezündet!"
+            case ("Salz" | "Salz"):
+                InvokedVar = "Salz"
+                ReplyTxt = "Man konnte sich schon ###REPLACE### Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>"
+            case ("Leak" | "leak"):
+                InvokedVar = "Leak"
+                ReplyTxt = "Da hat wohl jemand nicht aufgepasst... Es wurde bereits ###REPLACE### Mal geleakt! Obacht!"
+            case ("Mobbing" | "mobbing" | "Hasssprech" | "hasssprech"):
+                InvokedVar = "Mobbing"
+                ReplyTxt = "Das ist Hasssprech! ###REPLACE### Mal wurde schon Hasssprech betrieben! Pfui!"
+            case ("Pipi" | "pipi"):
+                InvokedVar = "Pipi"
+                ReplyTxt = "Dotas Babyblase hat ihn schon ###REPLACE### Mal auf das stille Örtchen getrieben!"
+            case ("Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando"):
+                InvokedVar = "Lieferando"
+                IncNum = 20
+                ReplyTxt = "Schnenko hat dieses Jahr bereits für ###REPLACE###€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!"
+            case _:
+                await ctx.send("Dieser Counter konnte nicht gefunden werden.")
+                return
+
         data = _read_json('Settings.json')
-        data['Settings']['Counter']['Puns'] = data['Settings']['Counter']['Puns'] + 1
-        PunNumber = data['Settings']['Counter']['Puns']
+        data['Settings']['Counter'][f'{InvokedVar}'] = data['Settings']['Counter'][f'{InvokedVar}'] + IncNum
+        NewResult = data['Settings']['Counter'][f'{InvokedVar}']
         _write_json('Settings.json', data)
-        await ctx.send(f"Es wurde bereits {PunNumber} Mal ein Gagfeuerwerk gezündet!")
+        await ctx.send(ReplyTxt.replace("###REPLACE###", f"{NewResult}"))
 
-    @_puncounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Puncount")
+    @_counter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Counter")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_puncounter(self, ctx):
+    async def _show_counter(self, ctx):
+        match (ctx.invoked_parents[0]):
+            case ("Pun" | "pun"):
+                InvokedVar = "Puns"
+                ReplyTxt = "Es gab bereits ###REPLACE### Gagfeuerwerke im Discord!"
+            case ("Salz" | "Salz"):
+                InvokedVar = "Salz"
+                ReplyTxt = "Bisher wurden ###REPLACE### Salzstreuer geleert!<:salt:826091230156161045>"
+            case ("Leak" | "leak"):
+                InvokedVar = "Leak"
+                ReplyTxt = "Bis dato wurden ###REPLACE### Mal sensible Informationen geleakt! Obacht!"
+            case ("Mobbing" | "mobbing" | "Hasssprech" | "hasssprech"):
+                InvokedVar = "Mobbing"
+                ReplyTxt = "Bereits ###REPLACE### Mal wurde Hasssprech betrieben! Warum so toxisch?"
+            case ("Pipi" | "pipi"):
+                InvokedVar = "Pipi"
+                ReplyTxt = "Doto hat bereits ###REPLACE### Mal den Stream pausiert um das WC aufzusuchen!"
+            case ("Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando"):
+                InvokedVar = "Lieferando"
+                ReplyTxt = "Aktuell hat Schnenko ###REPLACE###€ Umsatz bei Lieferando generiert, Investoren können sich freuen!"
+            case _:
+                await ctx.send("Dieser Counter konnte nicht gefunden werden.")
+                return
         data = _read_json('Settings.json')
-        await ctx.send(f"Bereits {data['Settings']['Counter']['Puns']} Gagfeuerwerke wurden gezündet!")
-
-    @commands.group(name="mobbing",  aliases=["Mobbing", "Hasssprech", "hasssprech"], invoke_without_command=True, brief="Erhöht Hasssprech Counter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _mobbingcounter(self, ctx):
-        data = _read_json('Settings.json')
-        data['Settings']['Counter']['Mobbing'] = int(
-            data['Settings']['Counter']['Mobbing']) + 1
-        _write_json('Settings.json', data)
-        MobbingNumber = data['Settings']['Counter']['Mobbing']
-        await ctx.send(f"Das ist Hasssprech! {MobbingNumber} Mal wurde schon Hasssprech betrieben! Pfui!")
-
-    @_mobbingcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Hasssprech Counter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_mobbingcounter(self, ctx):
-        data = _read_json('Settings.json')
-        await ctx.send(f"Auf dem Discord wurde bereits {data['Settings']['Counter']['Mobbing']} Mal Hasssprech betrieben! Pfui!")
-
-    @commands.group(name="leak", aliases=["Leak"], invoke_without_command=True, brief="Erhöht den Leak Counter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _leakcounter(self, ctx):
-        data = _read_json('Settings.json')
-        data['Settings']['Counter']['Leak'] = int(
-            data['Settings']['Counter']['Leak']) + 1
-        _write_json('Settings.json', data)
-        LeakNumber = data['Settings']['Counter']['Leak']
-        await ctx.send(f"Da hat wohl jemand nicht aufgepasst... Es wurde bereits {LeakNumber} Mal geleakt! Obacht!")
-
-    @_leakcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Leak Counter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_leakcounter(self, ctx):
-        data = _read_json('Settings.json')
-        await ctx.send(f"Bisher wurden {data['Settings']['Counter']['Leak']} Mal kritische Informationen geleakt.<:eyes:825006453936750612>")
-
-    @commands.group(name="salz", aliases=["Salz"], invoke_without_command=True, brief="Erhöht den Salz Counter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _salzcounter(self, ctx):
-        data = _read_json('Settings.json')
-        data['Settings']['Counter']['Salz'] = int(
-            data['Settings']['Counter']['Salz']) + 1
-        _write_json('Settings.json', data)
-        SalzNumber = data['Settings']['Counter']['Salz']
-        await ctx.send(f"Man konnte sich schon {SalzNumber} Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>")
-
-    @_salzcounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Salz Counter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_salzcounter(self, ctx):
-        data = _read_json('Settings.json')
-        await ctx.send(f"Bisher war es schon {data['Settings']['Counter']['Salz']} Mal salzig auf dem Discord!<:salt:826091230156161045>")
-
-    @commands.group(name="Schnenko", aliases=["schnenko", "Schnenk", "schnenk", "lieferando", "Lieferando"], invoke_without_command=True, brief="Wirtschaft dankt!")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _schnenkorder(self, ctx):
-        data = _read_json('Settings.json')
-        data['Settings']['Counter']['Lieferando'] = int(
-            data['Settings']['Counter']['Lieferando']) + 20
-        _write_json('Settings.json', data)
-        LieferandoNumber = data['Settings']['Counter']['Lieferando']
-        await ctx.send(f"Schnenko hat dieses Jahr bereits für {LieferandoNumber}€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!")
-
-    @_schnenkorder.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt Schnenkos Bestellfreudigkeit in Euro")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_schnenkcounter(self, ctx):
-        data = _read_json('Settings.json')
-        await ctx.send(f"Schnenko hat dieses Jahr bereits {data['Settings']['Counter']['Lieferando']}€ in Lieferando investiert. Ist das der neue Bitcoin?!")
-
-    @commands.group(name="Pipi", aliases=["pipi"], invoke_without_command=True, brief="Erhöht den Pipi Counter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _pipicounter(self, ctx):
-        data = _read_json('Settings.json')
-        data['Settings']['Counter']['Pipi'] = int(
-            data['Settings']['Counter']['Pipi']) + 1
-        _write_json('Settings.json', data)
-        PipiNumber = data['Settings']['Counter']['Pipi']
-        await ctx.send(f"Dotas Babyblase hat ihn schon {PipiNumber} Mal auf das stille Örtchen getrieben!")
-
-    @_pipicounter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Pipi Counter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_pipicounter(self, ctx):
-        data = _read_json('Settings.json')
-        await ctx.send(f"Bisher war Dota schon {data['Settings']['Counter']['Pipi']} Mal auf dem stillen Örtchen!")
+        await ctx.send(ReplyTxt.replace("###REPLACE###", f"{data['Settings']['Counter'][f'{InvokedVar}']}"))
 
     @commands.command(name="Dedge", aliases=["dedge", "splatoon3", "Splatoon3", "Splatoon3FuerDedge", "splatoon3fuerdedge"], brief="Er wird mitspielen!")
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -245,12 +197,12 @@ class Counter(commands.Cog, name="Counter"):
             StreamLabsData = json.loads(StreamLabsRequest.content)['data']
             await ctx.send(f"Es wurden bereits {StreamLabsData['amount']['current']}€ von {StreamLabsData['amount']['target']}€ gesammelt, damit Dedge mit uns Splatoon 3 spielt!")
 
-    @_schnenkorder.error
-    async def _schnenkorder_error(self, ctx, error):
+    @_counter.error
+    async def _counter_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
             logging.warning(
-                f"{ctx.author} wanted to raise the schnenkcounter massively!")
+                f"{ctx.author} wanted to raise a counter fast!")
 
 
 class Fun(commands.Cog, name="Schabernack"):
@@ -534,7 +486,7 @@ class Fun(commands.Cog, name="Schabernack"):
         DotoJokes.remove(DotoJoke)
 
     @_dotojokes.command(name="add", aliases=['+', 'Add'], brief="Fügt einen Doto-Joke hinzu")
-    @commands.check(_is_admin)
+    @commands.has_role("Admin")
     async def _add_dotojoke(self, ctx, joke):
         DotoJokesJSON = _read_json('Settings.json')
         DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
@@ -983,7 +935,6 @@ class Administration(commands.Cog, name="Administration"):
     Log:                       Zeigt die neusten 10 Zeilen des Log.
     MC Reboot:                 Startet den MC Server neu.
     """
-    global bot
 
     def __init__(self, bot):
         self.bot = bot
@@ -993,7 +944,7 @@ class Administration(commands.Cog, name="Administration"):
 
     @commands.command(name="mcreboot", aliases=["MCReboot"], brief="Rebootet den MC Server")
     @commands.cooldown(1, 7200, commands.BucketType.user)
-    @commands.check(_is_mcsu)
+    @commands.has_any_role("Der Stack", "Admin")
     async def _mcreboot(self, ctx):
         """
         Rebootet den Minecraft Server per SSH.
@@ -1028,7 +979,7 @@ class Administration(commands.Cog, name="Administration"):
                 "Something went wrong, is the Pi reachable?", exc_info=True)
 
     @commands.group(name="tw", invoke_without_command=False, aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File")
-    @commands.check(_is_admin)
+    @commands.has_role("Admin")
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def _twitchmanagement(self, ctx):
         """
@@ -1075,7 +1026,7 @@ class Administration(commands.Cog, name="Administration"):
                 f"User {Member} could not be removed from twitchlist.", exc_info=True)
 
     @commands.command(name="ext", aliases=["Ext", "Extension", "extension"], brief="Verwaltet Extensions")
-    @commands.check(_is_admin)
+    @commands.has_role("Admin")
     async def _extensions(self, ctx, ChangeArg, extension):
         """
         Verwaltet die externen Cogs.
@@ -1094,7 +1045,7 @@ class Administration(commands.Cog, name="Administration"):
             logging.info(f"Extension {extension} was unloaded.")
 
     @commands.command(name="log", aliases=["Log", "LOG"], brief="Zeigt die neusten Logeinträge des Bots")
-    @commands.check(_is_admin)
+    @commands.has_role("Admin")
     async def _showlog(self, ctx):
         """
         Zeigt die letzten 10 Einträge des Logs.
@@ -1374,11 +1325,13 @@ async def GetFreeEpicGames():
 
                             try:
 
-                                if not FreeGamesList:
+                                if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
+                                    pass
+                                else:
                                     FreeGamesList['Settings']['FreeEpicGames'].update(
                                         FreeGameObject)
-                                    _write_json('Settings.json',
-                                                FreeGameObject)
+                                    _write_json(
+                                        'Settings.json', FreeGamesList)
                                     EndOfOffer = offer['promotionalOffers'][0]['endDate']
                                     EndDateOfOffer = parser.parse(
                                         EndOfOffer).date()
@@ -1389,57 +1342,39 @@ async def GetFreeEpicGames():
                                             EpicImage = requests.get(
                                                 EpicImageURL)
                                             break
+                                        elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
+                                            EpicImageURL = FreeGame['keyImages'][index]['url']
+                                            EpicImage = requests.get(
+                                                EpicImageURL)
+                                            break
                                         else:
                                             EpicImage = ""
+
+                                    ### Build Embed with chosen vars ###
+                                    EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
+                                        0x1), timestamp=datetime.utcnow())
+                                    EpicEmbed.set_thumbnail(
+                                        url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
+                                    EpicEmbed.set_author(
+                                        name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                                    EpicEmbed.add_field(
+                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
+                                    EpicEmbed.add_field(
+                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
+                                    EpicEmbed.set_image(url=f"{EpicImageURL}")
+                                    EpicEmbed.set_footer(text="Bizeps_Bot")
 
                                     if EpicImage != "" and EpicImage.status_code == 200:
                                         EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
                                         with open(f'epic/{EpicImagePath}', 'wb') as write_file:
-                                            write_file.write(EpicImage.content)
+                                            write_file.write(
+                                                EpicImage.content)
                                         if EpicImagePath:
-                                            await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
+                                            await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
                                     else:
-                                        await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
-
+                                        await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
                                     logging.info(
-                                        f"{FreeGame['title']} was added to the free Epic Games!")
-                                else:
-                                    if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
-                                        pass
-                                    else:
-                                        FreeGamesList['Settings']['FreeEpicGames'].update(
-                                            FreeGameObject)
-                                        _write_json(
-                                            'Settings.json', FreeGamesList)
-                                        EndOfOffer = offer['promotionalOffers'][0]['endDate']
-                                        EndDateOfOffer = parser.parse(
-                                            EndOfOffer).date()
-
-                                        for index in range(len(FreeGame['keyImages'])):
-                                            if FreeGame['keyImages'][index]['type'] == "Thumbnail":
-                                                EpicImageURL = FreeGame['keyImages'][index]['url']
-                                                EpicImage = requests.get(
-                                                    EpicImageURL)
-                                                break
-                                            elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
-                                                EpicImageURL = FreeGame['keyImages'][index]['url']
-                                                EpicImage = requests.get(
-                                                    EpicImageURL)
-                                                break
-                                            else:
-                                                EpicImage = ""
-
-                                        if EpicImage != "" and EpicImage.status_code == 200:
-                                            EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
-                                            with open(f'epic/{EpicImagePath}', 'wb') as write_file:
-                                                write_file.write(
-                                                    EpicImage.content)
-                                            if EpicImagePath:
-                                                await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!", file=discord.File(f"epic/{EpicImagePath}"))
-                                        else:
-                                            await bot.get_channel(539553203570606090).send(f"Neues Gratis Epic Game: {FreeGame['title']}! Noch verfügbar bis {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!")
-                                        logging.info(
-                                            f"{FreeGame['title']} was added to free Epic Games!")
+                                        f"{FreeGame['title']} was added to free Epic Games!")
 
                             except json.decoder.JSONDecodeError:
                                 FreeGamesList['Settings']['FreeEpicGames'] = {}
