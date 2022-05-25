@@ -22,14 +22,12 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 ## To Dos ## 
 
 + Show FreeGames (can only be done in py-cord 2.0)
-+ Discord Pub erweitern
-+ Beim Output von Strings schauen ob aktueller String + neuer String unter 2k ist, ansonsten neuen String bauen | Muss noch als Funktion gebaut werden
-+ OWC Befehl, der 2-2-2 beachtet
-+ Bot wieder mehr in Module teilen
-+ Embed einbauen, wo sinnvoll
-+ ID Checks auf Rollen anpassen 
++ Extend Discord Pub
++ Split Messages over 2k chars | Needs to be implemented as func
++ OWC Command that uses 2-2-2
++ More Cogs, less Code in the main bot
 + Add free steam games
-+ Hinzufügen von Memes auch per URL
-+ Settingsdatei global laden und bei Änderung nachladen
++ Add Memes via URL
++ Load Settingsfile global
 
 
