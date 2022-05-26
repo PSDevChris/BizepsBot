@@ -8,6 +8,7 @@ import discord
 from discord.ext import commands, tasks
 from dateutil import parser
 import requests
+from requests.utils import quote
 from bs4 import BeautifulSoup
 import paramiko
 import uwuify
@@ -1361,7 +1362,9 @@ async def GetFreeEpicGames():
                                         name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
                                     EpicEmbed.add_field(
                                         name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
-                                    EpicEmbed.set_image(url=f"{EpicImageURL}")
+                                    if EpicImageURL:
+                                        EpicImageURL = quote(EpicImageURL, safe=':/')
+                                        EpicEmbed.set_image(url=f"{EpicImageURL}")
                                     EpicEmbed.set_footer(text="Bizeps_Bot")
 
                                     if EpicImage != "" and EpicImage.status_code == 200:
@@ -1369,10 +1372,7 @@ async def GetFreeEpicGames():
                                         with open(f'epic/{EpicImagePath}', 'wb') as write_file:
                                             write_file.write(
                                                 EpicImage.content)
-                                        if EpicImagePath:
-                                            await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
-                                    else:
-                                        await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
+                                    await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
                                     logging.info(
                                         f"{FreeGame['title']} was added to free Epic Games!")
 
