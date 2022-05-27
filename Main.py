@@ -1430,7 +1430,7 @@ async def _get_free_steamgames():
                         SteamImageURL = quote(ImageSrc, safe=':/')
                         SteamEmbed.set_image(url=f"{SteamImageURL}")
                         SteamEmbed.set_footer(text="Bizeps_Bot")
-                        await bot.get_channel(855140014986625066).send(embed=SteamEmbed)
+                        await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
                         FreeSteamList['Settings']['FreeSteamGames'].append(
                             SteamGameTitle)
                         _write_json('Settings.json', FreeSteamList)
