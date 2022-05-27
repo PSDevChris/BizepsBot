@@ -1254,7 +1254,6 @@ async def TrashReminder():
     TodayAtFiveAndAHalfPM = datetime.now().replace(
         hour=17, minute=32, second=00, microsecond=00)
     if datetime.now() >= TodayAtFivePM and datetime.now() <= TodayAtFiveAndAHalfPM:
-        AdminGroup = _read_json('Settings.json')
         AdminToNotify = 248181624485838849
         MyDiscordUser = await bot.fetch_user(AdminToNotify)
         tomorrowNow = datetime.today() + timedelta(days=1)
