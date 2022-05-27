@@ -1409,8 +1409,8 @@ async def _get_free_steamgames():
         if SteamResult:
             for Result in SteamResult:
                 SteamGameTitle = Result.find(class_="title").text
-                FreeGameTitleList.append(SteamGameTitle)
                 if SteamGameTitle:
+                    FreeGameTitleList.append(SteamGameTitle)
                     if SteamGameTitle not in FreeSteamList['Settings']['FreeSteamGames']:
                         SteamGameURL = Result['href']
                         ProdID = Result['data-ds-appid']
