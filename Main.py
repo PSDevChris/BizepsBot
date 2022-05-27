@@ -259,21 +259,26 @@ class Fun(commands.Cog, name="Schabernack"):
                 if datetime.now().isoweekday() == 3:
                     WednesdayMemes = list(
                         filter(lambda x: 'Mittwoch' in x, AllFiles))
-                else:
-                    WednesdayMemes = AllFiles
-                if WednesdayMemes == [] and datetime.now().isoweekday() == 3:
-                    RefreshMemes()
-                    WednesdayMemes = list(
-                        filter(lambda x: 'Mittwoch' in x, AllFiles))
-                RandomWedMeme = random.choice(WednesdayMemes)
-                WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
-                if datetime.now().isoweekday() == 3:
+                    if WednesdayMemes == []:
+                        RefreshMemes()
+                        WednesdayMemes = list(
+                            filter(lambda x: 'Mittwoch' in x, AllFiles))
+                    RandomWedMeme = random.choice(WednesdayMemes)
+                    WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
                     MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
                                          "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
                     await ctx.send(f"Es ist Mittwoch, meine {random.choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
                     logging.info(f"{ctx.author} wanted a wednesday meme.")
                 else:
+                    WednesdayMemes = list(
+                        filter(lambda x: 'Mittwoch' not in x, AllFiles))
+                    if NoWednesdayMemes == []:
+                        RefreshMemes()
+                        NoWednesdayMemes = list(
+                            filter(lambda x: 'Mittwoch' not in x, AllFiles))
+                    RandomWedMeme = random.choice(AllFiles)
+                    WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
                     await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
                     logging.info(
