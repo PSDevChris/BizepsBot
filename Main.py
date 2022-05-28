@@ -133,7 +133,7 @@ class Counter(commands.Cog, name="Counter"):
             case ("Pun" | "pun"):
                 InvokedVar = "Puns"
                 ReplyTxt = "Es wurde bereits ###REPLACE### Mal ein Gagfeuerwerk gezündet!"
-            case ("Salz" | "Salz"):
+            case ("Salz" | "salz"):
                 InvokedVar = "Salz"
                 ReplyTxt = "Man konnte sich schon ###REPLACE### Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>"
             case ("Leak" | "leak"):
