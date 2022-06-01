@@ -1436,14 +1436,14 @@ async def _get_free_steamgames():
                         logging.info(
                             f"{SteamGameTitle} was added to the free steam game list.")
 
-                    ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
-                        FreeGameTitleList)
-                    for ExpiredGame in ExpiredGames:
-                        FreeSteamList['Settings']['FreeSteamGames'].remove(
-                            ExpiredGame)
-                        logging.info(
-                            f"Removed {ExpiredGame} from free steam game list since it expired.")
-                        _write_json('Settings.json', FreeSteamList)
+            ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
+                FreeGameTitleList)
+            for ExpiredGame in ExpiredGames:
+                FreeSteamList['Settings']['FreeSteamGames'].remove(
+                    ExpiredGame)
+                logging.info(
+                    f"Removed {ExpiredGame} from free steam game list since it expired.")
+                _write_json('Settings.json', FreeSteamList)
 
 ### Bot Events ###
 
