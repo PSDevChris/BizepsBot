@@ -270,7 +270,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     AllFiles.remove(RandomWedMeme)
                     logging.info(f"{ctx.author} wanted a wednesday meme.")
                 else:
-                    WednesdayMemes = list(
+                    NoWednesdayMemes = list(
                         filter(lambda x: 'Mittwoch' not in x, AllFiles))
                     if NoWednesdayMemes == []:
                         RefreshMemes()
