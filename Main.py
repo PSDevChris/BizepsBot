@@ -276,7 +276,7 @@ class Fun(commands.Cog, name="Schabernack"):
                         RefreshMemes()
                         NoWednesdayMemes = list(
                             filter(lambda x: 'Mittwoch' not in x, AllFiles))
-                    RandomWedMeme = random.choice(AllFiles)
+                    RandomWedMeme = random.choice(NoWednesdayMemes)
                     WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
                     await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
