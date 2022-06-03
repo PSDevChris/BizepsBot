@@ -467,6 +467,14 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _blamedevs(self, ctx):
         await ctx.send(file=discord.File('memes/josch700#3680/josch.png'))
 
+    @commands.command(name="LeBonk", aliases=["Lebonk", "leBonk", "lebonk", "Lechonk", "lechonk", "LeChonk"], brief="Don't mess with him...")
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def _lebonk(self, ctx):
+        LastMessages = await ctx.message.channel.history(limit=2).flatten()
+        LastMessages.reverse()
+        LastMessage = LastMessages[0]
+        await LastMessage.reply("Mess with Lechonk, you get the bonk!", file=discord.File('fun/LeBonk.png'))
+
     @commands.command(name="Feiertag", aliases=["feiertag", "holiday", "Holiday"], brief="Zeigt den nächsten Feiertag an")
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def _nextholiday(self, ctx):
