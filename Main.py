@@ -366,9 +366,9 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _uwumsg(self, message):
         if isinstance(message.channel, discord.channel.DMChannel):
             pass
-        elif message.channel.category_id != 539547423782207488 and message.channel.id not in [539549544585756693, 539546796939149334]:
-            pass
-        else:
+        elif message.channel.category_id == 539547423782207488 and message.channel.id in [539549544585756693, 539546796939149334]:
+            logging.warning(f"{message.author.name} wanted to use a UwU command in a not UwU channel.")
+        else: 
             if message.author == bot.user:
                 return
             if random.randint(0, 75) == 1:
