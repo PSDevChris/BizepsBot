@@ -367,7 +367,7 @@ class Fun(commands.Cog, name="Schabernack"):
         if isinstance(message.channel, discord.channel.DMChannel):
             pass
         elif message.channel.category_id == 539547423782207488 and message.channel.id in [539549544585756693, 539546796939149334]:
-            logging.warning(f"{message.author.name} wanted to use a UwU command in a not UwU channel.")
+            pass
         else: 
             if message.author == bot.user:
                 return
