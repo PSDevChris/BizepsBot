@@ -366,7 +366,7 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _uwumsg(self, message):
         if isinstance(message.channel, discord.channel.DMChannel):
             pass
-        elif message.channel.category_id == 539547423782207488 or message.channel.id in [539549544585756693, 539546796939149334]:
+        elif message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693: 
             pass
         else: 
             if message.author == bot.user:
