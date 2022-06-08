@@ -12,6 +12,7 @@ from requests.utils import quote
 from bs4 import BeautifulSoup
 import paramiko
 import uwuify
+import aiohttp
 import pandas as pd
 
 logging.getLogger("discord").setLevel(logging.WARNING)
@@ -366,9 +367,9 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _uwumsg(self, message):
         if isinstance(message.channel, discord.channel.DMChannel):
             pass
-        elif message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693: 
+        elif message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693:
             pass
-        else: 
+        else:
             if message.author == bot.user:
                 return
             if random.randint(0, 75) == 1:
@@ -1159,11 +1160,13 @@ async def TwitchLiveCheck():
     for USER, LASTSTATE in TWITCHUSERNAMES['Settings']['TwitchUser'].items():
 
         try:
-            rUserData = requests.get(f'https://api.twitch.tv/helix/search/channels?query={USER}',
-                                     headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
-            data = json.loads(rUserData.content)['data']
-            data = list(
-                filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
+            async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
+                async with TwitchSession.get(f'https://api.twitch.tv/helix/search/channels?query={USER}') as rUserData:
+                    if rUserData.status == 200:
+                        data = await rUserData.json()
+                        data = data['data']
+                        data = list(
+                            filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
         except IndexError:
             # Username does not exist or Username is wrong, greetings to Schnabeltier
             continue
@@ -1176,19 +1179,14 @@ async def TwitchLiveCheck():
 
         if LASTSTATE is False and data['is_live'] and USER == data['broadcaster_login']:
             # User went live
-            if data['game_id'] is not None:
-                gamerequest = requests.get(f'https://api.twitch.tv/helix/games?id={data["game_id"]}',
-                                           headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
-                game = json.loads(gamerequest.content)['data'][0]
+            if data['game_name']:
+                game = data['game_name']
             else:
-                game = {"name": "Irgendwas"}
+                game = "Irgendwas"
 
-            try:
-                rDisplayName = requests.get(f'https://api.twitch.tv/helix/users?id={data["id"]}',
-                                            headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
-                Displayname = json.loads(rDisplayName.content)[
-                    'data'][0]['display_name']
-            except:
+            if data['display_name']:
+                Displayname = data['display_name']
+            else:
                 Displayname = USER.title()
             CurrentTime = int(datetime.timestamp(datetime.now()))
             embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
@@ -1208,16 +1206,15 @@ async def TwitchLiveCheck():
                 NotificationTime = datetime.utcnow() - timedelta(minutes=60)
                 LastMessages = await channel.history(after=NotificationTime).flatten()
                 if LastMessages:
-                    LastMessages.reverse()
                     for message in LastMessages:
                         if message.content.startswith(f"**{Displayname}**") is True:
                             break
                     else:
-                        await bot.get_channel(703530328836407327).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
+                        await channel.send(content=f"**{Displayname}** ist live! Gestreamt wird {game}!", embed=embed)
                         logging.info(
                             f"{Displayname} went live on Twitch! Twitch Twitch Notification sent, because the last Notification is older than 60min!")
                 else:
-                    await bot.get_channel(703530328836407327).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
+                    await channel.send(content=f"**{Displayname}** ist live! Gestreamt wird {game}!", embed=embed)
                     logging.info(
                         f"{Displayname} went live on Twitch! Twitch Notification sent!")
 
@@ -1314,94 +1311,96 @@ async def GetFreeEpicGames():
 
     EpicStoreURL = 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
 
-    RequestFromEpic = requests.get(EpicStoreURL)
-    if RequestFromEpic.status_code == 200:
-        JSONFromEpicStore = RequestFromEpic.json()
-        if JSONFromEpicStore:
-            for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
-                if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
-                    PromotionalStartDate = parser.parse(
-                        FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
-                    LaunchingToday = parser.parse(FreeGame['effectiveDate'])
+    async with aiohttp.ClientSession() as EpicSession:
+        async with EpicSession.get(EpicStoreURL) as RequestFromEpic:
 
-                    if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.now().date() or PromotionalStartDate.date() <= datetime.now().date()):
-                        offers = FreeGame['promotions']['promotionalOffers']
-                        for offer in offers:
+            if RequestFromEpic.status == 200:
+                JSONFromEpicStore = await RequestFromEpic.json()
+                if JSONFromEpicStore:
+                    for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
+                        if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
+                            PromotionalStartDate = parser.parse(
+                                FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
+                            LaunchingToday = parser.parse(FreeGame['effectiveDate'])
 
-                            FreeGameObject = {
-                                f"{FreeGame['title']}": {
-                                    "startDate": offer['promotionalOffers'][0]['startDate'],
-                                    "endDate": offer['promotionalOffers'][0]['endDate'],
-                                }
-                            }
+                            if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.now().date() or PromotionalStartDate.date() <= datetime.now().date()):
+                                offers = FreeGame['promotions']['promotionalOffers']
+                                for offer in offers:
 
-                            try:
+                                    FreeGameObject = {
+                                        f"{FreeGame['title']}": {
+                                            "startDate": offer['promotionalOffers'][0]['startDate'],
+                                            "endDate": offer['promotionalOffers'][0]['endDate'],
+                                        }
+                                    }
 
-                                if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
-                                    pass
-                                else:
-                                    FreeGamesList['Settings']['FreeEpicGames'].update(
-                                        FreeGameObject)
-                                    _write_json(
-                                        'Settings.json', FreeGamesList)
-                                    EndOfOffer = offer['promotionalOffers'][0]['endDate']
-                                    EndDateOfOffer = parser.parse(
-                                        EndOfOffer).date()
+                                    try:
 
-                                    for index in range(len(FreeGame['keyImages'])):
-                                        if FreeGame['keyImages'][index]['type'] == "Thumbnail":
-                                            EpicImageURL = FreeGame['keyImages'][index]['url']
-                                            EpicImage = requests.get(
-                                                EpicImageURL)
-                                            break
-                                        elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
-                                            EpicImageURL = FreeGame['keyImages'][index]['url']
-                                            EpicImage = requests.get(
-                                                EpicImageURL)
-                                            break
+                                        if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
+                                            pass
                                         else:
-                                            EpicImage = ""
+                                            FreeGamesList['Settings']['FreeEpicGames'].update(
+                                                FreeGameObject)
+                                            _write_json(
+                                                'Settings.json', FreeGamesList)
+                                            EndOfOffer = offer['promotionalOffers'][0]['endDate']
+                                            EndDateOfOffer = parser.parse(
+                                                EndOfOffer).date()
 
-                                    ### Build Embed with chosen vars ###
-                                    EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
-                                        0x1), timestamp=datetime.utcnow())
-                                    EpicEmbed.set_thumbnail(
-                                        url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
-                                    EpicEmbed.set_author(
-                                        name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
-                                    if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
-                                        EpicEmbed.add_field(
-                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['productSlug']})", inline=True)
-                                        EpicEmbed.add_field(
-                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['productSlug']}>", inline=True)
-                                    else:
-                                        EpicEmbed.add_field(
-                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
-                                        EpicEmbed.add_field(
-                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
-                                    if EpicImageURL:
-                                        EpicImageURL = quote(
-                                            EpicImageURL, safe=':/')
-                                        EpicEmbed.set_image(
-                                            url=f"{EpicImageURL}")
-                                    EpicEmbed.set_footer(text="Bizeps_Bot")
+                                            for index in range(len(FreeGame['keyImages'])):
+                                                if FreeGame['keyImages'][index]['type'] == "Thumbnail":
+                                                    EpicImageURL = FreeGame['keyImages'][index]['url']
+                                                    async with EpicSession.get(EpicImageURL) as EpicImageReq:
+                                                        EpicImage = await EpicImageReq.read()
+                                                        break
+                                                elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
+                                                    EpicImageURL = FreeGame['keyImages'][index]['url']
+                                                    async with EpicSession.get(EpicImageURL) as EpicImageReq:
+                                                        EpicImage = await EpicImageReq.read()
+                                                        break
+                                                else:
+                                                    EpicImage = ""
 
-                                    if EpicImage != "" and EpicImage.status_code == 200:
-                                        EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
-                                        with open(f'epic/{EpicImagePath}', 'wb') as write_file:
-                                            write_file.write(
-                                                EpicImage.content)
-                                    await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
-                                    logging.info(
-                                        f"{FreeGame['title']} was added to free Epic Games!")
+                                            ### Build Embed with chosen vars ###
+                                            EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
+                                                0x1), timestamp=datetime.utcnow())
+                                            EpicEmbed.set_thumbnail(
+                                                url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
+                                            EpicEmbed.set_author(
+                                                name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                                            if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
+                                                EpicEmbed.add_field(
+                                                    name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['productSlug']})", inline=True)
+                                                EpicEmbed.add_field(
+                                                    name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['productSlug']}>", inline=True)
+                                            else:
+                                                EpicEmbed.add_field(
+                                                    name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
+                                                EpicEmbed.add_field(
+                                                    name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
+                                            if EpicImageURL:
+                                                EpicImageURL = quote(
+                                                    EpicImageURL, safe=':/')
+                                                EpicEmbed.set_image(
+                                                    url=f"{EpicImageURL}")
+                                            EpicEmbed.set_footer(text="Bizeps_Bot")
 
-                            except json.decoder.JSONDecodeError:
-                                FreeGamesList['Settings']['FreeEpicGames'] = {}
-                                FreeGamesList['Settings']['FreeEpicGames'].update(
-                                    FreeGameObject)
-                                _write_json('Settings.json', FreeGamesList)
-    else:
-        logging.error("Epic Store is not available!")
+                                            if EpicImage != "" and EpicImage:
+                                                EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
+                                                with open(f'epic/{EpicImagePath}', 'wb') as write_file:
+                                                    write_file.write(
+                                                        EpicImage)
+                                            await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
+                                            logging.info(
+                                                f"{FreeGame['title']} was added to free Epic Games!")
+
+                                    except json.decoder.JSONDecodeError:
+                                        FreeGamesList['Settings']['FreeEpicGames'] = {}
+                                        FreeGamesList['Settings']['FreeEpicGames'].update(
+                                            FreeGameObject)
+                                        _write_json('Settings.json', FreeGamesList)
+            else:
+                logging.error("Epic Store is not available!")
 
 
 @tasks.loop(minutes=30)
