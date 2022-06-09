@@ -1208,6 +1208,8 @@ async def TwitchLiveCheck():
                 if LastMessages:
                     for message in LastMessages:
                         if message.content.startswith(f"**{Displayname}**") is True:
+                            logging.info(
+                                f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
                             break
                     else:
                         await channel.send(content=f"**{Displayname}** ist live! Gestreamt wird {game}!", embed=embed)
@@ -1321,7 +1323,8 @@ async def GetFreeEpicGames():
                         if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
                             PromotionalStartDate = parser.parse(
                                 FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
-                            LaunchingToday = parser.parse(FreeGame['effectiveDate'])
+                            LaunchingToday = parser.parse(
+                                FreeGame['effectiveDate'])
 
                             if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.now().date() or PromotionalStartDate.date() <= datetime.now().date()):
                                 offers = FreeGame['promotions']['promotionalOffers']
@@ -1383,7 +1386,8 @@ async def GetFreeEpicGames():
                                                     EpicImageURL, safe=':/')
                                                 EpicEmbed.set_image(
                                                     url=f"{EpicImageURL}")
-                                            EpicEmbed.set_footer(text="Bizeps_Bot")
+                                            EpicEmbed.set_footer(
+                                                text="Bizeps_Bot")
 
                                             if EpicImage != "" and EpicImage:
                                                 EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
@@ -1395,10 +1399,12 @@ async def GetFreeEpicGames():
                                                 f"{FreeGame['title']} was added to free Epic Games!")
 
                                     except json.decoder.JSONDecodeError:
-                                        FreeGamesList['Settings']['FreeEpicGames'] = {}
+                                        FreeGamesList['Settings']['FreeEpicGames'] = {
+                                        }
                                         FreeGamesList['Settings']['FreeEpicGames'].update(
                                             FreeGameObject)
-                                        _write_json('Settings.json', FreeGamesList)
+                                        _write_json(
+                                            'Settings.json', FreeGamesList)
             else:
                 logging.error("Epic Store is not available!")
 
@@ -1408,49 +1414,51 @@ async def _get_free_steamgames():
     FreeGameTitleList = []
     FreeSteamList = _read_json('Settings.json')
     SteamURL = "https://store.steampowered.com/search/?maxprice=free&specials=1"
-    SteamReq = requests.get(SteamURL)
-    if SteamReq.status_code == 200:
-        SteamHTML = BeautifulSoup(SteamReq.content, "html.parser")
-        SteamResult = SteamHTML.find_all(
-            "a", class_="search_result_row ds_collapse_flag")
-        if SteamResult:
-            for Result in SteamResult:
-                SteamGameTitle = Result.find(class_="title").text
-                if SteamGameTitle:
-                    FreeGameTitleList.append(SteamGameTitle)
-                    if SteamGameTitle not in FreeSteamList['Settings']['FreeSteamGames']:
-                        SteamGameURL = Result['href']
-                        ProdID = Result['data-ds-appid']
-                        ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
+    async with aiohttp.ClientSession() as SteamSession:
+        async with SteamSession.get(SteamURL) as SteamReq:
+            if SteamReq.status == 200:
+                SteamPage = await SteamReq.read()
+                SteamHTML = BeautifulSoup(SteamPage, "html.parser")
+                SteamResult = SteamHTML.find_all(
+                    "a", class_="search_result_row ds_collapse_flag")
+                if SteamResult:
+                    for Result in SteamResult:
+                        SteamGameTitle = Result.find(class_="title").text
+                        if SteamGameTitle:
+                            FreeGameTitleList.append(SteamGameTitle)
+                            if SteamGameTitle not in FreeSteamList['Settings']['FreeSteamGames']:
+                                SteamGameURL = Result['href']
+                                ProdID = Result['data-ds-appid']
+                                ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
 
-                        SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
-                            0x6c6c6c), timestamp=datetime.utcnow())
-                        SteamEmbed.set_thumbnail(
-                            url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
-                        SteamEmbed.set_author(
-                            name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
-                        SteamEmbed.add_field(
-                            name="Besuch mich auf Steam", value=f"{SteamGameURL}", inline=True)
-                        SteamEmbed.add_field(
-                            name="Hol mich im Launcher", value=f"<Steam://Store/{ProdID}>", inline=True)
-                        SteamImageURL = quote(ImageSrc, safe=':/')
-                        SteamEmbed.set_image(url=f"{SteamImageURL}")
-                        SteamEmbed.set_footer(text="Bizeps_Bot")
-                        await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
-                        FreeSteamList['Settings']['FreeSteamGames'].append(
-                            SteamGameTitle)
-                        _write_json('Settings.json', FreeSteamList)
+                                SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
+                                    0x6c6c6c), timestamp=datetime.utcnow())
+                                SteamEmbed.set_thumbnail(
+                                    url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
+                                SteamEmbed.set_author(
+                                    name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                                SteamEmbed.add_field(
+                                    name="Besuch mich auf Steam", value=f"{SteamGameURL}", inline=True)
+                                SteamEmbed.add_field(
+                                    name="Hol mich im Launcher", value=f"<Steam://Store/{ProdID}>", inline=True)
+                                SteamImageURL = quote(ImageSrc, safe=':/')
+                                SteamEmbed.set_image(url=f"{SteamImageURL}")
+                                SteamEmbed.set_footer(text="Bizeps_Bot")
+                                await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
+                                FreeSteamList['Settings']['FreeSteamGames'].append(
+                                    SteamGameTitle)
+                                _write_json('Settings.json', FreeSteamList)
+                                logging.info(
+                                    f"{SteamGameTitle} was added to the free steam game list.")
+
+                    ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
+                        FreeGameTitleList)
+                    for ExpiredGame in ExpiredGames:
+                        FreeSteamList['Settings']['FreeSteamGames'].remove(
+                            ExpiredGame)
                         logging.info(
-                            f"{SteamGameTitle} was added to the free steam game list.")
-
-            ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
-                FreeGameTitleList)
-            for ExpiredGame in ExpiredGames:
-                FreeSteamList['Settings']['FreeSteamGames'].remove(
-                    ExpiredGame)
-                logging.info(
-                    f"Removed {ExpiredGame} from free steam game list since it expired.")
-                _write_json('Settings.json', FreeSteamList)
+                            f"Removed {ExpiredGame} from free steam game list since it expired.")
+                        _write_json('Settings.json', FreeSteamList)
 
 ### Bot Events ###
 
