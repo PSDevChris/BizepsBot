@@ -17,7 +17,7 @@ import pandas as pd
 
 logging.getLogger("discord").setLevel(logging.WARNING)
 logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, handlers=[logging.FileHandler(f'./logs/{datetime.now().date()}_bot.log'),
-                                                                                      logging.StreamHandler()])
+                                                                                      logging.StreamHandler()], encoding="UTF-8")
 
 # To show the whole table, currently unused
 # pd.set_option('display.max_rows', None)
