@@ -1117,8 +1117,7 @@ class Administration(commands.Cog, name="Administration"):
     @_mcreboot.error
     async def _mcreboot_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            AdminGroup = _read_json('Settings.json')
-            AdminToNotify = AdminGroup['Settings']['ManagementGroups']['Admins']
+            AdminToNotify = 248181624485838849
             await ctx.send(f"Na na, das darfst du nicht! <@{AdminToNotify}> guck dir diesen Schelm an!")
             logging.warning(
                 f"{ctx.author} wanted to reboot the minecraftserver but is not allowed!")
@@ -1130,8 +1129,7 @@ class Administration(commands.Cog, name="Administration"):
     @_twitchmanagement.error
     async def _twitchmanagement_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            AdminGroup = _read_json('Settings.json')
-            AdminToNotify = AdminGroup['Settings']['ManagementGroups']['Admins']
+            AdminToNotify = 248181624485838849
             await ctx.send(f"Na na, das darf nur der Admin! <@{AdminToNotify}>, hier möchte jemand in die Twitchliste oder aus der Twitchliste entfernt werden!")
             logging.warning(f"{ctx.author} wanted to edit the twitchlist!")
         elif isinstance(error, commands.MissingRequiredArgument):
@@ -1198,7 +1196,7 @@ async def TwitchLiveCheck():
             embed.set_footer(text="Bizeps_Bot")
 
             if USER == 'dota_joker':
-                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live! Gestreamt wird {game['name']}!", embed=embed)
+                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live! Gestreamt wird {game}!", embed=embed)
                 logging.info(
                     f"{Displayname} went live on Twitch! Twitch Notification sent!")
             else:
@@ -1444,10 +1442,13 @@ async def _get_free_steamgames():
                                 SteamImageURL = quote(ImageSrc, safe=':/')
                                 SteamEmbed.set_image(url=f"{SteamImageURL}")
                                 SteamEmbed.set_footer(text="Bizeps_Bot")
-                                await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
+                                await bot.get_channel(855140014986625066).send(embed=SteamEmbed)
                                 FreeSteamList['Settings']['FreeSteamGames'].append(
                                     SteamGameTitle)
                                 _write_json('Settings.json', FreeSteamList)
+                                # Hack for missing char mapping in logging module
+                                SteamGameTitle = SteamGameTitle.replace(
+                                    "\uFF1A", ": ")
                                 logging.info(
                                     f"{SteamGameTitle} was added to the free steam game list.")
 
