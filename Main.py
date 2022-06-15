@@ -250,7 +250,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 if PattiMemes == []:
                     RefreshMemes()
                     PattiMemes = list(filter(lambda x: 'patti' in x, AllFiles))
-                RandomPattiMeme = random.choice(PattiMemes)
+                RandomPattiMeme = random.SystemRandom().choice(PattiMemes)
                 AuthorPatti = RandomPattiMeme.split("/")[1].split("#")[0]
                 await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorPatti}", file=discord.File(f"{RandomPattiMeme}"))
                 AllFiles.remove(RandomPattiMeme)
@@ -263,11 +263,11 @@ class Fun(commands.Cog, name="Schabernack"):
                         RefreshMemes()
                         WednesdayMemes = list(
                             filter(lambda x: 'Mittwoch' in x, AllFiles))
-                    RandomWedMeme = random.choice(WednesdayMemes)
+                    RandomWedMeme = random.SystemRandom().choice(WednesdayMemes)
                     WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
                     MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
                                          "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
-                    await ctx.send(f"Es ist Mittwoch, meine {random.choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
+                    await ctx.send(f"Es ist Mittwoch, meine {random.SystemRandom().choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
                     logging.info(f"{ctx.author} wanted a wednesday meme.")
                 else:
@@ -277,7 +277,7 @@ class Fun(commands.Cog, name="Schabernack"):
                         RefreshMemes()
                         NoWednesdayMemes = list(
                             filter(lambda x: 'Mittwoch' not in x, AllFiles))
-                    RandomWedMeme = random.choice(NoWednesdayMemes)
+                    RandomWedMeme = random.SystemRandom().choice(NoWednesdayMemes)
                     WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
                     await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
@@ -290,7 +290,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     RefreshMemes()
                     NoWednesdayMemes = list(
                         filter(lambda x: 'Mittwoch' not in x, AllFiles))
-                RandomMeme = random.choice(NoWednesdayMemes)
+                RandomMeme = random.SystemRandom().choice(NoWednesdayMemes)
                 AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
                 await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
                 AllFiles.remove(RandomMeme)
@@ -396,7 +396,7 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def _hansworks(self, ctx):
         HansTasks = _read_json('Settings.json')
-        HansTask = random.choice(HansTasks['Settings']['HansTask']['Tasks'])
+        HansTask = random.SystemRandom().choice(HansTasks['Settings']['HansTask']['Tasks'])
         await ctx.send(f"Hans muss {HansTask}...")
 
     @_hansworks.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
@@ -495,7 +495,7 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _dotojokes(self, ctx):
         if len(DotoJokes) == 0:
             RefreshJokes()
-        DotoJoke = random.choice(DotoJokes)
+        DotoJoke = random.SystemRandom().choice(DotoJokes)
         await ctx.send(f"{DotoJoke}")
         DotoJokes.remove(DotoJoke)
 
@@ -904,7 +904,7 @@ class Games(commands.Cog, name="Games"):
         ListOfAllHeros = ListOfTanks + ListOfDPS + ListOfSupports
         if role in ["SUPPORT", "support", "Support", "healer", "Healer"] and number < len(ListOfSupports):
             for _ in range(0, number):
-                SelectedHero = random.choice(ListOfSupports)
+                SelectedHero = random.SystemRandom().choice(ListOfSupports)
                 ListOfSupports.remove(f"{SelectedHero}")
                 SelectedHeros.append(SelectedHero)
                 SelectedHerosString = ", ".join(SelectedHeros)
@@ -913,7 +913,7 @@ class Games(commands.Cog, name="Games"):
                 f"User {ctx.author} raffled a support hero from Overwatch.")
         elif role in ["DAMAGE", "DPS", "DMG", "Damage", "dmg", "dps", "Dps"] and number < len(ListOfDPS):
             for _ in range(0, number):
-                SelectedHero = random.choice(ListOfDPS)
+                SelectedHero = random.SystemRandom().choice(ListOfDPS)
                 ListOfDPS.remove(f"{SelectedHero}")
                 SelectedHeros.append(SelectedHero)
                 SelectedHerosString = ", ".join(SelectedHeros)
@@ -922,7 +922,7 @@ class Games(commands.Cog, name="Games"):
                 f"User {ctx.author} raffled a dps hero from Overwatch.")
         elif role in ["TANK", "tank", "Tank"] and number < len(ListOfTanks):
             for _ in range(0, number):
-                SelectedHero = random.choice(ListOfTanks)
+                SelectedHero = random.SystemRandom().choice(ListOfTanks)
                 ListOfTanks.remove(f"{SelectedHero}")
                 SelectedHeros.append(SelectedHero)
                 SelectedHerosString = ", ".join(SelectedHeros)
@@ -931,7 +931,7 @@ class Games(commands.Cog, name="Games"):
                 f"User {ctx.author} raffled a tank hero from Overwatch.")
         elif role in ["all", "All", "ALL", "alle", "Alle"] and number < len(ListOfAllHeros):
             for _ in range(0, number):
-                SelectedHero = random.choice(ListOfAllHeros)
+                SelectedHero = random.SystemRandom().choice(ListOfAllHeros)
                 ListOfAllHeros.remove(f"{SelectedHero}")
                 SelectedHeros.append(SelectedHero)
                 SelectedHerosString = ", ".join(SelectedHeros)

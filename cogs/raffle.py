@@ -49,7 +49,7 @@ class Raffle(commands.Cog, name="Raffle"):
             if EntryList == []:
                 await ctx.send("Leider hat niemand teilgenommen. Viel Glück beim nächsten Mal!")
             else:
-                Entry = random.choice(EntryList)
+                Entry = random.SystemRandom().choice(EntryList)
                 await ctx.send(f"Das Raffle wurde beendet! Gewonnen hat {Entry[0]}! {Entry[1]}")
             RaffleJSON['Settings']['Raffle']['Entries'] = {}
             RaffleJSON['Settings']['Raffle']['Title'] = ""
