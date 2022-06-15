@@ -1316,7 +1316,7 @@ async def GetFreeEpicGames():
 
             if RequestFromEpic.status == 200:
                 JSONFromEpicStore = await RequestFromEpic.json()
-                if JSONFromEpicStore:
+                if JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
                     for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
                         if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
                             PromotionalStartDate = parser.parse(
