@@ -412,7 +412,7 @@ class Fun(commands.Cog, name="Schabernack"):
     async def _add_hansworks(self, ctx, task):
         if "```" not in task:
             AllHansTasks = _read_json('Settings.json')
-            AllHansTasks['Settings']['HansTask']['Tasks'].append(task)
+            AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
             _write_json('Settings.json', AllHansTasks)
             RefreshHansTasks()
             await ctx.send(f"Der Task '{task}' wurde Hans hinzugefügt.")
@@ -427,7 +427,7 @@ class Fun(commands.Cog, name="Schabernack"):
         HansOutputString = ""
         HansOutputLength = 0
         await ctx.send(f"Hans hat folgende Tasks:\n")
-        for HansTaskEntry in AllHansTasks['Settings']['HansTask']['Tasks']:
+        for HansTaskEntry in AllHansTasks['Settings']['HansTasks']['Tasks']:
             HansOutputLength += len(HansTaskEntry)
             if HansOutputLength >= 1994:
                 await ctx.send(f"```{HansOutputString}```")
@@ -442,7 +442,7 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _count_hansworks(self, ctx):
         AllHansTasks = _read_json('Settings.json')
-        HansTaskCount = len(AllHansTasks['Settings']['HansTask']['Tasks'])
+        HansTaskCount = len(AllHansTasks['Settings']['HansTasks']['Tasks'])
         await ctx.send(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
         logging.info(f"{ctx.author} wanted to know how busy Hans is.")
 
