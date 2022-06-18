@@ -1024,14 +1024,19 @@ class Administration(commands.Cog, name="Administration"):
         logging.info(f"Twitchlist was posted.")
 
     @_twitchmanagement.command(name="add", aliases=["+"], brief="Fügt den Twitchuser der Liste hinzu")
-    async def _addtwitchmembers(self, ctx, Member: str):
+    async def _addtwitchmembers(self, ctx, Member: str, custommsg: str):
         try:
             TwitchUser = _read_json('Settings.json')
-            TwitchMember = {f"{Member.lower()}": False}
+            TwitchMember = {
+                f"{Member.lower()}": {
+                    "live": False,
+                    "custom_msg": f"{custommsg}"
+                }
+            }
             TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
             _write_json('Settings.json', TwitchUser)
-            await ctx.send(f"{Member} zur Twitchliste hinzugefügt!")
-            logging.info(f"User {Member} was added to twitchlist.")
+            await ctx.send(f"{Member} zur Twitchliste hinzugefügt! Folgender Satz wurde hinterlegt: '{custommsg}'")
+            logging.info(f"User {Member} was added to twitchlist with custom message: '{custommsg}'")
         except:
             await ctx.send("Konnte User nicht hinzufügen.")
             logging.error(
@@ -1164,9 +1169,9 @@ async def TwitchLiveCheck():
     if datetime.timestamp(datetime.now()) > TWITCH_TOKEN_EXPIRES:
         RequestTwitchToken()
 
-    TWITCHUSERNAMES = _read_json('Settings.json')
+    TwitchJSON = _read_json('Settings.json')
 
-    for USER, LASTSTATE in TWITCHUSERNAMES['Settings']['TwitchUser'].items():
+    for USER in TwitchJSON['Settings']['TwitchUser'].keys():
 
         try:
             async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
@@ -1176,6 +1181,8 @@ async def TwitchLiveCheck():
                         data = data['data']
                         data = list(
                             filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
+                        livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
+                        custommsg = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['custom_msg']
         except IndexError:
             # Username does not exist or Username is wrong, greetings to Schnabeltier
             continue
@@ -1186,7 +1193,7 @@ async def TwitchLiveCheck():
             logging.error("Twitch API not available.")
             break
 
-        if LASTSTATE is False and data['is_live'] and USER == data['broadcaster_login']:
+        if livestate is False and data['is_live'] and USER == data['broadcaster_login']:
             # User went live
             if data['game_name']:
                 game = data['game_name']
@@ -1207,7 +1214,7 @@ async def TwitchLiveCheck():
             embed.set_footer(text="Bizeps_Bot")
 
             if USER == 'dota_joker':
-                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live! Gestreamt wird {game}!", embed=embed)
+                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
                 logging.info(
                     f"{Displayname} went live on Twitch! Twitch Notification sent!")
             else:
@@ -1221,17 +1228,17 @@ async def TwitchLiveCheck():
                                 f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
                             break
                     else:
-                        await channel.send(content=f"**{Displayname}** ist live! Gestreamt wird {game}!", embed=embed)
+                        await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
                         logging.info(
                             f"{Displayname} went live on Twitch! Twitch Twitch Notification sent, because the last Notification is older than 60min!")
                 else:
-                    await channel.send(content=f"**{Displayname}** ist live! Gestreamt wird {game}!", embed=embed)
+                    await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
                     logging.info(
                         f"{Displayname} went live on Twitch! Twitch Notification sent!")
 
-        if LASTSTATE is not data['is_live']:
-            TWITCHUSERNAMES['Settings']['TwitchUser'][USER] = data['is_live']
-            _write_json('Settings.json', TWITCHUSERNAMES)
+        if livestate is not data['is_live']:
+            TwitchJSON['Settings']['TwitchUser'][USER]['live'] = data['is_live']
+            _write_json('Settings.json', TwitchJSON)
 
 
 @tasks.loop(seconds=60)
