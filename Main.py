@@ -1518,10 +1518,10 @@ async def on_message(message):
     """
     if message.author == bot.user:
         return
-
-    if(_is_banned(message, BannedUsers)):
-        # This line needs to be added so the commands are actually processed
-        await bot.process_commands(message)
+    if message.content.startswith("!"):
+        if(_is_banned(message, BannedUsers)):
+            # This line needs to be added so the commands are actually processed
+            await bot.process_commands(message)
 
 
 @bot.event
