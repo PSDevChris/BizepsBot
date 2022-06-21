@@ -21,7 +21,8 @@ class xkcd(commands.Cog):
         pass
 
     # Commands
-    @commands.command(name="xkcd", aliases=["XKCD", "Xkcd"], brief="Macht Pong")
+    @commands.command(name="xkcd", aliases=["XKCD", "Xkcd"], brief="Postet das aktuelle xkcd")
+    @commands.cooldown(1, 60, commands.BucketType.user)
     async def _show_xkcd(self, ctx):
         XkcdURL = "https://xkcd.com/info.0.json"
         async with aiohttp.ClientSession() as XkcdSession:
