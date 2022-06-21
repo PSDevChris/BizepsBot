@@ -9,3 +9,4 @@
 !Readme.md
 !requirements.txt
 !.gitignore
+!cogs/xkcd.py
