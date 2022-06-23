@@ -1387,16 +1387,28 @@ async def GetFreeEpicGames():
                                                 url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
                                             EpicEmbed.set_author(
                                                 name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
-                                            if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
-                                                EpicEmbed.add_field(
-                                                    name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['productSlug']})", inline=True)
-                                                EpicEmbed.add_field(
-                                                    name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['productSlug']}>", inline=True)
-                                            else:
-                                                EpicEmbed.add_field(
-                                                    name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
-                                                EpicEmbed.add_field(
-                                                    name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
+                                            if FreeGame['productSlug']:
+                                                if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
+                                                    EpicEmbed.add_field(
+                                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['productSlug']})", inline=True)
+                                                    EpicEmbed.add_field(
+                                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['productSlug']}>", inline=True)
+                                                else:
+                                                    EpicEmbed.add_field(
+                                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
+                                                    EpicEmbed.add_field(
+                                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
+                                            elif FreeGame['title']:
+                                                if "collection" in FreeGame['title'] or "bundle" in FreeGame['title'] or "trilogy" in FreeGame['title']:
+                                                    EpicEmbed.add_field(
+                                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['title']})", inline=True)
+                                                    EpicEmbed.add_field(
+                                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['title']}>", inline=True)
+                                                else:
+                                                    EpicEmbed.add_field(
+                                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['title']})", inline=True)
+                                                    EpicEmbed.add_field(
+                                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['title']}>", inline=True)
                                             if EpicImageURL:
                                                 EpicImageURL = quote(
                                                     EpicImageURL, safe=':/')
