@@ -29,7 +29,6 @@ class Raffle(commands.Cog, name="Raffle"):
 
     # Commands
     @commands.group(name="Raffle", aliases=["raffle"], brief="Startet ein Raffle oder beendet es.")
-    @commands.has_role("Admin")
     async def _raffle(self, ctx):
         pass
 
