@@ -28,7 +28,7 @@ class Raffle(commands.Cog, name="Raffle"):
         pass
 
     # Commands
-    @commands.group(name="Raffle", aliases=["raffle"], brief="Startet ein Raffle oder beendet es.")
+    @commands.group(name="Raffle", aliases=["raffle"], invoke_without_command=True, brief="Startet ein Raffle oder beendet es.")
     async def _raffle(self, ctx):
         RaffleJSON = _read_json('Settings.json')
         Price =  RaffleJSON['Settings']['Raffle']['Title']
