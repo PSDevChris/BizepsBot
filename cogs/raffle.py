@@ -30,7 +30,13 @@ class Raffle(commands.Cog, name="Raffle"):
     # Commands
     @commands.group(name="Raffle", aliases=["raffle"], brief="Startet ein Raffle oder beendet es.")
     async def _raffle(self, ctx):
-        pass
+        RaffleJSON = _read_json('Settings.json')
+        Price =  RaffleJSON['Settings']['Raffle']['Title']
+        if Price != "":
+            await ctx.send(f"Aktuell wird {Price} verlost, tritt einfach mit !raffle join bei!")
+        else:
+            await ctx.send("Aktuell ist keine Verlosung aktiv.")
+
 
     @_raffle.command(name="active", aliases=["Active"], brief="Aktiviert das Raffle")
     @commands.has_role("Admin")
@@ -54,7 +60,7 @@ class Raffle(commands.Cog, name="Raffle"):
             RaffleJSON['Settings']['Raffle']['Title'] = ""
             _write_json('Settings.json', RaffleJSON)
 
-    @_raffle.command(name="price", aliases=["Price"], brief="Setzt den Preis fest")
+    @_raffle.command(name="prize", aliases=["Prize"], brief="Setzt den Preis fest")
     @commands.has_role("Admin")
     async def _setprize(self, ctx, title: str):
         RaffleJSON = _read_json('Settings.json')
