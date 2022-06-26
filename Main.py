@@ -133,7 +133,7 @@ class Counter(commands.Cog, name="Counter"):
     async def cog_check(self, ctx):
         return _is_banned(ctx, BannedUsers)
 
-    @commands.group(name="pun",  aliases=["Pun", "salz", "Salz", "mobbing", "Mobbing", "Hasssprech", "hasssprech", "Leak", "leak", "Schnenko", "schnenko", "Schnenk", "schnenk", "lieferando", "Lieferando", "Pipi", "pipi"], invoke_without_command=True, brief="Erhöht diverse Counter")
+    @commands.group(name="pun",  aliases=["Pun", "salz", "Salz", "mobbing", "Mobbing", "Hasssprech", "hasssprech", "Leak", "leak", "Schnenko", "schnenko", "Schnenk", "schnenk", "lieferando", "Lieferando", "Pipi", "pipi", "Luck", "luck", "Dotoluck", "dotoluck"], invoke_without_command=True, brief="Erhöht diverse Counter")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _counter(self, ctx):
         IncNum = 1
