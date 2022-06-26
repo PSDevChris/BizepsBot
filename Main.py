@@ -153,6 +153,9 @@ class Counter(commands.Cog, name="Counter"):
             case ("Pipi" | "pipi"):
                 InvokedVar = "Pipi"
                 ReplyTxt = "Dotas Babyblase hat ihn schon ###REPLACE### Mal auf das stille Örtchen getrieben!"
+            case ("Luck" | "luck" | "Dotoluck" | "dotoluck"):
+                InvokedVar = "Luck"
+                ReplyTxt = "Doto hatte schon wieder Glück! Damit hat er ###REPLACE### Mal unverschämtes Glück gehabt!"
             case ("Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando"):
                 InvokedVar = "Lieferando"
                 IncNum = 20
@@ -163,9 +166,14 @@ class Counter(commands.Cog, name="Counter"):
 
         data = _read_json('Settings.json')
         data['Settings']['Counter'][f'{InvokedVar}'] = data['Settings']['Counter'][f'{InvokedVar}'] + IncNum
+        LastAboNumber = data['Settings']['Counter']['LastAboAt']
         NewResult = data['Settings']['Counter'][f'{InvokedVar}']
+        if ctx.invoked_parents[0] in ["Luck", "luck", "Dotoluck", "dotoluck"] and ((NewResult - LastAboNumber) + random.SystemRandom().randint(0,50) >= (LastAboNumber+100)):
+            await ctx.send(f"{ReplyTxt.replace('###REPLACE###', f'{NewResult}')} Als Strafe verschenkt er im nächsten Stream {random.SystemRandom().randint(1,3)} Abos!")
+            data['Settings']['Counter']['LastAboAt'] = NewResult
+        else:
+            await ctx.send(ReplyTxt.replace('###REPLACE###', f'{NewResult}'))
         _write_json('Settings.json', data)
-        await ctx.send(ReplyTxt.replace("###REPLACE###", f"{NewResult}"))
 
     @_counter.command(name="show", aliases=["sh", "-s", "Show"], brief="Zeigt den aktuellen Counter")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -186,6 +194,9 @@ class Counter(commands.Cog, name="Counter"):
             case ("Pipi" | "pipi"):
                 InvokedVar = "Pipi"
                 ReplyTxt = "Doto hat bereits ###REPLACE### Mal den Stream pausiert um das WC aufzusuchen!"
+            case ("Luck" | "luck" | "Dotoluck" | "dotoluck"):
+                InvokedVar = "Luck"
+                ReplyTxt = "Doto hatte bereits ###REPLACE### Mal unverschämtes Glück!"
             case ("Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando"):
                 InvokedVar = "Lieferando"
                 ReplyTxt = "Aktuell hat Schnenko ###REPLACE###€ Umsatz bei Lieferando generiert, Investoren können sich freuen!"
