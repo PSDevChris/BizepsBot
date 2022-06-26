@@ -10,3 +10,4 @@
 !requirements.txt
 !.gitignore
 !cogs/xkcd.py
+!cogs/diceroll.py
