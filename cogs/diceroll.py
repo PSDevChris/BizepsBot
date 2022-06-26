@@ -21,7 +21,7 @@ class Diceroll(commands.Cog):
     @commands.command(name="roll", aliases=["Roll", "dice", "Dice", "diceroll", "Diceroll"], brief="Rollt einen X seitigen Würfel, Default ist 3")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _rolldice(self, ctx, maxroll: int=3):
-        await ctx.send(f"{random.SystemRandom().randrange(0, maxroll)}")
+        await ctx.send(f"{random.SystemRandom().randrange(1, maxroll)}")
 
 
 def setup(bot):
