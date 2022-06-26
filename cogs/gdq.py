@@ -39,9 +39,9 @@ class GDQ(commands.Cog):
                 GameTimeStamp = datetime.timestamp(GameTime + GameDelta)
                 if datetime.timestamp(datetime.now()) < GameTimeStamp and datetime.now().date() <= GameTime.date():
                     if index == 0:
-                        await ctx.send(f"Zu Beginn von GDQ am {('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag')[GameTime.weekday()]} den {GameTime.date().strftime('%d.%m.%Y')} läuft {runEntry[index]} {runEntry[index+1]}!")
+                        await ctx.send(f"Zu Beginn von GDQ am {('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag')[GameTime.weekday()]} den {GameTime.date().strftime('%d.%m.%Y')} läuft {runEntry[index]} {runEntry[index+1]} mit {Entry['Runners & Host'][index]}!")
                     else:
-                        await ctx.send(f"Bei GDQ läuft gerade {runEntry[index]} {runEntry[index+1]}!")
+                        await ctx.send(f"Bei GDQ läuft gerade {runEntry[index]} {runEntry[index+1]} von {Entry['Runners & Host'][index]}!")
                     break
             else:
                 await ctx.send("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
@@ -62,7 +62,7 @@ class GDQ(commands.Cog):
                     hours=GameDuration.hour, minutes=GameDuration.minute, seconds=GameDuration.second)
                 GameTimeStamp = datetime.timestamp(GameTime + GameDelta)
                 if datetime.timestamp(datetime.now()) < GameTimeStamp and datetime.now().date() <= GameTime.date():
-                    await ctx.send(f"Bei GDQ läuft als nächstes {runEntry[index+2]} {runEntry[index+3]}!")
+                    await ctx.send(f"Bei GDQ läuft als nächstes {runEntry[index+2]} {runEntry[index+3]} von {Entry['Runners & Host'][index+2]}!")
                     break
             else:
                 await ctx.send("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
