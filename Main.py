@@ -23,6 +23,7 @@ logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, hand
 # pd.set_option('display.max_rows', None)
 
 intents = discord.Intents.default()
+intents.message_content = True
 bot = commands.Bot(command_prefix=('!'), intents=intents)
 
 ### Functions ###
