@@ -327,10 +327,10 @@ class Fun(commands.Cog, name="Schabernack"):
                 for index, meme in enumerate(LastMessages[0].attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
                         await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
+                        AllFiles.append(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                         await ctx.send("Mittwoch Memes hinzugefügt.")
                         logging.info(
                             f"{ctx.author} has added a wednesday meme.")
-                        RefreshMemes()
                     else:
                         pass
             else:
@@ -342,10 +342,10 @@ class Fun(commands.Cog, name="Schabernack"):
                 for index, meme in enumerate(LastMessages[0].attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
                         await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                        AllFiles.append(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                         await ctx.send("Memes hinzugefügt.")
                         logging.info(
                             f"{ctx.author} has added a meme.")
-                        RefreshMemes()
                     else:
                         pass
 
@@ -413,6 +413,8 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.group(name="Hans", invoke_without_command=True, aliases=["hans", "HANS"], brief="Er muss arbeiten...?")
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def _hansworks(self, ctx):
+        if HansTasks == []:
+            RefreshHansTasks()
         HansTask = random.SystemRandom().choice(HansTasks)
         HansTasks.remove(HansTask)
         await ctx.send(f"Hans muss {HansTask}...")
@@ -425,7 +427,7 @@ class Fun(commands.Cog, name="Schabernack"):
             AllHansTasks = _read_json('Settings.json')
             AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
             _write_json('Settings.json', AllHansTasks)
-            RefreshHansTasks()
+            HansTasks.append(task)
             await ctx.send(f"Der Task '{task}' wurde Hans hinzugefügt.")
             logging.info(f"{ctx.author.name} has added {task} to Hans tasks.")
         else:
@@ -527,8 +529,8 @@ class Fun(commands.Cog, name="Schabernack"):
         DotoJokesJSON = _read_json('Settings.json')
         DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
         _write_json('Settings.json', DotoJokesJSON)
+        DotoJokes.append(joke)
         await ctx.send(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
-        RefreshJokes()
 
     @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt alle Doto-Jokes")
     async def _show_dotojokes(self, ctx):
@@ -1277,44 +1279,39 @@ async def GameReminder():
         _write_json('Settings.json', groups)
 
 
-@tasks.loop(minutes=30)
+@tasks.loop(time=datetime.now().time().replace(hour=17, minute=00, microsecond=00))
 async def TrashReminder():
     """
-    Prüft alle 30min ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
+    Prüft einmal um 17 Uhr ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
     dabei wird eine CSV Datei eingelesen und durchiteriert.
     """
-    TodayAtFivePM = datetime.now().replace(
-        hour=17, minute=00, second=00, microsecond=00)
-    TodayAtFiveAndAHalfPM = datetime.now().replace(
-        hour=17, minute=32, second=00, microsecond=00)
-    if datetime.now() >= TodayAtFivePM and datetime.now() <= TodayAtFiveAndAHalfPM:
-        AdminToNotify = 248181624485838849
-        MyDiscordUser = await bot.fetch_user(AdminToNotify)
-        tomorrowNow = datetime.today() + timedelta(days=1)
-        tomorrowClean = tomorrowNow.replace(
-            hour=00, minute=00, second=00, microsecond=00)
-        MuellListe = pd.read_csv('Muell.csv', sep=";")
-        for entry in MuellListe["Schwarze Tonne"].dropna():
-            EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
-            if tomorrowClean == EntryDate:
-                await MyDiscordUser.send(f"Die nächste schwarze Tonne ist morgen am: {entry}")
-                logging.info(
-                    f"Reminder for black garbage can which is collected on {entry} sent!")
-        for entry in MuellListe["Blaue Tonne"].dropna():
-            EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
-            if tomorrowClean == EntryDate:
-                await MyDiscordUser.send(f"Die nächste blaue Tonne ist morgen am: {entry}")
-                logging.info(
-                    f"Reminder for blue garbage can which is collected on {entry} sent!")
-        for entry in MuellListe["Gelbe Saecke"].dropna():
-            EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
-            if tomorrowClean == EntryDate:
-                await MyDiscordUser.send(f"Die nächsten gelben Säcke sind morgen am: {entry}")
-                logging.info(
-                    f"Reminder for yellow trashbag which is collected on {entry} sent!")
+    AdminToNotify = 248181624485838849
+    MyDiscordUser = await bot.fetch_user(AdminToNotify)
+    tomorrowNow = datetime.today() + timedelta(days=1)
+    tomorrowClean = tomorrowNow.replace(
+        hour=00, minute=00, second=00, microsecond=00)
+    MuellListe = pd.read_csv('Muell.csv', sep=";")
+    for entry in MuellListe["Schwarze Tonne"].dropna():
+        EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
+        if tomorrowClean == EntryDate:
+            await MyDiscordUser.send(f"Die nächste schwarze Tonne ist morgen am: {entry}")
+            logging.info(
+                f"Reminder for black garbage can which is collected on {entry} sent!")
+    for entry in MuellListe["Blaue Tonne"].dropna():
+        EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
+        if tomorrowClean == EntryDate:
+            await MyDiscordUser.send(f"Die nächste blaue Tonne ist morgen am: {entry}")
+            logging.info(
+                f"Reminder for blue garbage can which is collected on {entry} sent!")
+    for entry in MuellListe["Gelbe Saecke"].dropna():
+        EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
+        if tomorrowClean == EntryDate:
+            await MyDiscordUser.send(f"Die nächsten gelben Säcke sind morgen am: {entry}")
+            logging.info(
+                f"Reminder for yellow trashbag which is collected on {entry} sent!")
 
 
-@tasks.loop(minutes=5)
+@tasks.loop(time=datetime.now().time().replace(hour=17, minute=5, microsecond=00))
 async def GetFreeEpicGames():
 
     AllEpicFiles = next(os.walk("epic/"))[2]
