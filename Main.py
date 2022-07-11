@@ -24,7 +24,8 @@ logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, hand
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix=('!'), intents=intents)
+# Remember to remove the debug guild if you want to use it on your server
+bot = commands.Bot(debug_guilds=[539546796473712650], command_prefix=('!'), intents=intents)
 
 ### Functions ###
 
@@ -1506,16 +1507,11 @@ async def _get_free_steamgames():
 @bot.event
 async def on_ready():
     """
-    Startet den Bot und lädt alle notwendigen Cogs,
-    dazu werden die Loops gestartet, sollten sie nicht schon laufen.
+    Startet den Bot und die Loops werden gestartet, sollten sie nicht schon laufen.
     """
 
     logging.info(f"Logged in as {bot.user}!")
     logging.info("Bot started up!")
-    for File in os.listdir('./cogs'):
-        if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys():
-            bot.load_extension(f"cogs.{File[:-3]}")
-            logging.info(f"Extension {File[:-3]} loaded.")
     if not TwitchLiveCheck.is_running():
         TwitchLiveCheck.start()
     if not GameReminder.is_running():
@@ -1587,7 +1583,10 @@ if __name__ == '__main__':
     logging.info(f"Extension {Games.__name__} loaded.")
     bot.add_cog(Administration(bot))
     logging.info(f"Extension {Administration.__name__} loaded.")
-
+    for File in os.listdir('./cogs'):
+        if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys():
+            bot.load_extension(f"cogs.{File[:-3]}")
+            logging.info(f"Extension {File[:-3]} loaded.")
     ### Run Bot ###
 
     bot.run(TOKEN)

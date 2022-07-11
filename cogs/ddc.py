@@ -18,9 +18,9 @@ class DDC(commands.Cog):
         pass
 
     # Commands
-    @commands.command(name="ping", aliases=["Ping"], brief="Macht Pong")
+    @commands.slash_command(name="ping", aliases=["Ping"], description="Macht Pong!", brief="Macht Pong")
     async def _ping(self, ctx):
-        await ctx.send("Pong!")
+        await ctx.respond("Pong!")
 
 
 def setup(bot):
