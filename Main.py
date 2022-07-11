@@ -412,55 +412,6 @@ class Fun(commands.Cog, name="Schabernack"):
         logging.info(
             f"{ctx.message.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
 
-    @commands.group(name="Hans", invoke_without_command=True, aliases=["hans", "HANS"], brief="Er muss arbeiten...?")
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    async def _hansworks(self, ctx):
-        if HansTasks == []:
-            RefreshHansTasks()
-        HansTask = random.SystemRandom().choice(HansTasks)
-        HansTasks.remove(HansTask)
-        await ctx.send(f"Hans muss {HansTask}...")
-        logging.info(f"{ctx.author.name} wanted to know what Hans is doing all day.")
-
-    @_hansworks.command(name="add", aliases=['+', 'Add'], brief="Fügt Hans einen Task hinzu")
-    @commands.cooldown(1, 20, commands.BucketType.user)
-    async def _add_hansworks(self, ctx, task):
-        if "```" not in task:
-            AllHansTasks = _read_json('Settings.json')
-            AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
-            _write_json('Settings.json', AllHansTasks)
-            HansTasks.append(task)
-            await ctx.send(f"Der Task '{task}' wurde Hans hinzugefügt.")
-            logging.info(f"{ctx.author.name} has added {task} to Hans tasks.")
-        else:
-            await ctx.send("Das füge ich nicht hinzu.")
-
-    @_hansworks.command(name="show", aliases=['sh', '-s'], brief="Zeigt Hans Aufgaben an")
-    @commands.cooldown(1, 180, commands.BucketType.user)
-    async def _show_hansworks(self, ctx):
-        AllHansTasks = _read_json('Settings.json')
-        HansOutputString = ""
-        HansOutputLength = 0
-        await ctx.send(f"Hans hat folgende Tasks:\n")
-        for HansTaskEntry in AllHansTasks['Settings']['HansTasks']['Tasks']:
-            HansOutputLength += len(HansTaskEntry)
-            if HansOutputLength >= 1994:
-                await ctx.send(f"```{HansOutputString}```")
-                HansOutputString = ""
-                HansOutputLength = 0
-            HansOutputString += HansTaskEntry + "\n"
-            HansOutputLength = HansOutputLength + len(HansTaskEntry)
-        await ctx.send(f"```{HansOutputString}```")
-        logging.info(f"{ctx.author.name} requested the numbers of tasks Hans has.")
-
-    @_hansworks.command(name="num", aliases=["Number", "count", "Count"], brief="Zeigt, wie beschäftigt Hans ist")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _count_hansworks(self, ctx):
-        AllHansTasks = _read_json('Settings.json')
-        HansTaskCount = len(AllHansTasks['Settings']['HansTasks']['Tasks'])
-        await ctx.send(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
-        logging.info(f"{ctx.author} wanted to know how busy Hans is.")
-
     @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def _schnabiuwu(self, ctx):
@@ -604,12 +555,6 @@ class Fun(commands.Cog, name="Schabernack"):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
             logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
-
-    @_hansworks.error
-    async def _hanstasks_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wanted to spam the hanscommand!")
 
     @_dotojokes.error
     async def _dotojoke_error(self, ctx, error):
