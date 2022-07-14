@@ -1227,7 +1227,7 @@ async def GameReminder():
         _write_json('Settings.json', groups)
 
 
-@tasks.loop(time=datetime.datetime.now().time().replace(hour=17, minute=00, microsecond=00))
+@tasks.loop(time=datetime.datetime.now().time().replace(hour=17, minute=00, microsecond=00, tzinfo=datetime.datetime.utcnow().astimezone().tzinfo))
 async def TrashReminder():
     """
     Prüft einmal um 17 Uhr ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
