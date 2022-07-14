@@ -1,5 +1,6 @@
 import time
-from datetime import datetime, timedelta, timezone
+import datetime
+from datetime import timedelta, timezone
 import json
 import os
 import random
@@ -16,7 +17,7 @@ import aiohttp
 import pandas as pd
 
 logging.getLogger("discord").setLevel(logging.WARNING)
-logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, handlers=[logging.FileHandler(f'./logs/{datetime.now().date()}_bot.log'),
+logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, handlers=[logging.FileHandler(f'./logs/{datetime.datetime.now().date()}_bot.log'),
                                                                                       logging.StreamHandler()], encoding="UTF-8")
 
 # To show the whole table, currently unused
@@ -44,8 +45,8 @@ def RequestTwitchToken():
 
     TWITCHTOKENDATA = json.loads(rTwitchTokenData.content)
     TWITCH_TOKEN = TWITCHTOKENDATA['access_token']
-    TWITCH_TOKEN_EXPIRES = datetime.timestamp(
-        datetime.now()) + TWITCHTOKENDATA['expires_in']
+    TWITCH_TOKEN_EXPIRES = datetime.datetime.timestamp(
+        datetime.datetime.now()) + TWITCHTOKENDATA['expires_in']
 
     with open('TOKEN.json') as TokenJsonRead:
         data = json.load(TokenJsonRead)
@@ -276,7 +277,7 @@ class Fun(commands.Cog, name="Schabernack"):
                 AllFiles.remove(RandomPattiMeme)
                 logging.info(f"{ctx.author} wanted a patti meme.")
             case ("Mittwoch" | "mittwoch"):
-                if datetime.now().isoweekday() == 3:
+                if datetime.datetime.now().isoweekday() == 3:
                     WednesdayMemes = list(
                         filter(lambda x: 'Mittwoch' in x, AllFiles))
                     if WednesdayMemes == []:
@@ -510,7 +511,7 @@ class Fun(commands.Cog, name="Schabernack"):
     @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _calctvoed(self, ctx, eggroup: str, step):
-        CurrentYear = datetime.now().year
+        CurrentYear = datetime.datetime.now().year
         TVSiteHTML = requests.get(
             f"https://oeffentlicher-dienst.info/c/t/rechner/tvoed/vka?id=tvoed-vka-{CurrentYear}&matrix=1")
         TVSiteText = TVSiteHTML.text.replace("100%", "100")
@@ -624,9 +625,9 @@ class Meetings(commands.Cog, name="Meetings"):
     @commands.check(_is_gamechannel)
     async def _playgame(self, ctx, timearg):
         try:
-            CurrentDate = datetime.now()
-            GameTime = datetime.strptime(timearg, "%H:%M").time()
-            GameDateTime = datetime.combine(CurrentDate, GameTime)
+            CurrentDate = datetime.datetime.now()
+            GameTime = datetime.datetime.strptime(timearg, "%H:%M").time()
+            GameDateTime = datetime.datetime.combine(CurrentDate, GameTime)
             GameDateTimeTimestamp = GameDateTime.timestamp()
         except ValueError:
             await ctx.send("Na na, das ist keine Uhrzeit!")
@@ -708,9 +709,9 @@ class Meetings(commands.Cog, name="Meetings"):
 
         if ctx.message.channel.name in groups["Settings"]["Groups"].keys() and ctx.message.author.mention == groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             try:
-                CurrentDate = datetime.now()
-                GameTime = datetime.strptime(timearg, "%H:%M").time()
-                GameDateTime = datetime.combine(CurrentDate, GameTime)
+                CurrentDate = datetime.datetime.now()
+                GameTime = datetime.datetime.strptime(timearg, "%H:%M").time()
+                GameDateTime = datetime.datetime.combine(CurrentDate, GameTime)
                 GameDateTimeTimestamp = GameDateTime.timestamp()
             except ValueError:
                 await ctx.send("Na na, das ist keine Uhrzeit!")
@@ -1126,7 +1127,7 @@ async def TwitchLiveCheck():
     Zuletzt wird eine Benachrichtigung in meinen oder den Kumpels Channel gepostet.
     """
 
-    if datetime.timestamp(datetime.now()) > TWITCH_TOKEN_EXPIRES:
+    if datetime.datetime.timestamp(datetime.datetime.now()) > TWITCH_TOKEN_EXPIRES:
         RequestTwitchToken()
 
     TwitchJSON = _read_json('Settings.json')
@@ -1164,9 +1165,9 @@ async def TwitchLiveCheck():
                 Displayname = data['display_name']
             else:
                 Displayname = USER.title()
-            CurrentTime = int(datetime.timestamp(datetime.now()))
+            CurrentTime = int(datetime.datetime.timestamp(datetime.datetime.now()))
             embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
-                0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.utcnow())
+                0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.utcnow())
             embed.set_image(
                 url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
             embed.set_author(
@@ -1179,7 +1180,7 @@ async def TwitchLiveCheck():
                     f"{Displayname} went live on Twitch! Twitch Notification sent!")
             else:
                 channel = bot.get_channel(703530328836407327)
-                NotificationTime = datetime.utcnow() - timedelta(minutes=60)
+                NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
                 LastMessages = await channel.history(after=NotificationTime).flatten()
                 if LastMessages:
                     for message in LastMessages:
@@ -1208,7 +1209,7 @@ async def GameReminder():
     wenn ja wird in den Channel ein Reminder zur Uhrzeit gepostet.
     """
 
-    CurrentTime = datetime.timestamp(datetime.now())
+    CurrentTime = datetime.datetime.timestamp(datetime.datetime.now())
     groups = _read_json('Settings.json')
     FoundList = []
     for reminder in groups["Settings"]["Groups"].keys():
@@ -1226,7 +1227,7 @@ async def GameReminder():
         _write_json('Settings.json', groups)
 
 
-@tasks.loop(time=datetime.now().time().replace(hour=17, minute=00, microsecond=00))
+@tasks.loop(time=datetime.datetime.now().time().replace(hour=17, minute=00, microsecond=00))
 async def TrashReminder():
     """
     Prüft einmal um 17 Uhr ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
@@ -1234,7 +1235,7 @@ async def TrashReminder():
     """
     AdminToNotify = 248181624485838849
     MyDiscordUser = await bot.fetch_user(AdminToNotify)
-    tomorrowNow = datetime.today() + timedelta(days=1)
+    tomorrowNow = datetime.datetime.today() + timedelta(days=1)
     tomorrowClean = tomorrowNow.replace(
         hour=00, minute=00, second=00, microsecond=00)
     MuellListe = pd.read_csv('Muell.csv', sep=";")
@@ -1258,14 +1259,14 @@ async def TrashReminder():
                 f"Reminder for yellow trashbag which is collected on {entry} sent!")
 
 
-@tasks.loop(time=datetime.now().time().replace(hour=17, minute=5, microsecond=00))
+@tasks.loop(time=datetime.time(hour=17, minute=5, second=0, tzinfo=datetime.datetime.utcnow().astimezone().tzinfo))
 async def GetFreeEpicGames():
 
     AllEpicFiles = next(os.walk("epic/"))[2]
     NumberOfEpicFiles = len(AllEpicFiles)
 
     FreeGamesList = _read_json('Settings.json')
-    CurrentTime = datetime.now(timezone.utc)
+    CurrentTime = datetime.datetime.now(timezone.utc)
     EndedOffers = []
 
     for FreeGameEntry in FreeGamesList['Settings']['FreeEpicGames'].keys():
@@ -1297,7 +1298,7 @@ async def GetFreeEpicGames():
                             LaunchingToday = parser.parse(
                                 FreeGame['effectiveDate'])
 
-                            if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.now().date() or PromotionalStartDate.date() <= datetime.now().date()):
+                            if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.datetime.now().date() or PromotionalStartDate.date() <= datetime.datetime.now().date()):
                                 offers = FreeGame['promotions']['promotionalOffers']
                                 for offer in offers:
 
@@ -1337,7 +1338,7 @@ async def GetFreeEpicGames():
 
                                             ### Build Embed with chosen vars ###
                                             EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
-                                                0x1), timestamp=datetime.utcnow())
+                                                0x1), timestamp=datetime.datetime.utcnow())
                                             EpicEmbed.set_thumbnail(
                                                 url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
                                             EpicEmbed.set_author(
@@ -1415,7 +1416,7 @@ async def _get_free_steamgames():
                                 ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
 
                                 SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
-                                    0x6c6c6c), timestamp=datetime.utcnow())
+                                    0x6c6c6c), timestamp=datetime.datetime.utcnow())
                                 SteamEmbed.set_thumbnail(
                                     url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
                                 SteamEmbed.set_author(
@@ -1507,7 +1508,7 @@ if __name__ == '__main__':
         TWITCH_CLIENT_ID = TOKENDATA['TWITCH_CLIENT_ID']
         TWITCH_CLIENT_SECRET = TOKENDATA['TWITCH_CLIENT_SECRET']
         STREAMLABS_TOKEN = TOKENDATA['STREAMLABS_TOKEN']
-        if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys() and datetime.timestamp(datetime.now()) < TOKENDATA['TWITCH_TOKEN_EXPIRES']:
+        if 'TWITCH_TOKEN' in TOKENDATA.keys() and 'TWITCH_TOKEN_EXPIRES' in TOKENDATA.keys() and datetime.datetime.timestamp(datetime.datetime.now()) < TOKENDATA['TWITCH_TOKEN_EXPIRES']:
             TWITCH_TOKEN = TOKENDATA['TWITCH_TOKEN']
             TWITCH_TOKEN_EXPIRES = TOKENDATA['TWITCH_TOKEN_EXPIRES']
         else:
