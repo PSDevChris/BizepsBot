@@ -7,7 +7,7 @@ from Main import logging
 from Main import random
 from Main import _write_json
 
-def RefreshHansTasks():
+def _refresh_hanstasks():
     HansTasksJSON = _read_json('Settings.json')
     HansTasks = list(HansTasksJSON['Settings']['HansTasks']['Tasks'])
     return HansTasks
@@ -17,7 +17,7 @@ class HansTaskList(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
-        self.HansTasks = RefreshHansTasks()
+        self.HansTasks = _refresh_hanstasks()
     
 
     async def cog_check(self, ctx):
@@ -30,7 +30,7 @@ class HansTaskList(commands.Cog):
         pass
 
     # Commands
-    @commands.slash_command(name="hans", aliases=["hans", "HANS"], description="Er hat zu tun!", brief="Er hat zu tun!")
+    @commands.slash_command(name="hans", description="Er hat zu tun!", brief="Er hat zu tun!")
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def _hanstasks(self, ctx, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count", "add"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
         if option == "show":
@@ -67,7 +67,7 @@ class HansTaskList(commands.Cog):
             ctx.respond("Hier fehlte der Task, bitte beim hinzufügen angeben.")
         else:
             if self.HansTasks == []:
-                RefreshHansTasks()
+                _refresh_hanstasks()
             HansTask = random.SystemRandom().choice(self.HansTasks)
             self.HansTasks.remove(HansTask)
             await ctx.respond(f"Hans muss {HansTask}...")

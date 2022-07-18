@@ -76,20 +76,6 @@ def RefreshMemes():
                 AllFiles.append(f"{MemeFolder}/{FileName}")
     return AllFiles
 
-
-def RefreshJokes():
-    global DotoJokes
-    DotoJokesJSON = _read_json('Settings.json')
-    DotoJokes = list(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
-    return DotoJokes
-
-
-def RefreshHansTasks():
-    global HansTasks
-    HansTasksJSON = _read_json('Settings.json')
-    HansTasks = list(HansTasksJSON['Settings']['HansTasks']['Tasks'])
-    return HansTasks
-
 ### Permission Checks ###
 
 
@@ -468,46 +454,6 @@ class Fun(commands.Cog, name="Schabernack"):
         else:
             await ctx.send("Die API für den nächsten Feiertag ist nicht erreichbar :(")
 
-    @commands.group(name="Doto", invoke_without_command=True, aliases=["doto", "DotoJokes", "dotojokes", "dotoJokes"], brief="Gute Witze, schlechte Witze")
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def _dotojokes(self, ctx):
-        if len(DotoJokes) == 0:
-            RefreshJokes()
-        DotoJoke = random.SystemRandom().choice(DotoJokes)
-        await ctx.send(f"{DotoJoke}")
-        DotoJokes.remove(DotoJoke)
-
-    @_dotojokes.command(name="add", aliases=['+', 'Add'], brief="Fügt einen Doto-Joke hinzu")
-    @commands.has_role("Admin")
-    async def _add_dotojoke(self, ctx, joke):
-        DotoJokesJSON = _read_json('Settings.json')
-        DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
-        _write_json('Settings.json', DotoJokesJSON)
-        DotoJokes.append(joke)
-        await ctx.send(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
-
-    @_dotojokes.command(name="show", aliases=['sh', '-s'], brief="Zeigt alle Doto-Jokes")
-    async def _show_dotojokes(self, ctx):
-        DotoJokesJSON = _read_json('Settings.json')
-        DotoOutputString = ""
-        DotoOutputLength = 0
-        await ctx.send(f"Doto hat folgende Gagfeuerwerke gezündet:\n")
-        for DotoTaskEntry in DotoJokesJSON['Settings']['DotoJokes']['Jokes']:
-            DotoOutputLength += len(DotoTaskEntry)
-            if DotoOutputLength >= 1994:
-                await ctx.send(f"```{DotoOutputString}```")
-                DotoOutputString = ""
-                DotoOutputLength = 0
-            DotoOutputString += DotoTaskEntry + "\n\n"
-            DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
-        await ctx.send(f"```{DotoOutputString}```")
-
-    @_dotojokes.command(name="count", aliases=["num", "Number", "Count"], brief="Wie viele Gags hat Doto nochmal gerissen?")
-    async def _count_dotojokes(self, ctx):
-        DotoJokesJSON = _read_json('Settings.json')
-        DotoJokesCount = len(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
-        await ctx.send(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
-
     @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _calctvoed(self, ctx, eggroup: str, step):
@@ -556,15 +502,6 @@ class Fun(commands.Cog, name="Schabernack"):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
             logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
-
-    @_dotojokes.error
-    async def _dotojoke_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wanted to spam Doto-Jokes!")
-        elif isinstance(error, commands.CheckFailure):
-            await ctx.send("Nur Doto darf so schlechte Witze machen und hinzufügen.")
-            logging.warning(f"{ctx.author} wanted to add Doto-Jokes!")
 
     @_zuggishow.error
     async def _zuggishow_error(self, ctx, error):
@@ -1227,7 +1164,7 @@ async def GameReminder():
         _write_json('Settings.json', groups)
 
 
-@tasks.loop(time=datetime.datetime.now().time().replace(hour=17, minute=00, microsecond=00, tzinfo=datetime.datetime.utcnow().astimezone().tzinfo))
+@tasks.loop(time=datetime.time(hour=17, minute=0, second=0, tzinfo=datetime.datetime.utcnow().astimezone().tzinfo))
 async def TrashReminder():
     """
     Prüft einmal um 17 Uhr ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
@@ -1469,8 +1406,6 @@ async def on_ready():
     if not _get_free_steamgames.is_running():
         _get_free_steamgames.start()
     RefreshMemes()
-    RefreshJokes()
-    RefreshHansTasks()
     _get_banned_users()
 
 
