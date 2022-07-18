@@ -1465,9 +1465,12 @@ if __name__ == '__main__':
     bot.add_cog(Administration(bot))
     logging.info(f"Extension {Administration.__name__} loaded.")
     for File in os.listdir('./cogs'):
-        if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys():
+        if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys() and not File.startswith("management"):
             bot.load_extension(f"cogs.{File[:-3]}")
             logging.info(f"Extension {File[:-3]} loaded.")
+    if "cogs.management" not in bot.extensions.keys():
+        bot.load_extension("cogs.management")
+        logging.info(f"Extension management loaded.")
     ### Run Bot ###
 
     bot.run(TOKEN)

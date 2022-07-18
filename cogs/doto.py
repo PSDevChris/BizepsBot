@@ -51,11 +51,11 @@ class DotoJokes(commands.Cog):
             DotoJokesCount = len(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
             await ctx.respond(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
         else:
-            if len(self.DotoJokes) == 0:
+            if len(self.bot.DotoJokes) == 0:
                 _refresh_dotojokes()
-            DotoJoke = random.SystemRandom().choice(self.DotoJokes)
+            DotoJoke = random.SystemRandom().choice(self.bot.DotoJokes)
             await ctx.respond(f"{DotoJoke}")
-            self.DotoJokes.remove(DotoJoke)
+            self.bot.DotoJokes.remove(DotoJoke)
 
     @_dotojokes.error
     async def _dotojokes_error(self, ctx, error):
