@@ -30,7 +30,7 @@ class xkcd(commands.Cog):
                 if RequestToXkcd.status == 200:
                     JSONFromXkcd = await RequestToXkcd.json()
                     XkcdEmbed = discord.Embed(title=f'Aktuelles xkcd Comic: {JSONFromXkcd["safe_title"]}!\r\n', colour=discord.Colour(
-                        0xFFFFFF), description=f'{JSONFromXkcd["alt"]}', timestamp=datetime.utcnow())
+                        0xFFFFFF), description=f'{JSONFromXkcd["alt"]}', timestamp=datetime.datetime.utcnow())
                     XkcdEmbed.set_image(
                         url=f'{JSONFromXkcd["img"]}')
                     XkcdEmbed.set_footer(text="Bizeps_Bot")

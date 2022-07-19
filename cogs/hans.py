@@ -31,7 +31,7 @@ class HansTaskList(commands.Cog):
 
     # Commands
     @commands.slash_command(name="hans", description="Er hat zu tun!", brief="Er hat zu tun!")
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _hanstasks(self, ctx, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count", "add"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
         if option == "show":
             AllHansTasks = _read_json('Settings.json')
