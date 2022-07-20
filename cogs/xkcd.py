@@ -21,7 +21,7 @@ class xkcd(commands.Cog):
         pass
 
     # Commands
-    @commands.command(name="xkcd", aliases=["XKCD", "Xkcd"], brief="Postet das aktuelle xkcd")
+    @commands.slash_command(name="xkcd", description="Postet das aktuelle xkcd Comic", brief="Postet das aktuelle xkcd Comic")
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def _show_xkcd(self, ctx):
         XkcdURL = "https://xkcd.com/info.0.json"
@@ -34,7 +34,7 @@ class xkcd(commands.Cog):
                     XkcdEmbed.set_image(
                         url=f'{JSONFromXkcd["img"]}')
                     XkcdEmbed.set_footer(text="Bizeps_Bot")
-                    await ctx.send("", embed=XkcdEmbed)
+                    await ctx.respond("", embed=XkcdEmbed)
 
 
 def setup(bot):

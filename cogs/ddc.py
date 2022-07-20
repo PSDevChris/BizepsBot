@@ -18,7 +18,7 @@ class DDC(commands.Cog):
         pass
 
     # Commands
-    @commands.slash_command(name="ping", aliases=["Ping"], description="Macht Pong!", brief="Macht Pong")
+    @commands.slash_command(name="ping", description="Macht Pong!", brief="Macht Pong")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _ping(self, ctx):
         await ctx.respond("Pong!")
