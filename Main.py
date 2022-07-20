@@ -26,7 +26,8 @@ logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, hand
 intents = discord.Intents.default()
 intents.message_content = True
 # Remember to remove the debug guild if you want to use it on your server
-bot = commands.Bot(debug_guilds=[539546796473712650], command_prefix=('!'), intents=intents)
+bot = commands.Bot(debug_guilds=[539546796473712650],
+                   command_prefix=('!'), intents=intents)
 
 ### Functions ###
 
@@ -157,7 +158,7 @@ class Counter(commands.Cog, name="Counter"):
         data['Settings']['Counter'][f'{InvokedVar}'] = data['Settings']['Counter'][f'{InvokedVar}'] + IncNum
         LastAboNumber = data['Settings']['Counter']['LastAboAt']
         NewResult = data['Settings']['Counter'][f'{InvokedVar}']
-        if ctx.invoked_parents[0] in ["Luck", "luck", "Dotoluck", "dotoluck"] and ((NewResult - LastAboNumber) + random.SystemRandom().randint(0,50) >= (LastAboNumber+100)):
+        if ctx.invoked_parents[0] in ["Luck", "luck", "Dotoluck", "dotoluck"] and ((NewResult - LastAboNumber) + random.SystemRandom().randint(0, 50) >= (LastAboNumber+100)):
             await ctx.send(f"{ReplyTxt.replace('###REPLACE###', f'{NewResult}')} Als Strafe verschenkt er im nächsten Stream {random.SystemRandom().randint(1,3)} Abos!")
             data['Settings']['Counter']['LastAboAt'] = NewResult
         else:
@@ -316,7 +317,8 @@ class Fun(commands.Cog, name="Schabernack"):
                 for index, meme in enumerate(LastMessages[0].attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
                         await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        AllFiles.append(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
+                        AllFiles.append(
+                            f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                         await ctx.send("Mittwoch Memes hinzugefügt.")
                         logging.info(
                             f"{ctx.author} has added a wednesday meme.")
@@ -331,7 +333,8 @@ class Fun(commands.Cog, name="Schabernack"):
                 for index, meme in enumerate(LastMessages[0].attachments):
                     if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
                         await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        AllFiles.append(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                        AllFiles.append(
+                            f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                         await ctx.send("Memes hinzugefügt.")
                         logging.info(
                             f"{ctx.author} has added a meme.")
@@ -934,7 +937,8 @@ class Administration(commands.Cog, name="Administration"):
             TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
             _write_json('Settings.json', TwitchUser)
             await ctx.send(f"{Member} zur Twitchliste hinzugefügt! Folgender Satz wurde hinterlegt: '{custommsg}'")
-            logging.info(f"User {Member} was added to twitchlist with custom message: '{custommsg}'")
+            logging.info(
+                f"User {Member} was added to twitchlist with custom message: '{custommsg}'")
         except:
             await ctx.send("Konnte User nicht hinzufügen.")
             logging.error(
@@ -971,23 +975,6 @@ class Administration(commands.Cog, name="Administration"):
             bot.unload_extension(f"cogs.{extension}")
             await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
             logging.info(f"Extension {extension} was unloaded.")
-
-    @commands.command(name="log", aliases=["Log", "LOG"], brief="Zeigt die neusten Logeinträge des Bots")
-    @commands.has_role("Admin")
-    async def _showlog(self, ctx):
-        """
-        Zeigt die letzten 10 Einträge des Logs.
-        """
-
-        AllLogFiles = next(os.walk("logs/"))[2]
-        SortedLogFiles = sorted(AllLogFiles)
-        LatestLogFile = SortedLogFiles[-1]
-        with open(f'logs/{LatestLogFile}', 'r') as LogFileRead:
-            LogContent = LogFileRead.readlines()
-            LatestLogLines = LogContent[-10:]
-            LogOutputInString = "".join(LatestLogLines)
-            await ctx.send(f"```{LogOutputInString}```")
-        logging.info(f"{ctx.author} has called for the log.")
 
     @commands.command(name="Ban", aliases=["ban", "bann", "Bann"], brief="Hindert den User am verwenden von Commands")
     @commands.has_any_role("Admin", "Moderatoren")
@@ -1102,7 +1089,8 @@ async def TwitchLiveCheck():
                 Displayname = data['display_name']
             else:
                 Displayname = USER.title()
-            CurrentTime = int(datetime.datetime.timestamp(datetime.datetime.now()))
+            CurrentTime = int(datetime.datetime.timestamp(
+                datetime.datetime.now()))
             embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
                 0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.utcnow())
             embed.set_image(
