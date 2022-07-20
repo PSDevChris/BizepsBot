@@ -3,6 +3,7 @@ from discord.ext import commands
 from Main import _is_banned
 from Main import _get_banned_users
 from Main import random
+from Main import logging
 
 class Diceroll(commands.Cog):
 
@@ -22,7 +23,11 @@ class Diceroll(commands.Cog):
     @commands.slash_command(name="roll", description="Rollt einen X seitigen Würfel, Standardwert ist 3", brief="Rollt einen X seitigen Würfel, Standardwert ist 3")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _rolldice(self, ctx, maxroll: Option(int, "Die Anzahl der Seiten des Würfels", required=False, default=3)):
-        await ctx.respond(f"{random.SystemRandom().randrange(1, maxroll)}")
+        if maxroll == 0:
+            await ctx.respond("Es gibt keinen 0 seitigen Würfel!", ephemeral=True)
+        else:
+            await ctx.respond(f"{random.SystemRandom().randrange(1, abs(maxroll))}")
+            logging.info(f"{ctx.author} rolled with value {maxroll} as max value, negative numbers were turned to absolutes.")
 
 
 def setup(bot):
