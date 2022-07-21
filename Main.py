@@ -1092,7 +1092,7 @@ async def TwitchLiveCheck():
             CurrentTime = int(datetime.datetime.timestamp(
                 datetime.datetime.now()))
             embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
-                0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.utcnow())
+                0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.now())
             embed.set_image(
                 url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
             embed.set_author(
@@ -1268,7 +1268,7 @@ async def GetFreeEpicGames():
 
                                             ### Build Embed with chosen vars ###
                                             EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
-                                                0x1), timestamp=datetime.datetime.utcnow())
+                                                0x1), timestamp=datetime.datetime.now())
                                             EpicEmbed.set_thumbnail(
                                                 url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
                                             EpicEmbed.set_author(
@@ -1346,7 +1346,7 @@ async def _get_free_steamgames():
                                 ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
 
                                 SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
-                                    0x6c6c6c), timestamp=datetime.datetime.utcnow())
+                                    0x6c6c6c), timestamp=datetime.datetime.now())
                                 SteamEmbed.set_thumbnail(
                                     url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
                                 SteamEmbed.set_author(
