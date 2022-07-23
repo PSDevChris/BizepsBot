@@ -761,7 +761,7 @@ class Games(commands.Cog, name="Games"):
     async def cog_check(self, ctx):
         return _is_banned(ctx, BannedUsers)
 
-    @commands.command(name="ESAGame", aliases=["esagame"], brief="Gibt das aktuelle ESA Game aus")
+    @commands.command(name="ESAGame", aliases=["esagame", "ESA", "esa", "ESAGAME"], brief="Gibt das aktuelle ESA Game aus")
     async def _esagame(self, ctx):
         try:
             USER = "esamarathon"
