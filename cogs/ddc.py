@@ -1,6 +1,7 @@
 ﻿from discord.ext import commands
 from Main import _is_banned
 from Main import _get_banned_users
+from Main import logging
 
 
 class DDC(commands.Cog):
@@ -22,6 +23,7 @@ class DDC(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _ping(self, ctx):
         await ctx.respond("Pong!")
+        logging.info(f"{ctx.author} requested a pong.")
 
 
 def setup(bot):

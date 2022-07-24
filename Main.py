@@ -235,17 +235,6 @@ class Fun(commands.Cog, name="Schabernack"):
         LastMessage = LastMessages[0]
         await LastMessage.reply(f"Zuggi sagt nein.")
 
-    @commands.command(name="Orangensaft", aliases=["orangensaft", "OrangenSaft"], brief="Frag nicht was für Saft...")
-    async def _orangejuice(self, ctx):
-        if str(ctx.author) != "Schnenko#9944":
-            await ctx.send(f"Frag nicht was für Saft, einfach Orangensaft! Tuuuuuuuurn up! Fassen Sie mich nicht an!")
-        else:
-            await ctx.send(f"https://tenor.com/view/nerd-moneyboy-money-boy-hau-gif-16097814")
-
-    @commands.command(name="Ehrenmann", aliases=["ehrenmann"], brief="Der erwähnte User ist ein Ehrenmann!")
-    async def _ehrenmann(self, ctx, user: commands.MemberConverter):
-        await ctx.send(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:762764389384192000>")
-
     @commands.group(name="meme", aliases=["Meme", "patti", "Patti", "Mittwoch", "mittwoch"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
     @commands.cooldown(2, 180, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
@@ -429,11 +418,6 @@ class Fun(commands.Cog, name="Schabernack"):
             await ctx.send(f"{RecipElementName}\n{RecipElementURL}")
         else:
             await ctx.send("Kartoffel API ist leider down T_T")
-
-    @commands.command(name="Josch", aliases=["josch", "fullstack"], brief="Entwickler...")
-    @commands.cooldown(1, 30, commands.BucketType.user)
-    async def _blamedevs(self, ctx):
-        await ctx.send(file=discord.File('memes/josch700#3680/josch.png'))
 
     @commands.command(name="LeBonk", aliases=["Lebonk", "leBonk", "lebonk", "Lechonk", "lechonk", "LeChonk"], brief="Don't mess with him...")
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -705,7 +689,7 @@ class Meetings(commands.Cog, name="Meetings"):
                 ctx.message.author.mention)
             await ctx.send(f"{ctx.author.mention}, du wurdest aus der Verabredung entfernt.")
             logging.info(
-                f"{ctx.author} removed from meeting in {CurrentChannel}")
+                f"{ctx.author} removed from meeting in {CurrentChannel}.")
             _write_json('Settings.json', StartedGroups)
         elif ctx.message.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.message.author.mention not in StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             await ctx.send(f"{ctx.author.mention}, du bist der Verabredung nicht beigetreten und wurdest daher auch nicht entfernt.")
@@ -779,7 +763,7 @@ class Games(commands.Cog, name="Games"):
                 game = {"name": "Irgendwas"}
 
             await ctx.send(f"Bei ESA wird gerade {game['name']} gespielt!")
-            logging.info(f"{ctx.author} invoked the ESA command")
+            logging.info(f"{ctx.author} invoked the ESA command.")
         except IndexError:
             # Username does not exist or Username is wrong, greetings to Schnabeltier
             logging.error("ESA Channel not found. Was it deleted or banned?!")
