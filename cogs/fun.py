@@ -25,7 +25,7 @@ class Fun2(commands.Cog):
         await ctx.respond(file=discord.File('memes/josch700#3680/josch.png'))
         logging.info(f"{ctx.author} blamed the devs.")
 
-    @commands.slash_command(name="turnup", description="Was für Saft=", brief="Was für Saft?")
+    @commands.slash_command(name="turnup", description="Was für Saft?", brief="Was für Saft?")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _orangejuice(self, ctx):
         if str(ctx.author) != "Schnenko#9944":
