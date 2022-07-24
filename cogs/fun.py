@@ -42,8 +42,7 @@ class Fun2(commands.Cog):
     @commands.slash_command(name="lebonk", description="Don't mess with him...", brief="Don't mess with him...")
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def _lebonk(self, ctx):
-        LastMessages = await ctx.channel.history(limit=2).flatten()
-        LastMessages.reverse()
+        LastMessages = await ctx.channel.history(limit=1).flatten()
         LastMessage = LastMessages[0]
         await ctx.respond("Die Nachricht wurde gebonkt!", ephemeral=True)
         await LastMessage.reply("Mess with Lechonk, you get the bonk!", file=discord.File('fun/LeBonk.png'))
