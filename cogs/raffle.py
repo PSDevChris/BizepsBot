@@ -82,7 +82,7 @@ class Raffle(commands.Cog, name="Raffle"):
         CurrentPrize = RaffleJSON['Settings']['Raffle']['Title']
         CurrentState = RaffleJSON['Settings']['Raffle']['Active']
         if CurrentPrize != "" and CurrentState:
-            await ctx.respond(f"Das neue Raffle wurde aktiviert! Teilnehmen könnt ihr über !raffle join, verlost wird {RaffleJSON['Settings']['Raffle']['Title']}!")
+            await ctx.respond(f"Das neue Raffle wurde aktiviert! Teilnehmen könnt ihr über /giveaway join, verlost wird {RaffleJSON['Settings']['Raffle']['Title']}!")
         else:
             await ctx.respond(f"Es fehlt der Preis oder der Status wurde nicht auf aktiv gesetzt! Preis: {CurrentPrize} State: {CurrentState}!")
 
