@@ -263,9 +263,10 @@ class Fun(commands.Cog, name="Schabernack"):
                     RandomWedMeme = random.SystemRandom().choice(WednesdayMemes)
                     MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
                                          "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
-                    await ctx.send(f"Es ist Mittwoch, meine {random.SystemRandom().choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
+                    RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)                                        
+                    logging.info(f"{ctx.author} wanted a wednesday meme, chosen adjective was {RandomAdjective}, chosen meme was {RandomWedMeme}.")
+                    await ctx.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
-                    logging.info(f"{ctx.author} wanted a wednesday meme.")
                 else:
                     NoWednesdayMemes = list(
                         filter(lambda x: 'Mittwoch' not in x, AllFiles))
