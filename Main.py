@@ -261,7 +261,6 @@ class Fun(commands.Cog, name="Schabernack"):
                         WednesdayMemes = list(
                             filter(lambda x: 'Mittwoch' in x, AllFiles))
                     RandomWedMeme = random.SystemRandom().choice(WednesdayMemes)
-                    WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
                     MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
                                          "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
                     await ctx.send(f"Es ist Mittwoch, meine {random.SystemRandom().choice(MyDudesAdjectives)} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
@@ -274,10 +273,10 @@ class Fun(commands.Cog, name="Schabernack"):
                         RefreshMemes()
                         NoWednesdayMemes = list(
                             filter(lambda x: 'Mittwoch' not in x, AllFiles))
-                    RandomWedMeme = random.SystemRandom().choice(NoWednesdayMemes)
-                    WednesdayAuthor = RandomWedMeme.split("/")[1].split("#")[0]
-                    await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {WednesdayAuthor}", file=discord.File(f"{RandomWedMeme}"))
-                    AllFiles.remove(RandomWedMeme)
+                    RandomNoWedMeme = random.SystemRandom().choice(NoWednesdayMemes)
+                    NoWednesdayAuthor = RandomNoWedMeme.split("/")[1].split("#")[0]
+                    await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {NoWednesdayAuthor}", file=discord.File(f"{RandomNoWedMeme}"))
+                    AllFiles.remove(RandomNoWedMeme)
                     logging.info(
                         f"{ctx.author} wanted a wednesday meme but it is not wednesday.")
             case _:
@@ -473,8 +472,10 @@ class Fun(commands.Cog, name="Schabernack"):
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Dieser Befehl ist noch im Cooldown.")
+            await ctx.send(f"Dieser Befehl ist noch im Cooldown. Versuche es erneut in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam random memes!")
+        else:
+            logging.error(f"ERROR: {error}!")
 
     @_uwuthis.error
     async def _uwuthis_error(self, ctx, error):
