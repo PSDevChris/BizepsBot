@@ -264,7 +264,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
                                          "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
                     RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)                                        
-                    logging.info(f"{ctx.author} wanted a wednesday meme, chosen adjective was {RandomAdjective}, chosen meme was {RandomWedMeme}.")
+                    logging.info(f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
                     await ctx.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
                 else:
@@ -276,10 +276,9 @@ class Fun(commands.Cog, name="Schabernack"):
                             filter(lambda x: 'Mittwoch' not in x, AllFiles))
                     RandomNoWedMeme = random.SystemRandom().choice(NoWednesdayMemes)
                     NoWednesdayAuthor = RandomNoWedMeme.split("/")[1].split("#")[0]
+                    logging.info(f"{ctx.author} wanted a wednesday meme not on wednesday. Chosen meme was [{RandomNoWedMeme}].")
                     await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {NoWednesdayAuthor}", file=discord.File(f"{RandomNoWedMeme}"))
                     AllFiles.remove(RandomNoWedMeme)
-                    logging.info(
-                        f"{ctx.author} wanted a wednesday meme but it is not wednesday.")
             case _:
                 NoWednesdayMemes = list(
                     filter(lambda x: 'Mittwoch' not in x, AllFiles))
@@ -289,9 +288,9 @@ class Fun(commands.Cog, name="Schabernack"):
                         filter(lambda x: 'Mittwoch' not in x, AllFiles))
                 RandomMeme = random.SystemRandom().choice(NoWednesdayMemes)
                 AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
+                logging.info(f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
                 await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
-                AllFiles.remove(RandomMeme)
-                logging.info(f"{ctx.author} wanted a random meme.")
+                AllFiles.remove(RandomMeme)    
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
     @commands.cooldown(2, 180, commands.BucketType.user)
@@ -304,7 +303,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     os.walk(f"memes/Mittwoch meine Kerle#"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(LastMessages[0].attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size >= 8000000:
                         await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                         AllFiles.append(
                             f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
@@ -312,7 +311,7 @@ class Fun(commands.Cog, name="Schabernack"):
                         logging.info(
                             f"{ctx.author} has added a wednesday meme.")
                     else:
-                        pass
+                        logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
             else:
                 if os.path.exists(f"memes/{LastMessages[0].author}") == False:
                     os.mkdir(f"memes/{LastMessages[0].author}")
@@ -320,7 +319,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     os.walk(f"memes/{LastMessages[0].author}"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(LastMessages[0].attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size >= 8000000:
                         await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                         AllFiles.append(
                             f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
@@ -328,7 +327,7 @@ class Fun(commands.Cog, name="Schabernack"):
                         logging.info(
                             f"{ctx.author} has added a meme.")
                     else:
-                        pass
+                        logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     @commands.cooldown(2, 180, commands.BucketType.user)
