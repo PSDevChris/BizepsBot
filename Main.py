@@ -303,7 +303,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     os.walk(f"memes/Mittwoch meine Kerle#"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(LastMessages[0].attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size >= 8000000:
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
                         await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                         AllFiles.append(
                             f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
@@ -319,7 +319,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     os.walk(f"memes/{LastMessages[0].author}"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(LastMessages[0].attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size >= 8000000:
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
                         await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                         AllFiles.append(
                             f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
