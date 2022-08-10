@@ -46,21 +46,21 @@ class HansTaskList(commands.Cog):
                     HansOutputLength = 0
                 HansOutputString += HansTaskEntry + "\n"
                 HansOutputLength = HansOutputLength + len(HansTaskEntry)
+            logging.info(f"{ctx.author.name} requested the list of Hans tasks.")
             await ctx.respond(f"```{HansOutputString}```")
-            logging.info(f"{ctx.author.name} requested the numbers of tasks Hans has.")
         elif option == "count":
             AllHansTasks = _read_json('Settings.json')
             HansTaskCount = len(AllHansTasks['Settings']['HansTasks']['Tasks'])
+            logging.info(f"{ctx.author} wanted to know how much tasks Hans has.")
             await ctx.respond(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
-            logging.info(f"{ctx.author} wanted to know how busy Hans is.")
         elif (option == "add" and task) or task:
             if "```" not in task:
                 AllHansTasks = _read_json('Settings.json')
                 AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
                 _write_json('Settings.json', AllHansTasks)
                 self.HansTasks.append(task)
-                await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
                 logging.info(f"{ctx.author.name} has added {task} to Hans tasks.")
+                await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
         elif option == "add" and not task:
@@ -70,14 +70,16 @@ class HansTaskList(commands.Cog):
                 _refresh_hanstasks()
             HansTask = random.SystemRandom().choice(self.HansTasks)
             self.HansTasks.remove(HansTask)
+            logging.info(f"{ctx.author.name} wanted to know what Hans is doing all day, task chosen was {HansTask}.")
             await ctx.respond(f"Hans muss {HansTask}...")
-            logging.info(f"{ctx.author.name} wanted to know what Hans is doing all day.")
 
     @_hanstasks.error
     async def _hanstasks_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam the hanscommand!")
+        else:
+            logging.error(f"ERROR: {error}")
 
 def setup(bot):
     bot.add_cog(HansTaskList(bot))

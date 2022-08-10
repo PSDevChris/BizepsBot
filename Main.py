@@ -338,28 +338,28 @@ class Fun(commands.Cog, name="Schabernack"):
                     os.walk(f"memes/Mittwoch meine Kerle#"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(Message.attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
                         await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        await ctx.send("Mittwoch Memes hinzugefügt.")
                         logging.info(
-                            f"{ctx.author} has added a wednesday meme.")
-                        RefreshMemes()
+                            f"{ctx.author} has added the wednesday meme {meme.Filename}.")
+                        await ctx.send("Mittwoch Memes hinzugefügt.")
+                        AllFiles.append(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                     else:
-                        pass
+                        logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
             else:
                 if os.path.exists(f"memes/{Message.author}") == False:
                     os.mkdir(f"memes/{Message.author}")
                 NumberOfMemes = next(os.walk(f"memes/{Message.author}"))[2]
                 NumberOfFiles = len(NumberOfMemes)
                 for index, meme in enumerate(Message.attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')):
+                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
                         await meme.save(f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
                         logging.info(
-                            f"{ctx.author} has collected a meme.")
-                        RefreshMemes()
+                            f"{ctx.author} has collected the meme {meme.Filename}.")
+                        await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
+                        AllFiles.append(f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                     else:
-                        pass
+                        logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
 
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
@@ -402,7 +402,7 @@ class Fun(commands.Cog, name="Schabernack"):
             await ctx.send("API ist gerade nicht erreichbar TwT")
 
     @commands.command(name="Zucker", aliases=["zucker", "Zuggi", "zuggi"], brief="Zuckersüß")
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.cooldown(2, 30, commands.BucketType.user)
     async def _zuggishow(self, ctx):
         RandomIndex = random.randrange(0, 990, 30)
         RecipURL = requests.get(
@@ -1300,7 +1300,7 @@ async def GetFreeEpicGames():
                 logging.error("Epic Store is not available!")
 
 
-@tasks.loop(minutes=30)
+@tasks.loop(minutes=15)
 async def _get_free_steamgames():
     FreeGameTitleList = []
     FreeSteamList = _read_json('Settings.json')
