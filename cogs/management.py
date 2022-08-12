@@ -7,6 +7,7 @@ from Main import _get_banned_users
 from Main import _read_json
 from Main import logging
 from Main import _write_json
+from Main import requests
 
 
 class Management(commands.Cog):
@@ -37,6 +38,14 @@ class Management(commands.Cog):
         self.bot.DotoJokes.append(joke)
         await ctx.respond(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
 
+    @commands.slash_command(name="ip", description="Gibt die aktuelle public IP aus")
+    @discord.default_permissions(administrator=True)
+    @commands.has_any_role("Admin", "Moderatoren")
+    async def _returnpubip(self, ctx):
+        MyIP = requests.get('https://api.ipify.org').content.decode('UTF-8')
+        await ctx.respond(f"Die aktuelle IP lautet: {MyIP}", ephemeral=True)
+        logging.info(f"{ctx.author} requested the public ip.")
+
     @commands.slash_command(name="log", description="Zeigt die neusten Logeinträge des Bots", brief="Zeigt die neusten Logeinträge des Bots")
     @discord.default_permissions(administrator=True)
     @commands.has_role("Admin")
@@ -54,6 +63,38 @@ class Management(commands.Cog):
             LogOutputInString = "".join(LatestLogLines)
             await ctx.respond(f"```{LogOutputInString}```")
         logging.info(f"{ctx.author} has called for the log.")
+
+    @commands.slash_command(name="ban", description="Hindert den User am verwenden von Commands")
+    @discord.default_permissions(moderate_members=True)
+    @commands.has_any_role("Admin", "Moderatoren")
+    async def _banuser(self, ctx, user: discord.User):
+        UserString = user.name
+        BannedUserJSON = _read_json('Settings.json')
+        BannedUsers = BannedUserJSON['Settings']['BannedUsers']
+        if UserString not in BannedUsers:
+            BannedUsers.append(UserString)
+            _write_json('Settings.json', BannedUserJSON)
+            await ctx.respond(f"User {UserString} wurde für 24 Stunden für Befehle gebannt.")
+            logging.info(f"User {UserString} was banned from using commands.")
+            _get_banned_users()
+        else:
+            await ctx.respond("Dieser User ist bereits gebannt.")
+
+    @commands.slash_command(name="unban", description="Gibt den User für Commands frei")
+    @discord.default_permissions(moderate_members=True)
+    @commands.has_any_role("Admin", "Moderatoren")
+    async def _unbanuser(self, ctx, user: discord.User):
+        UserString = user.name
+        BannedUserJSON = _read_json('Settings.json')
+        BannedUsers = BannedUserJSON['Settings']['BannedUsers']
+        if UserString in BannedUsers:
+            BannedUsers.remove(UserString)
+            _write_json('Settings.json', BannedUserJSON)
+            await ctx.respond(f"Der User {UserString} wurde entbannt.")
+            logging.info(f"User {UserString} was unbanned.")
+            _get_banned_users()
+        else:
+            ctx.respond(f"Der Benutzer {UserString} ist nicht gebannt.")
 
     # Error Checking
 

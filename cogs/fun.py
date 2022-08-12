@@ -47,6 +47,9 @@ class Fun2(commands.Cog):
         await ctx.respond("Die Nachricht wurde gebonkt!", ephemeral=True)
         await LastMessage.reply("Mess with Lechonk, you get the bonk!", file=discord.File('fun/LeBonk.png'))
 
+    @commands.slash_command(name="pub", description="Typos...")
+    async def _pubtypo(self, ctx):
+        await ctx.respond(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
 
 def setup(bot):
     bot.add_cog(Fun2(bot))

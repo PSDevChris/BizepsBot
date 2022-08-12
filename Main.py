@@ -1,4 +1,3 @@
-import time
 import datetime
 from datetime import timedelta, timezone
 import json
@@ -11,7 +10,6 @@ from dateutil import parser
 import requests
 from requests.utils import quote
 from bs4 import BeautifulSoup
-import paramiko
 import uwuify
 import aiohttp
 import pandas as pd
@@ -151,6 +149,8 @@ class Counter(commands.Cog, name="Counter"):
                 IncNum = 20
                 ReplyTxt = "Schnenko hat dieses Jahr bereits für ###REPLACE###€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!"
             case _:
+                logging.error(
+                    f"ERROR: {ctx.author.name} wanted to increase the counter for {ctx.invoked_parents[0]} but there is none!")
                 await ctx.send("Dieser Counter konnte nicht gefunden werden.")
                 return
 
@@ -159,9 +159,13 @@ class Counter(commands.Cog, name="Counter"):
         LastAboNumber = data['Settings']['Counter']['LastAboAt']
         NewResult = data['Settings']['Counter'][f'{InvokedVar}']
         if ctx.invoked_parents[0] in ["Luck", "luck", "Dotoluck", "dotoluck"] and ((NewResult - LastAboNumber) + random.SystemRandom().randint(0, 50) >= (LastAboNumber+100)):
+            logging.info(
+                f"{ctx.author.name} increased the counter of {InvokedVar} with invokeparameter {ctx.invoked_parents[0]} and had dotoluck. Subs are given out next stream.")
             await ctx.send(f"{ReplyTxt.replace('###REPLACE###', f'{NewResult}')} Als Strafe verschenkt er im nächsten Stream {random.SystemRandom().randint(1,3)} Abos!")
             data['Settings']['Counter']['LastAboAt'] = NewResult
         else:
+            logging.info(
+                f"{ctx.author.name} increased the counter of {InvokedVar} with invokeparameter {ctx.invoked_parents[0]}.")
             await ctx.send(ReplyTxt.replace('###REPLACE###', f'{NewResult}'))
         _write_json('Settings.json', data)
 
@@ -191,20 +195,14 @@ class Counter(commands.Cog, name="Counter"):
                 InvokedVar = "Lieferando"
                 ReplyTxt = "Aktuell hat Schnenko ###REPLACE###€ Umsatz bei Lieferando generiert, Investoren können sich freuen!"
             case _:
+                logging.error(
+                    f"ERROR: {ctx.author.name} wanted to list the counter for {ctx.invoked_parents[0]} but there is none!")
                 await ctx.send("Dieser Counter konnte nicht gefunden werden.")
                 return
         data = _read_json('Settings.json')
+        logging.info(
+            f"{ctx.author.name} requested the current counter for {InvokedVar} with invokeparameter {ctx.invoked_parents[0]}.")
         await ctx.send(ReplyTxt.replace("###REPLACE###", f"{data['Settings']['Counter'][f'{InvokedVar}']}"))
-
-    @commands.command(name="Dedge", aliases=["dedge", "splatoon3", "Splatoon3", "Splatoon3FuerDedge", "splatoon3fuerdedge"], brief="Er wird mitspielen!")
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    async def _sp3dedge(self, ctx):
-        StreamLabsURL = f"https://streamlabs.com/api/v5/donation-goal/data/?token={STREAMLABS_TOKEN}"
-        StreamLabsRequest = requests.get(StreamLabsURL)
-
-        if StreamLabsRequest.status_code == 200:
-            StreamLabsData = json.loads(StreamLabsRequest.content)['data']
-            await ctx.send(f"Es wurden bereits {StreamLabsData['amount']['current']}€ von {StreamLabsData['amount']['target']}€ gesammelt, damit Dedge mit uns Splatoon 3 spielt!")
 
     @_counter.error
     async def _counter_error(self, ctx, error):
@@ -223,16 +221,13 @@ class Fun(commands.Cog, name="Schabernack"):
     async def cog_check(self, ctx):
         return _is_banned(ctx, BannedUsers)
 
-    @commands.command(name="Pub", aliases=["pub"], brief="Typos...")
-    async def _pubtypo(self, ctx):
-        await ctx.send(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
-
     @commands.command(name="nein", aliases=["Nein", "NEIN"], brief="Nein.")
     @commands.check(_is_zuggi)
     async def _zuggisaysno(self, ctx):
         LastMessages = await ctx.message.channel.history(limit=2).flatten()
         LastMessages.reverse()
         LastMessage = LastMessages[0]
+        logging.info(f"{ctx.author.name} has invoked the nein command.")
         await LastMessage.reply(f"Zuggi sagt nein.")
 
     @commands.group(name="meme", aliases=["Meme", "patti", "Patti", "Mittwoch", "mittwoch"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
@@ -263,8 +258,9 @@ class Fun(commands.Cog, name="Schabernack"):
                     RandomWedMeme = random.SystemRandom().choice(WednesdayMemes)
                     MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
                                          "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
-                    RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)                                        
-                    logging.info(f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
+                    RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
+                    logging.info(
+                        f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
                     await ctx.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
                 else:
@@ -275,8 +271,10 @@ class Fun(commands.Cog, name="Schabernack"):
                         NoWednesdayMemes = list(
                             filter(lambda x: 'Mittwoch' not in x, AllFiles))
                     RandomNoWedMeme = random.SystemRandom().choice(NoWednesdayMemes)
-                    NoWednesdayAuthor = RandomNoWedMeme.split("/")[1].split("#")[0]
-                    logging.info(f"{ctx.author} wanted a wednesday meme not on wednesday. Chosen meme was [{RandomNoWedMeme}].")
+                    NoWednesdayAuthor = RandomNoWedMeme.split(
+                        "/")[1].split("#")[0]
+                    logging.info(
+                        f"{ctx.author} wanted a wednesday meme not on wednesday. Chosen meme was [{RandomNoWedMeme}].")
                     await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {NoWednesdayAuthor}", file=discord.File(f"{RandomNoWedMeme}"))
                     AllFiles.remove(RandomNoWedMeme)
             case _:
@@ -288,9 +286,10 @@ class Fun(commands.Cog, name="Schabernack"):
                         filter(lambda x: 'Mittwoch' not in x, AllFiles))
                 RandomMeme = random.SystemRandom().choice(NoWednesdayMemes)
                 AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
-                logging.info(f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
+                logging.info(
+                    f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
                 await ctx.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
-                AllFiles.remove(RandomMeme)    
+                AllFiles.remove(RandomMeme)
 
     @_memearchiv.command(name="add", aliases=["+"], brief="Fügt das Meme der oberen Nachricht hinzu")
     @commands.cooldown(2, 180, commands.BucketType.user)
@@ -311,7 +310,8 @@ class Fun(commands.Cog, name="Schabernack"):
                         logging.info(
                             f"{ctx.author} has added a wednesday meme.")
                     else:
-                        logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                        logging.error(
+                            f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
             else:
                 if os.path.exists(f"memes/{LastMessages[0].author}") == False:
                     os.mkdir(f"memes/{LastMessages[0].author}")
@@ -327,7 +327,8 @@ class Fun(commands.Cog, name="Schabernack"):
                         logging.info(
                             f"{ctx.author} has added a meme.")
                     else:
-                        logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                        logging.error(
+                            f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     @commands.cooldown(2, 180, commands.BucketType.user)
@@ -343,9 +344,11 @@ class Fun(commands.Cog, name="Schabernack"):
                         logging.info(
                             f"{ctx.author} has added the wednesday meme {meme.Filename}.")
                         await ctx.send("Mittwoch Memes hinzugefügt.")
-                        AllFiles.append(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
+                        AllFiles.append(
+                            f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                     else:
-                        logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                        logging.error(
+                            f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
             else:
                 if os.path.exists(f"memes/{Message.author}") == False:
                     os.mkdir(f"memes/{Message.author}")
@@ -357,9 +360,11 @@ class Fun(commands.Cog, name="Schabernack"):
                         logging.info(
                             f"{ctx.author} has collected the meme {meme.Filename}.")
                         await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
-                        AllFiles.append(f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                        AllFiles.append(
+                            f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                     else:
-                        logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                        logging.error(
+                            f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
 
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
@@ -389,48 +394,6 @@ class Fun(commands.Cog, name="Schabernack"):
         await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
         logging.info(
             f"{ctx.message.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
-
-    @commands.command(name="Schnabi", aliases=["schnabi", "Hirnfresser", "Schnabeltier", "schnabeltier"], brief=r"Weebs out for Schnabi \o/")
-    @commands.cooldown(1, 30, commands.BucketType.user)
-    async def _schnabiuwu(self, ctx):
-        AnimeElement = requests.get('https://api.waifu.pics/sfw/waifu')
-        if AnimeElement.status_code == 200:
-            AnimeJSON = json.loads(AnimeElement.content)
-            AnimeURL = AnimeJSON['url']
-            await ctx.send(f"{AnimeURL}")
-        else:
-            await ctx.send("API ist gerade nicht erreichbar TwT")
-
-    @commands.command(name="Zucker", aliases=["zucker", "Zuggi", "zuggi"], brief="Zuckersüß")
-    @commands.cooldown(2, 30, commands.BucketType.user)
-    async def _zuggishow(self, ctx):
-        RandomIndex = random.randrange(0, 990, 30)
-        RecipURL = requests.get(
-            f"https://www.chefkoch.de/rs/s{RandomIndex}/kartoffel/Rezepte.html")
-        if RecipURL.status_code == 200:
-            RecipHTML = BeautifulSoup(RecipURL.text, "html.parser")
-            RecipJSON = json.loads("".join(RecipHTML.find_all(
-                "script", {"type": "application/ld+json"})[1]))
-            RandomRecipIndex = random.randint(0, 30)
-            RecipElementName = RecipJSON['itemListElement'][RandomRecipIndex]['name']
-            RecipElementURL = RecipJSON['itemListElement'][RandomRecipIndex]['url']
-            await ctx.send(f"{RecipElementName}\n{RecipElementURL}")
-        else:
-            await ctx.send("Kartoffel API ist leider down T_T")
-
-    @commands.command(name="Feiertag", aliases=["feiertag", "holiday", "Holiday"], brief="Zeigt den nächsten Feiertag an")
-    @commands.cooldown(1, 30, commands.BucketType.user)
-    async def _nextholiday(self, ctx):
-        NextHolidayElement = requests.get(
-            f'https://date.nager.at/api/v3/nextpublicholidays/DE')
-        if NextHolidayElement.status_code == 200:
-            NextHolidayJSON = json.loads(NextHolidayElement.content)
-            NextHoliday = NextHolidayJSON[0]
-            GermanDate = parser.parse(NextHoliday['date'])
-            await ctx.send(
-                f"Der nächste Feiertag ist der {NextHoliday['localName']}, dieser findet am {GermanDate.day}.{GermanDate.month}.{GermanDate.year} statt.")
-        else:
-            await ctx.send("Die API für den nächsten Feiertag ist nicht erreichbar :(")
 
     @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -482,45 +445,6 @@ class Fun(commands.Cog, name="Schabernack"):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Dieser Befehl ist noch im Cooldown.")
             logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
-
-    @_zuggishow.error
-    async def _zuggishow_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wanted to spam the zuggicommand!")
-
-    @_schnabiuwu.error
-    async def _schnabiuwu_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wanted to spam the schnabicommand!")
-
-
-class Corona(commands.Cog, name="Corona"):
-    """
-    Eine Klasse für Corona Funktionen, aktuell werden hier nur aktuelle Zahlen abgerufen.
-    """
-
-    async def cog_check(self, ctx):
-        return _is_banned(ctx, BannedUsers)
-
-    @commands.command(name="Corona", aliases=["corona", "covid", "COVID", "Covid"], brief="Gibt aktuelle Coronazahlen aus")
-    async def _coronazahlen(self, ctx):
-        CovURL = "https://www.corona-in-zahlen.de/weltweit/deutschland/"
-        CovHTML = requests.get(CovURL)
-        CovResult = BeautifulSoup(CovHTML.content, "html.parser")
-        CovRate = CovResult.find_all("p", class_="card-title")
-        WeeklyInz = CovRate[3].text.strip()
-        NewCovCases = CovRate[9].text.strip()
-        NewAvgWeek = CovRate[10].text.strip()
-        HospRate = CovRate[12].text.strip()
-        HospNum = CovRate[13].text.strip()
-        HospPerc = CovRate[14].text.strip()
-
-        await ctx.send(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es im Schnitt {NewAvgWeek} Fälle pro Tag. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
-                       f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
-        logging.info(
-            f"User {ctx.author} has requested the COVID numbers.")
 
 
 class Meetings(commands.Cog, name="Meetings"):
@@ -835,8 +759,6 @@ class Administration(commands.Cog, name="Administration"):
 
     Cogs:                      Können geladen oder entladen werden.
     Twitch:                    User hinzufügen oder löschen.
-    Log:                       Zeigt die neusten 10 Zeilen des Log.
-    MC Reboot:                 Startet den MC Server neu.
     """
 
     def __init__(self, bot):
@@ -844,42 +766,6 @@ class Administration(commands.Cog, name="Administration"):
 
     async def cog_check(self, ctx):
         return _is_banned(ctx, BannedUsers)
-
-    @commands.command(name="mcreboot", aliases=["MCReboot"], brief="Rebootet den MC Server")
-    @commands.cooldown(1, 7200, commands.BucketType.user)
-    @commands.has_any_role("Der Stack", "Admin")
-    async def _mcreboot(self, ctx):
-        """
-        Rebootet den Minecraft Server per SSH.
-        """
-
-        try:
-
-            MCDATA = _read_json('MC_DATA.json')
-            host = MCDATA['MC_HOST']
-            username = MCDATA['MC_USER']
-            password = MCDATA['MC_PW']
-            port = MCDATA['SSH_PORT']
-            KillScreenCommand = "screen -S minecraft -X quit"
-            RebootCommand = "sudo reboot"
-
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(host, port, username, password)
-
-            ssh.exec_command(KillScreenCommand)
-            time.sleep(10)
-            ssh.exec_command(RebootCommand)
-            ssh.close()
-
-            await ctx.send(f"{ctx.author.name} hat den Minecraft Server neugestartet.")
-            logging.info(f"User {ctx.author} rebooted the minecraftserver.")
-
-        except json.JSONDecodeError:
-            logging.error("Could not load JSON File!", exc_info=True)
-        except:
-            logging.error(
-                "Something went wrong, is the Pi reachable?", exc_info=True)
 
     @commands.group(name="tw", invoke_without_command=False, aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File")
     @commands.has_role("Admin")
@@ -953,56 +839,7 @@ class Administration(commands.Cog, name="Administration"):
             await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
             logging.info(f"Extension {extension} was unloaded.")
 
-    @commands.command(name="Ban", aliases=["ban", "bann", "Bann"], brief="Hindert den User am verwenden von Commands")
-    @commands.has_any_role("Admin", "Moderatoren")
-    async def _banuser(self, ctx, user: commands.MemberConverter):
-        UserString = str(user)
-        BannedUserJSON = _read_json('Settings.json')
-        BannedUsers = BannedUserJSON['Settings']['BannedUsers']
-        if UserString not in BannedUsers:
-            BannedUsers.append(UserString)
-            _write_json('Settings.json', BannedUserJSON)
-            await ctx.send(f"User {UserString} wurde für 24 Stunden für Befehle gebannt.")
-            logging.info(f"User {UserString} was banned from using commands.")
-            _get_banned_users()
-        else:
-            await ctx.send("Dieser User ist bereits gebannt.")
-
-    @commands.command(name="Unban", aliases=["unban", "entbannen", "UnBan"], brief="Gibt den User für Commands frei")
-    @commands.has_any_role("Admin", "Moderatoren")
-    async def _unbanuser(self, ctx, user: commands.MemberConverter):
-        UserString = str(user)
-        BannedUserJSON = _read_json('Settings.json')
-        BannedUsers = BannedUserJSON['Settings']['BannedUsers']
-        if UserString in BannedUsers:
-            BannedUsers.remove(UserString)
-            _write_json('Settings.json', BannedUserJSON)
-            await ctx.send(f"Der User {UserString} wurde entbannt.")
-            logging.info(f"User {UserString} was unbanned.")
-            _get_banned_users()
-        else:
-            ctx.send(f"Der Benutzer {UserString} ist nicht gebannt.")
-
-    @commands.command(name="ip", aliases=["IP", "Ip", "vpnip", "VPNip", "VPNIP"], brief="Gibt die aktuelle public IP aus")
-    @commands.has_any_role("Admin", "Moderatoren")
-    async def _returnpubip(self, ctx):
-        MyIP = requests.get('https://api.ipify.org').content.decode('UTF-8')
-        await ctx.send(f"Die aktuelle IP lautet: {MyIP}")
-        logging.info(f"{ctx.author} requested the public ip.")
-
     ### Error Handling for Administrator Cog ###
-
-    @_mcreboot.error
-    async def _mcreboot_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            AdminToNotify = 248181624485838849
-            await ctx.send(f"Na na, das darfst du nicht! <@{AdminToNotify}> guck dir diesen Schelm an!")
-            logging.warning(
-                f"{ctx.author} wanted to reboot the minecraftserver but is not allowed!")
-        elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Der Befehl ist aktuell noch im Cooldown.")
-            logging.warning(
-                f"{ctx.author} wanted to reboot the minecraftserver multiple times in three hours!")
 
     @_twitchmanagement.error
     async def _twitchmanagement_error(self, ctx, error):
@@ -1426,8 +1263,6 @@ if __name__ == '__main__':
     logging.info(f"Extension {Counter.__name__} loaded.")
     bot.add_cog(Fun(bot))
     logging.info(f"Extension {Fun.__name__} loaded.")
-    bot.add_cog(Corona(bot))
-    logging.info(f"Extension {Corona.__name__} loaded.")
     bot.add_cog(Meetings(bot))
     logging.info(f"Extension {Meetings.__name__} loaded.")
     bot.add_cog(Games(bot))
@@ -1435,7 +1270,7 @@ if __name__ == '__main__':
     bot.add_cog(Administration(bot))
     logging.info(f"Extension {Administration.__name__} loaded.")
     for File in os.listdir('./cogs'):
-        if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys() and not File.startswith("management"):
+        if File.endswith('.py') and f"cogs.{File[:-3]}" not in bot.extensions.keys() and not File.startswith("management") and not File.startswith("old"):
             bot.load_extension(f"cogs.{File[:-3]}")
             logging.info(f"Extension {File[:-3]} loaded.")
     if "cogs.management" not in bot.extensions.keys():
