@@ -64,7 +64,7 @@ class Management(commands.Cog):
             await ctx.respond(f"```{LogOutputInString}```")
         logging.info(f"{ctx.author} has called for the log.")
 
-    @commands.slash_command(name="ban", description="Hindert den User am verwenden von Commands")
+    @commands.slash_command(name="block", description="Hindert den User am verwenden von Commands")
     @discord.default_permissions(moderate_members=True)
     @commands.has_any_role("Admin", "Moderatoren")
     async def _banuser(self, ctx, user: discord.User):
@@ -74,13 +74,13 @@ class Management(commands.Cog):
         if UserString not in BannedUsers:
             BannedUsers.append(UserString)
             _write_json('Settings.json', BannedUserJSON)
-            await ctx.respond(f"User {UserString} wurde für 24 Stunden für Befehle gebannt.")
+            await ctx.respond(f"User {UserString} wurde für Befehle gebannt.")
             logging.info(f"User {UserString} was banned from using commands.")
             _get_banned_users()
         else:
             await ctx.respond("Dieser User ist bereits gebannt.")
 
-    @commands.slash_command(name="unban", description="Gibt den User für Commands frei")
+    @commands.slash_command(name="unblock", description="Gibt den User für Commands frei")
     @discord.default_permissions(moderate_members=True)
     @commands.has_any_role("Admin", "Moderatoren")
     async def _unbanuser(self, ctx, user: discord.User):
