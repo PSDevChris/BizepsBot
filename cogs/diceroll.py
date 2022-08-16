@@ -25,6 +25,8 @@ class Diceroll(commands.Cog):
     async def _rolldice(self, ctx, maxroll: Option(int, "Die Anzahl der Seiten des Würfels", required=False, default=3)):
         if maxroll == 0:
             await ctx.respond("Es gibt keinen 0 seitigen Würfel!", ephemeral=True)
+        elif maxroll == 1:
+            await ctx.respond("1")
         else:
             await ctx.respond(f"{random.SystemRandom().randrange(1, abs(maxroll))}")
             logging.info(f"{ctx.author} rolled with value {maxroll} as max value, negative numbers were turned to absolutes.")
