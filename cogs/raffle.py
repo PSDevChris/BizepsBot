@@ -124,8 +124,17 @@ class Raffle(commands.Cog, name="Raffle"):
             await ctx.respond("Na na, das darf nur der Admin.")
             logging.warning(f"{ctx.author} wanted to set a giveaway!")
 
-    @commands.Cog.listener()
-    async def on_application_command_error(self, ctx: discord.ApplicationContext, error: discord.DiscordException):
+    @_joinraffle.error
+    async def _giveaway_join_error(self, ctx: discord.ApplicationContext, error: discord.DiscordException):
+        if isinstance(error, discord.errors.CheckFailure):
+            await ctx.respond("Es ist kein Giveaway aktiv!")
+            logging.info(
+                f"{ctx.author} wanted to join a giveaway, but none are running.")
+        else:
+            logging.error(f"{error}")  # Raise other errors
+
+    @_showraffle.error
+    async def _giveaway_show_error(self, ctx: discord.ApplicationContext, error: discord.DiscordException):
         if isinstance(error, discord.errors.CheckFailure):
             await ctx.respond("Es ist kein Giveaway aktiv!")
             logging.info(

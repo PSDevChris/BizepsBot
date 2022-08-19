@@ -3,6 +3,7 @@ from discord.ext import commands
 from Main import _is_banned
 from Main import _get_banned_users
 from Main import logging
+import uwuify
 
 class Fun2(commands.Cog):
 
@@ -12,6 +13,13 @@ class Fun2(commands.Cog):
 
     async def cog_check(self, ctx):
         return _is_banned(ctx, self.BannedUsers)
+    
+    # Checks 
+    def _is_zuggi(ctx):
+        return ctx.author.id == 232561052573892608
+    
+    def _is_nouwuchannel(ctx):
+        return ctx.channel.category_id != 539547423782207488 and ctx.channel.id != 539549544585756693
 
     # Events
     @commands.Cog.listener()
@@ -51,5 +59,40 @@ class Fun2(commands.Cog):
     async def _pubtypo(self, ctx):
         await ctx.respond(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
 
+    @commands.slash_command(name="nein", description="Nein.")
+    @commands.check(_is_zuggi)
+    async def _zuggisaysno(self, ctx: discord.ApplicationContext):
+        LastMessages = await ctx.channel.history(limit=1).flatten()
+        LastMessage = LastMessages[0]
+        logging.info(f"{ctx.author.name} has invoked the nein command.")
+        await LastMessage.reply(f"Zuggi sagt nein.")
+        await ctx.respond("Nachricht wurde verneint!", ephemeral=True)
+
+    @commands.slash_command(name="uwu", description="Weebt die Message UwU")
+    @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.check(_is_nouwuchannel)
+    async def _uwuthis(self, ctx):
+        if ctx.author == self.bot.user:
+            return
+        LastMessages = await ctx.channel.history(limit=1).flatten()
+        LastMessages.reverse()
+        flags = uwuify.SMILEY | uwuify.YU
+        await ctx.respond(uwuify.uwu(LastMessages[0].content, flags=flags))
+        logging.info(
+            f"{ctx.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
+
+    @_zuggisaysno.error
+    async def _zuggisaysno_error(self, ctx, error):
+        if isinstance(error, discord.errors.CheckFailure):
+            await ctx.respond("Du bist nicht Zuggi.", ephemeral=True)
+            logging.warning(
+                f"{ctx.author} wanted to nein something, but is not Zuggi.")
+
+    @_uwuthis.error
+    async def _uwuthis_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
+            logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
+            
 def setup(bot):
     bot.add_cog(Fun2(bot))

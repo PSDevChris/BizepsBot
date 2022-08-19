@@ -82,10 +82,6 @@ def _is_owchannel(ctx):
     return ctx.message.channel.id == 554390037811167363
 
 
-def _is_nouwuchannel(ctx):
-    return ctx.message.channel.category_id != 539547423782207488 and ctx.message.channel.id != 539549544585756693
-
-
 def _is_gamechannel(ctx):
     if isinstance(ctx.channel, discord.channel.DMChannel):
         return False
@@ -104,10 +100,6 @@ def _is_banned(ctx: commands.context.Context, BannedUsers):
         logging.info(
             f"User {ctx.author} wanted to use a command but is banned.")
     return str(ctx.author) not in BannedUsers
-
-
-def _is_zuggi(ctx):
-    return ctx.author.id == 232561052573892608
 
 ### Commands and Cogs Section ###
 
@@ -220,15 +212,6 @@ class Fun(commands.Cog, name="Schabernack"):
 
     async def cog_check(self, ctx):
         return _is_banned(ctx, BannedUsers)
-
-    @commands.command(name="nein", aliases=["Nein", "NEIN"], brief="Nein.")
-    @commands.check(_is_zuggi)
-    async def _zuggisaysno(self, ctx):
-        LastMessages = await ctx.message.channel.history(limit=2).flatten()
-        LastMessages.reverse()
-        LastMessage = LastMessages[0]
-        logging.info(f"{ctx.author.name} has invoked the nein command.")
-        await LastMessage.reply(f"Zuggi sagt nein.")
 
     @commands.group(name="meme", aliases=["Meme", "patti", "Patti", "Mittwoch", "mittwoch"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
     @commands.cooldown(2, 180, commands.BucketType.user)
@@ -383,19 +366,6 @@ class Fun(commands.Cog, name="Schabernack"):
                 logging.info(
                     f"The message [{LastMessageContent}] was UwUed.")
 
-    @commands.command(name="uwu", aliases=["UwU", "Uwu", "uWu", "uWU"], brief="Weebt die Message UwU")
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    @commands.check(_is_nouwuchannel)
-    async def _uwuthis(self, ctx):
-        if ctx.message.author == bot.user:
-            return
-        LastMessages = await ctx.message.channel.history(limit=2).flatten()
-        LastMessages.reverse()
-        flags = uwuify.SMILEY | uwuify.YU
-        await ctx.send(uwuify.uwu(LastMessages[0].content, flags=flags))
-        logging.info(
-            f"{ctx.message.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
-
     @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _calctvoed(self, ctx, eggroup: str, step):
@@ -440,12 +410,6 @@ class Fun(commands.Cog, name="Schabernack"):
             logging.warning(f"{ctx.author} wanted to spam random memes!")
         else:
             logging.error(f"ERROR: {error}!")
-
-    @_uwuthis.error
-    async def _uwuthis_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
 
 
 class Meetings(commands.Cog, name="Meetings"):
