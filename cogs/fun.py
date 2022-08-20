@@ -72,10 +72,10 @@ class Fun2(commands.Cog):
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.check(_is_nouwuchannel)
     async def _uwuthis(self, ctx):
-        if ctx.author == self.bot.user:
-            return
         LastMessages = await ctx.channel.history(limit=1).flatten()
-        LastMessages.reverse()
+        if LastMessages[0].author == self.bot.user:
+            await ctx.respond("Ich uwue meine Nachricht nicht!", ephemeral=True)
+            return
         flags = uwuify.SMILEY | uwuify.YU
         await ctx.respond(uwuify.uwu(LastMessages[0].content, flags=flags))
         logging.info(
