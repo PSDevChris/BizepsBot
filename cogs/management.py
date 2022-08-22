@@ -93,7 +93,7 @@ class Management(commands.Cog):
             logging.info(f"User {UserString} was unbanned.")
             _get_banned_users()
         else:
-            ctx.respond(f"Der Benutzer {UserString} ist nicht gebannt.")
+            await ctx.respond(f"Der Benutzer {UserString} ist nicht gebannt.")
 
     # Error Checking
 
