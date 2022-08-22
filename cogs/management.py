@@ -66,8 +66,8 @@ class Management(commands.Cog):
     @commands.slash_command(name="block", description="Hindert den User am verwenden von Commands")
     @discord.default_permissions(moderate_members=True)
     @commands.has_any_role("Admin", "Moderatoren")
-    async def _banuser(self, ctx, user: discord.User):
-        UserString = user.name
+    async def _banuser(self, ctx, user: discord.Member):
+        UserString = str(user)
         BannedUserJSON = _read_json('Settings.json')
         BannedUsers = BannedUserJSON['Settings']['BannedUsers']
         if UserString not in BannedUsers:
@@ -82,8 +82,8 @@ class Management(commands.Cog):
     @commands.slash_command(name="unblock", description="Gibt den User für Commands frei")
     @discord.default_permissions(moderate_members=True)
     @commands.has_any_role("Admin", "Moderatoren")
-    async def _unbanuser(self, ctx, user: discord.User):
-        UserString = user.name
+    async def _unbanuser(self, ctx, user: discord.Member):
+        UserString = str(user)
         BannedUserJSON = _read_json('Settings.json')
         BannedUsers = BannedUserJSON['Settings']['BannedUsers']
         if UserString in BannedUsers:

@@ -1,3 +1,4 @@
+import discord
 from discord import Option
 from discord.ext import commands
 from Main import _is_banned
@@ -17,7 +18,7 @@ class HansTaskList(commands.Cog):
         self.bot = bot
         self.HansTasks = _refresh_hanstasks()
     
-
+    # Is not working in pycord 2.0 so far
     async def cog_check(self, ctx):
         return _is_banned(ctx)
 
@@ -69,7 +70,7 @@ class HansTaskList(commands.Cog):
                 _refresh_hanstasks()
             HansTask = random.SystemRandom().choice(self.HansTasks)
             self.HansTasks.remove(HansTask)
-            logging.info(f"{ctx.author.name} wanted to know what Hans is doing all day, task chosen was {HansTask}.")
+            logging.info(f"[{ctx.author.name}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
             await ctx.respond(f"Hans muss {HansTask}...")
 
     @_hanstasks.error
@@ -77,8 +78,8 @@ class HansTaskList(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam the hanscommand!")
-        elif isinstance(error, commands.CheckFailure):
-            await ctx.respond("Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
+        elif isinstance(error, discord.CheckFailure):
+            await ctx.respond(f"Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
         else:
             logging.error(f"ERROR: {error}")
 
