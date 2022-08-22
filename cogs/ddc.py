@@ -11,7 +11,7 @@ class DDC(commands.Cog):
         self.BannedUsers = _get_banned_users()
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return await _is_banned(ctx)
 
     # Events
     @commands.Cog.listener()

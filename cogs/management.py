@@ -16,7 +16,7 @@ class Management(commands.Cog):
         self.bot = bot
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx)
+        return await _is_banned(ctx)
 
     # Events
 
