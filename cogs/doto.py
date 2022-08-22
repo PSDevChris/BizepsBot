@@ -20,7 +20,7 @@ class DotoJokes(commands.Cog):
     
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, self.BannedUsers)
+        return _is_banned(ctx)
 
 
     # Events

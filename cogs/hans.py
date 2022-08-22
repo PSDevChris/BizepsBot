@@ -19,7 +19,7 @@ class HansTaskList(commands.Cog):
     
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, self.bot.BannedUsers)
+        return _is_banned(ctx)
 
 
     # Events
@@ -30,6 +30,7 @@ class HansTaskList(commands.Cog):
     # Commands
     @commands.slash_command(name="hans", description="Er hat zu tun!", brief="Er hat zu tun!")
     @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.check(_is_banned)
     async def _hanstasks(self, ctx, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count", "add"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
         if option == "show":
             AllHansTasks = _read_json('Settings.json')

@@ -14,7 +14,7 @@ class GDQ(commands.Cog):
         self.BannedUsers = _get_banned_users()
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, self.BannedUsers)
+        return _is_banned(ctx)
 
     # Events
     @commands.Cog.listener()
