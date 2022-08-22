@@ -94,6 +94,8 @@ def _get_banned_users():
     return bot.BannedUsers
 
 # Needs to be async for cog checks, command checks etc. work without async
+
+
 async def _is_banned(ctx: commands.context.Context):
     if str(ctx.author) in bot.BannedUsers:
         logging.info(
@@ -1082,7 +1084,8 @@ async def GetFreeEpicGames():
                                                 text="Bizeps_Bot")
 
                                             if EpicImage != "" and EpicImage:
-                                                EpicImagePath = f"{NumberOfEpicFiles +1}_epic.jpg"
+                                                NumberOfEpicFiles = NumberOfEpicFiles + 1
+                                                EpicImagePath = f"{NumberOfEpicFiles}_epic.jpg"
                                                 with open(f'epic/{EpicImagePath}', 'wb') as write_file:
                                                     write_file.write(
                                                         EpicImage)
