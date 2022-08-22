@@ -90,12 +90,12 @@ def _is_gamechannel(ctx):
 
 
 def _get_banned_users():
-    global BannedUsers
-    BannedUsers = _read_json('Settings.json')['Settings']['BannedUsers']
-    return BannedUsers
+    bot.BannedUsers = _read_json('Settings.json')['Settings']['BannedUsers']
+    return bot.BannedUsers
 
 
 def _is_banned(ctx: commands.context.Context, BannedUsers):
+    BannedUsers = bot.BannedUsers
     if str(ctx.author) in BannedUsers:
         logging.info(
             f"User {ctx.author} wanted to use a command but is banned.")
@@ -111,7 +111,7 @@ class Counter(commands.Cog, name="Counter"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, BannedUsers)
+        return _is_banned(ctx, bot.BannedUsers)
 
     @commands.group(name="pun",  aliases=["Pun", "salz", "Salz", "mobbing", "Mobbing", "Hasssprech", "hasssprech", "Leak", "leak", "Schnenko", "schnenko", "Schnenk", "schnenk", "lieferando", "Lieferando", "Pipi", "pipi", "Luck", "luck", "Dotoluck", "dotoluck"], invoke_without_command=True, brief="Erhöht diverse Counter")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -211,7 +211,7 @@ class Fun(commands.Cog, name="Schabernack"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, BannedUsers)
+        return _is_banned(ctx, bot.BannedUsers)
 
     @commands.group(name="meme", aliases=["Meme", "patti", "Patti", "Mittwoch", "mittwoch"], invoke_without_command=True, brief="Gibt ein Zufallsmeme aus, kann auch Memes adden")
     @commands.cooldown(2, 180, commands.BucketType.user)
@@ -425,7 +425,7 @@ class Meetings(commands.Cog, name="Meetings"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, BannedUsers)
+        return _is_banned(ctx, bot.BannedUsers)
 
     @commands.command(name="game", aliases=["Game"], brief="Startet eine Verabredung")
     @commands.check(_is_gamechannel)
@@ -625,7 +625,7 @@ class Games(commands.Cog, name="Games"):
     """
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, BannedUsers)
+        return _is_banned(ctx, bot.BannedUsers)
 
     @commands.command(name="ESAGame", aliases=["esagame", "ESA", "esa", "ESAGAME"], brief="Gibt das aktuelle ESA Game aus")
     async def _esagame(self, ctx):
@@ -730,7 +730,7 @@ class Administration(commands.Cog, name="Administration"):
         self.bot = bot
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, BannedUsers)
+        return _is_banned(ctx, bot.BannedUsers)
 
     @commands.group(name="tw", invoke_without_command=False, aliases=["twitch", "Twitch", "TW"], brief="Verwaltet das Twitch File")
     @commands.has_role("Admin")
@@ -1178,7 +1178,6 @@ async def on_ready():
     if not _get_free_steamgames.is_running():
         _get_free_steamgames.start()
     RefreshMemes()
-    _get_banned_users()
 
 
 @bot.event
@@ -1189,7 +1188,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
     if message.content.startswith("!"):
-        if(_is_banned(message, BannedUsers)):
+        if(_is_banned(message, bot.BannedUsers)):
             # This line needs to be added so the commands are actually processed
             await bot.process_commands(message)
 
@@ -1221,6 +1220,9 @@ if __name__ == '__main__':
         else:
             RequestTwitchToken()
         logging.info("Token successfully loaded.")
+
+    # Reading Banned Users before Startup for Cogs
+    _get_banned_users()
 
     ### Add Cogs in bot file ###
 

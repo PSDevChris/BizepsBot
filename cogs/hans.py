@@ -1,7 +1,6 @@
 from discord import Option
 from discord.ext import commands
 from Main import _is_banned
-from Main import _get_banned_users
 from Main import _read_json
 from Main import logging
 from Main import random
@@ -16,12 +15,11 @@ class HansTaskList(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.BannedUsers = _get_banned_users()
         self.HansTasks = _refresh_hanstasks()
     
 
     async def cog_check(self, ctx):
-        return _is_banned(ctx, self.BannedUsers)
+        return _is_banned(ctx, self.bot.BannedUsers)
 
 
     # Events
@@ -64,7 +62,7 @@ class HansTaskList(commands.Cog):
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
         elif option == "add" and not task:
-            ctx.respond("Hier fehlte der Task, bitte beim hinzufügen angeben.")
+            await ctx.respond("Hier fehlte der Task, bitte beim hinzufügen angeben.")
         else:
             if self.HansTasks == []:
                 _refresh_hanstasks()
