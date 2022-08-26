@@ -296,6 +296,8 @@ class Fun(commands.Cog, name="Schabernack"):
                     else:
                         logging.error(
                             f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                else:
+                    ctx.send("Bitte das Meme als Anhang einreichen.")
             else:
                 if os.path.exists(f"memes/{LastMessages[0].author}") == False:
                     os.mkdir(f"memes/{LastMessages[0].author}")
@@ -313,6 +315,8 @@ class Fun(commands.Cog, name="Schabernack"):
                     else:
                         logging.error(
                             f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                else:
+                    ctx.send("Bitte das Meme als Anhang einreichen.")
 
     @_memearchiv.command(name="collect", aliases=["coll", "Collect", "Coll"], brief="Sammelt das Meme per ID ein")
     @commands.cooldown(2, 180, commands.BucketType.user)
@@ -333,6 +337,8 @@ class Fun(commands.Cog, name="Schabernack"):
                     else:
                         logging.error(
                             f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                else:
+                    ctx.send("Bitte das Meme als Anhang einreichen.")
             else:
                 if os.path.exists(f"memes/{Message.author}") == False:
                     os.mkdir(f"memes/{Message.author}")
@@ -350,6 +356,8 @@ class Fun(commands.Cog, name="Schabernack"):
                     else:
                         logging.error(
                             f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                else:
+                    ctx.send("Bitte das Meme als Anhang einreichen.")
 
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
