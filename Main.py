@@ -285,17 +285,18 @@ class Fun(commands.Cog, name="Schabernack"):
                 NumberOfMemes = next(
                     os.walk(f"memes/Mittwoch meine Kerle#"))[2]
                 NumberOfFiles = len(NumberOfMemes)
-                for index, meme in enumerate(LastMessages[0].attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
-                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        AllFiles.append(
-                            f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        await ctx.send("Mittwoch Memes hinzugefügt.")
-                        logging.info(
-                            f"{ctx.author} has added a wednesday meme. Name was {meme.filename}")
-                    else:
-                        logging.error(
-                            f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                if LastMessages[0].attachments:
+                    for index, meme in enumerate(LastMessages[0].attachments):
+                        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
+                            await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
+                            AllFiles.append(
+                                f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
+                            await ctx.send("Mittwoch Memes hinzugefügt.")
+                            logging.info(
+                                f"{ctx.author} has added a wednesday meme. Name was {meme.filename}")
+                        else:
+                            logging.error(
+                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
                 else:
                     await ctx.send("Bitte das Meme als Anhang einreichen.")
             else:
@@ -304,17 +305,18 @@ class Fun(commands.Cog, name="Schabernack"):
                 NumberOfMemes = next(
                     os.walk(f"memes/{LastMessages[0].author}"))[2]
                 NumberOfFiles = len(NumberOfMemes)
-                for index, meme in enumerate(LastMessages[0].attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
-                        await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        AllFiles.append(
-                            f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        await ctx.send("Memes hinzugefügt.")
-                        logging.info(
-                            f"{ctx.author} has added a meme, filename was {meme.filename}.")
-                    else:
-                        logging.error(
-                            f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                if LastMessages[0].attachments:
+                    for index, meme in enumerate(LastMessages[0].attachments):
+                        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
+                            await meme.save(f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                            AllFiles.append(
+                                f"memes/{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                            await ctx.send("Memes hinzugefügt.")
+                            logging.info(
+                                f"{ctx.author} has added a meme, filename was {meme.filename}.")
+                        else:
+                            logging.error(
+                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
                 else:
                     await ctx.send("Bitte das Meme als Anhang einreichen.")
 
@@ -326,17 +328,18 @@ class Fun(commands.Cog, name="Schabernack"):
                 NumberOfMemes = next(
                     os.walk(f"memes/Mittwoch meine Kerle#"))[2]
                 NumberOfFiles = len(NumberOfMemes)
-                for index, meme in enumerate(Message.attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
-                        await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        logging.info(
-                            f"{ctx.author} has added the wednesday meme {meme.filename}.")
-                        await ctx.send("Mittwoch Memes hinzugefügt.")
-                        AllFiles.append(
-                            f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
-                    else:
-                        logging.error(
-                            f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                if Message.attachments:
+                    for index, meme in enumerate(Message.attachments):
+                        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
+                            await meme.save(f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
+                            logging.info(
+                                f"{ctx.author} has added the wednesday meme {meme.filename}.")
+                            await ctx.send("Mittwoch Memes hinzugefügt.")
+                            AllFiles.append(
+                                f"memes/Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
+                        else:
+                            logging.error(
+                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
                 else:
                     await ctx.send("Bitte das Meme als Anhang einreichen.")
             else:
@@ -344,18 +347,19 @@ class Fun(commands.Cog, name="Schabernack"):
                     os.mkdir(f"memes/{Message.author}")
                 NumberOfMemes = next(os.walk(f"memes/{Message.author}"))[2]
                 NumberOfFiles = len(NumberOfMemes)
-                for index, meme in enumerate(Message.attachments):
-                    if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
-                        await meme.save(f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
-                        AllFiles.append(
-                            f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                        logging.info(
-                            f"{ctx.author} has collected the meme {meme.filename}.")
+                if Message.attachments:
+                    for index, meme in enumerate(Message.attachments):
+                        if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
+                            await meme.save(f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                            await ctx.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
+                            AllFiles.append(
+                                f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                            logging.info(
+                                f"{ctx.author} has collected the meme {meme.filename}.")
 
-                    else:
-                        logging.error(
-                            f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                        else:
+                            logging.error(
+                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
                 else:
                     await ctx.send("Bitte das Meme als Anhang einreichen.")
 
