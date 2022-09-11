@@ -54,7 +54,7 @@ class Raffle(commands.Cog, name="Raffle"):
         ctx.respond(
             f"Aktuell wird {RaffleJSON['Settings']['Raffle']['Title']} verlost!")
 
-    @commands.slash_command(name="set_giveaway", description="Startet ein Giveaway", brief="Startet ein Giveaway")
+    @commands.slash_command(name="set_giveaway", description="Setzt ein Giveaway Preis")
     @discord.default_permissions(administrator=True)
     @commands.has_role("Admin")
     async def _set_giveaway(self, ctx, prize: Option(str, description="Der Preis", required=True)):
@@ -86,7 +86,7 @@ class Raffle(commands.Cog, name="Raffle"):
         else:
             await ctx.respond(f"Es fehlt der Preis oder der Status wurde nicht auf aktiv gesetzt! Preis: {CurrentPrize} State: {CurrentState}!")
 
-    @commands.slash_command(name="stop_giveaway", description="Startet ein Giveaway", brief="Startet ein Giveaway")
+    @commands.slash_command(name="stop_giveaway", description="Beendet ein Giveaway")
     @discord.default_permissions(administrator=True)
     @commands.has_role("Admin")
     async def _stop_giveaway(self, ctx):
@@ -100,7 +100,7 @@ class Raffle(commands.Cog, name="Raffle"):
             await ctx.respond("Leider hat niemand teilgenommen. Viel Glück beim nächsten Mal!")
         else:
             Entry = random.SystemRandom().choice(EntryList)
-            await ctx.respond(f"Das Raffle wurde beendet! {RaffleJSON['Settings']['Raffle']['Title']} wurde von {Entry[0]}! {Entry[1]} gewonnen!")
+            await ctx.respond(f"Das Raffle wurde beendet! {RaffleJSON['Settings']['Raffle']['Title']} wurde von {Entry[0]}, {Entry[1]} gewonnen!")
         RaffleJSON['Settings']['Raffle']['Entries'] = {}
         RaffleJSON['Settings']['Raffle']['Title'] = ""
         RaffleJSON['Settings']['Raffle']['Active'] = False

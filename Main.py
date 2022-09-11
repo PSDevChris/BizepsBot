@@ -356,7 +356,6 @@ class Fun(commands.Cog, name="Schabernack"):
                                 f"memes/{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                             logging.info(
                                 f"{ctx.author} has collected the meme {meme.filename}.")
-
                         else:
                             logging.error(
                                 f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
@@ -852,23 +851,32 @@ async def TwitchLiveCheck():
 
         try:
             async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
-                async with TwitchSession.get(f'https://api.twitch.tv/helix/search/channels?query={USER}') as rUserData:
+                async with TwitchSession.get(f'https://api.twitch.tv/helix/search/channels?query={USER}&live_only=True') as rUserData:
                     if rUserData.status == 200:
                         data = await rUserData.json()
                         data = data['data']
-                        data = list(
-                            filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
-                        livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
-                        custommsg = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['custom_msg']
+                        if data == []:
+                            continue
+                        else:
+                            data = list(
+                                filter(lambda x: x["broadcaster_login"] == f"{USER}", data))
+                            if data == []:
+                                continue
+                            else:
+                                data = data[0]
+                                livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
+                                custommsg = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['custom_msg']
         except IndexError:
             # Username does not exist or Username is wrong, greetings to Schnabeltier
             continue
         except json.decoder.JSONDecodeError:
-            logging.error("Twitch API not available.")
+            logging.error("ERROR: Twitch API not available.")
             break
         except KeyError:
-            logging.error("Twitch API not available.")
+            logging.error("ERROR: Twitch API not available.")
             break
+        except:
+            logging.error("ERROR: ", exc_info=True)
 
         if livestate is False and data['is_live'] and USER == data['broadcaster_login']:
             # User went live
