@@ -873,6 +873,60 @@ async def TwitchLiveCheck():
                                 livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
                                 custommsg = TwitchJSON['Settings'][
                                     'TwitchUser'][f'{USER}']['custom_msg']
+                                if livestate is False and data['is_live'] and USER == data['broadcaster_login']:
+                                    # User went live
+                                    if data['game_name']:
+                                        game = data['game_name']
+                                    else:
+                                        game = "Irgendwas"
+
+                                    if data['display_name']:
+                                        Displayname = data['display_name']
+                                    else:
+                                        Displayname = USER.title()
+                                    CurrentTime = int(datetime.datetime.timestamp(
+                                        datetime.datetime.now()))
+                                    embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
+                                        0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.now())
+                                    embed.set_image(
+                                        url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
+                                    embed.set_author(
+                                        name=f"{Displayname} ist jetzt live!", icon_url=f"{data['thumbnail_url']}")
+                                    embed.set_footer(text="Bizeps_Bot")
+
+                                    if USER == 'dota_joker':
+                                        await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
+                                        logging.info(
+                                            f"{Displayname} went live on Twitch! Twitch Notification sent!")
+                                        # DM when I go live, requested by Kernie
+                                        KernieDM = await bot.fetch_user(628940079913500703)
+                                        await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
+                                        logging.info(
+                                            f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
+                                    else:
+                                        channel = bot.get_channel(
+                                            703530328836407327)
+                                        NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
+                                        LastMessages = await channel.history(after=NotificationTime).flatten()
+                                        if LastMessages:
+                                            for message in LastMessages:
+                                                if message.content.startswith(f"**{Displayname}**") is True:
+                                                    logging.info(
+                                                        f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
+                                                    break
+                                            else:
+                                                await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
+                                                logging.info(
+                                                    f"{Displayname} went live on Twitch! Twitch Twitch Notification sent, because the last Notification is older than 60min!")
+                                        else:
+                                            await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
+                                            logging.info(
+                                                f"{Displayname} went live on Twitch! Twitch Notification sent!")
+
+                                    if livestate is not data['is_live']:
+                                        TwitchJSON['Settings']['TwitchUser'][USER]['live'] = data['is_live']
+                                        _write_json(
+                                            'Settings.json', TwitchJSON)
         except IndexError:
             # Username does not exist or Username is wrong, greetings to Schnabeltier
             continue
@@ -884,59 +938,6 @@ async def TwitchLiveCheck():
             break
         except:
             logging.error("ERROR: ", exc_info=True)
-
-        if livestate is False and data['is_live'] and USER == data['broadcaster_login']:
-            # User went live
-            if data['game_name']:
-                game = data['game_name']
-            else:
-                game = "Irgendwas"
-
-            if data['display_name']:
-                Displayname = data['display_name']
-            else:
-                Displayname = USER.title()
-            CurrentTime = int(datetime.datetime.timestamp(
-                datetime.datetime.now()))
-            embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
-                0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.now())
-            embed.set_image(
-                url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
-            embed.set_author(
-                name=f"{Displayname} ist jetzt live!", icon_url=f"{data['thumbnail_url']}")
-            embed.set_footer(text="Bizeps_Bot")
-
-            if USER == 'dota_joker':
-                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
-                logging.info(
-                    f"{Displayname} went live on Twitch! Twitch Notification sent!")
-                # DM when I go live, requested by Kernie
-                KernieDM = await bot.fetch_user(628940079913500703)
-                await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
-                logging.info(
-                    f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
-            else:
-                channel = bot.get_channel(703530328836407327)
-                NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
-                LastMessages = await channel.history(after=NotificationTime).flatten()
-                if LastMessages:
-                    for message in LastMessages:
-                        if message.content.startswith(f"**{Displayname}**") is True:
-                            logging.info(
-                                f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
-                            break
-                    else:
-                        await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
-                        logging.info(
-                            f"{Displayname} went live on Twitch! Twitch Twitch Notification sent, because the last Notification is older than 60min!")
-                else:
-                    await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
-                    logging.info(
-                        f"{Displayname} went live on Twitch! Twitch Notification sent!")
-
-            if livestate is not data['is_live']:
-                TwitchJSON['Settings']['TwitchUser'][USER]['live'] = data['is_live']
-                _write_json('Settings.json', TwitchJSON)
 
 
 @tasks.loop(seconds=60)
