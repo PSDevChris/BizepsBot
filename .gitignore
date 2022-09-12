@@ -16,3 +16,4 @@
 !cogs/management.py
 !cogs/fun.py
 !cogs/misc.py
+!cogs/twitch.py

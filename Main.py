@@ -856,16 +856,23 @@ async def TwitchLiveCheck():
                         data = await rUserData.json()
                         data = data['data']
                         if data == []:
+                            if TwitchJSON['Settings']['TwitchUser'][USER]['live'] != False:
+                                TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
+                                _write_json('Settings.json', TwitchJSON)
                             continue
                         else:
                             data = list(
                                 filter(lambda x: x["broadcaster_login"] == f"{USER}", data))
                             if data == []:
+                                if TwitchJSON['Settings']['TwitchUser'][USER]['live'] != False:
+                                    TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
+                                    _write_json('Settings.json', TwitchJSON)
                                 continue
                             else:
                                 data = data[0]
                                 livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
-                                custommsg = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['custom_msg']
+                                custommsg = TwitchJSON['Settings'][
+                                    'TwitchUser'][f'{USER}']['custom_msg']
         except IndexError:
             # Username does not exist or Username is wrong, greetings to Schnabeltier
             continue
@@ -927,9 +934,9 @@ async def TwitchLiveCheck():
                     logging.info(
                         f"{Displayname} went live on Twitch! Twitch Notification sent!")
 
-        if livestate is not data['is_live']:
-            TwitchJSON['Settings']['TwitchUser'][USER]['live'] = data['is_live']
-            _write_json('Settings.json', TwitchJSON)
+            if livestate is not data['is_live']:
+                TwitchJSON['Settings']['TwitchUser'][USER]['live'] = data['is_live']
+                _write_json('Settings.json', TwitchJSON)
 
 
 @tasks.loop(seconds=60)
@@ -1210,7 +1217,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
     if message.content.startswith("!"):
-        if(await _is_banned(message)):
+        if (await _is_banned(message)):
             # This line needs to be added so the commands are actually processed
             await bot.process_commands(message)
 
