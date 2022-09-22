@@ -976,7 +976,7 @@ async def TrashReminder():
     tomorrowNow = datetime.datetime.today() + timedelta(days=1)
     tomorrowClean = tomorrowNow.replace(
         hour=00, minute=00, second=00, microsecond=00)
-    MuellListe = pd.read_csv('Muell.csv', sep=";")
+    MuellListe = pd.read_csv('Muell.csv', sep=";", dtype='category') # categorial DFs reduce memory usage
     for entry in MuellListe["Schwarze Tonne"].dropna():
         EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
         if tomorrowClean == EntryDate:

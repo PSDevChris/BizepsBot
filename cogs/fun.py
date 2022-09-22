@@ -53,7 +53,7 @@ class Fun2(commands.Cog):
         LastMessages = await ctx.channel.history(limit=1).flatten()
         LastMessage = LastMessages[0]
         await ctx.respond("Die Nachricht wurde gebonkt!", ephemeral=True)
-        await LastMessage.reply("Mess with Lechonk, you get the bonk!", file=discord.File('fun/LeBonk.png'))
+        await LastMessage.reply(f"Mess with Lechonk, you get the bonk! Du wurdest gebonkt von {ctx.author}!", file=discord.File('fun/LeBonk.png'))
 
     @commands.slash_command(name="pub", description="Typos...")
     async def _pubtypo(self, ctx):
