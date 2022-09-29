@@ -3,7 +3,9 @@ from discord.ext import commands
 from Main import _is_banned
 from Main import _get_banned_users
 from Main import logging
+from Main import random
 import uwuify
+
 
 class Fun2(commands.Cog):
 
@@ -13,11 +15,11 @@ class Fun2(commands.Cog):
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
-    
-    # Checks 
+
+    # Checks
     def _is_zuggi(ctx):
         return ctx.author.id == 232561052573892608
-    
+
     def _is_nouwuchannel(ctx):
         return ctx.channel.category_id != 539547423782207488 and ctx.channel.id != 539549544585756693
 
@@ -45,7 +47,8 @@ class Fun2(commands.Cog):
     @commands.slash_command(name="ehrenmann", description="Der erwähnte User ist ein Ehrenmann!", brief="Der erwähnte User ist ein Ehrenmann!")
     async def _ehrenmann(self, ctx, user: discord.Option(discord.User, description="Wähle den ehrenhaften User", required=True)):
         await ctx.respond(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:955905863154036748>")
-        logging.info(f"{ctx.author} wanted to let {user.name} know he is an ehrenmann.")
+        logging.info(
+            f"{ctx.author} wanted to let {user.name} know he is an ehrenmann.")
 
     @commands.slash_command(name="lebonk", description="Don't mess with him...", brief="Don't mess with him...")
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -58,6 +61,23 @@ class Fun2(commands.Cog):
     @commands.slash_command(name="pub", description="Typos...")
     async def _pubtypo(self, ctx):
         await ctx.respond(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
+
+    @commands.slash_command(name="nein_l", description="Sie sagte nein.")
+    async def _noL(self, ctx):
+        ElisabotList = [
+            "frag doch einfach nochmal",
+            "sie hat gerade einen kreativen Flow",
+            "auch zu Lieferando",
+            "denn es ist Käseabend, meine Kerl*innen",
+            "denn das Arbeiszimmer ist besetzt",
+            "weil die Aperolspur ist voll",
+            "aber vielleicht morgen nicht mehr",
+            "weil sie es kann",
+            "auch wenn es keinen Grund gibt",
+            "denn sie zahlt nicht umsonst Apple TV+",
+            "Elisabot will wandern gehen"
+        ]
+        await ctx.respond(f"Elisabot sagt nein, {random.SystemRandom().choice(ElisabotList)}.")
 
     @commands.slash_command(name="nein", description="Nein.")
     @commands.check(_is_zuggi)
@@ -93,6 +113,7 @@ class Fun2(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
             logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
-            
+
+
 def setup(bot):
     bot.add_cog(Fun2(bot))

@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 from Main import _is_banned
 from Main import _get_banned_users
@@ -8,6 +7,7 @@ from Main import aiohttp
 from Main import RequestTwitchToken
 from Main import json
 from Main import datetime
+
 
 class Twitch(commands.Cog):
 
@@ -38,12 +38,14 @@ class Twitch(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_twitch_clip(self, ctx):
         async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as session:
-            async with session.get(f'https://api.twitch.tv/helix/clips?broadcaster_id=41503263&first=50') as r: #My ID is entered, change it to yours
+            # My ID is entered, change it to yours
+            async with session.get(f'https://api.twitch.tv/helix/clips?broadcaster_id=41503263&first=50') as r:
                 if r.status == 200:
                     js = await r.json()
                     Clip = random.SystemRandom().choice(js['data'])
                     await ctx.respond(f"Dieser Clip wurde bereitgestellt durch {Clip['creator_name']}!\n{Clip['url']}")
-        logging.info(f"{ctx.author} requested a Twitch Clip, chosen was [{Clip['url']}]")
+        logging.info(
+            f"{ctx.author} requested a Twitch Clip, chosen was [{Clip['url']}]")
 
 
 def setup(bot):

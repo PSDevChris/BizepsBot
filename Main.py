@@ -895,7 +895,7 @@ async def TwitchLiveCheck():
                                     embed.set_footer(text="Bizeps_Bot")
 
                                     if USER == 'dota_joker':
-                                        await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
+                                        await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
                                         logging.info(
                                             f"{Displayname} went live on Twitch! Twitch Notification sent!")
                                         # DM when I go live, requested by Kernie
@@ -976,7 +976,8 @@ async def TrashReminder():
     tomorrowNow = datetime.datetime.today() + timedelta(days=1)
     tomorrowClean = tomorrowNow.replace(
         hour=00, minute=00, second=00, microsecond=00)
-    MuellListe = pd.read_csv('Muell.csv', sep=";", dtype='category') # categorial DFs reduce memory usage
+    # categorial DFs reduce memory usage
+    MuellListe = pd.read_csv('Muell.csv', sep=";", dtype='category')
     for entry in MuellListe["Schwarze Tonne"].dropna():
         EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
         if tomorrowClean == EntryDate:
