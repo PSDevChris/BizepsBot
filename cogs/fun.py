@@ -69,13 +69,15 @@ class Fun2(commands.Cog):
             "sie hat gerade einen kreativen Flow",
             "auch zu Lieferando",
             "denn es ist Käseabend, meine Kerl*innen",
-            "denn das Arbeiszimmer ist besetzt",
+            "denn das Arbeitszimmer ist besetzt",
             "weil die Aperolspur ist voll",
             "aber vielleicht morgen nicht mehr",
             "weil sie es kann",
             "auch wenn es keinen Grund gibt",
             "denn sie zahlt nicht umsonst Apple TV+",
-            "Elisabot will wandern gehen"
+            "Elisabot will wandern gehen",
+            "die Bolo-Avocado ist gleich fertig",
+            "denn die Bildschirmzeit ist aufgebraucht"
         ]
         await ctx.respond(f"Elisabot sagt nein, {random.SystemRandom().choice(ElisabotList)}.")
 
