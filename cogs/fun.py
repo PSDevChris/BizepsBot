@@ -62,7 +62,7 @@ class Fun2(commands.Cog):
     async def _pubtypo(self, ctx):
         await ctx.respond(f"Das Discord Pub ist geschlossen, {ctx.author.name}! Du meintest wohl !pun?")
 
-    @commands.slash_command(name="nein_l", description="Sie sagte nein.")
+    @commands.slash_command(name="neinl", description="Sie sagte nein.")
     async def _noL(self, ctx):
         ElisabotList = [
             "frag doch einfach nochmal",
