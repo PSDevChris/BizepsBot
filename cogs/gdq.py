@@ -64,6 +64,8 @@ class GDQ(commands.Cog):
                 await ctx.respond("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
                 logging.warning(
                     f"{ctx.author} wanted to know the current game that is run at GDQ, but there is no schedule live.")
+            except:
+                logging.error("ERROR: ", exc_info=True)
         else:
             await ctx.respond("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
             logging.error(
