@@ -378,43 +378,6 @@ class Fun(commands.Cog, name="Schabernack"):
                 logging.info(
                     f"The message [{LastMessageContent}] was UwUed.")
 
-    @commands.command(name="TVoed", aliases=["tvoed", "Tvoed", "TVoeD"], brief="Zeigt die Gehaltsgruppe im TVöD an")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _calctvoed(self, ctx, eggroup: str, step):
-        CurrentYear = datetime.datetime.now().year
-        TVSiteHTML = requests.get(
-            f"https://oeffentlicher-dienst.info/c/t/rechner/tvoed/vka?id=tvoed-vka-{CurrentYear}&matrix=1")
-        TVSiteText = TVSiteHTML.text.replace("100%", "100")
-        TVTableData = pd.read_html(TVSiteText)
-        TVTable = TVTableData[1]
-        TVTableCleaned = TVTable.drop(index=[19, 20]).iloc[:, 0:7]
-        TVTableCleaned = TVTableCleaned.rename(columns={"€": "EG"})
-        TVTableCleaned = TVTableCleaned.sort_index(ascending=False)
-        TVTableCleaned = TVTableCleaned[f"Entgelttabelle TVÖD VKA {CurrentYear}"]
-        TVTableCleaned["EG"] = TVTableCleaned["EG"].str.replace(u'\xa0', u' ')
-        try:
-            TVEGRow = TVTableCleaned[TVTableCleaned["EG"]
-                                     == f"{eggroup}"][f"{step}"]
-            if TVEGRow.empty == False and pd.isna(TVEGRow.values[0]) == False:
-                await ctx.send(f"Dies entspricht: {TVEGRow.values[0]}€ Brutto laut Entgeldtabelle des TVöD.")
-                logging.info(f"{ctx.author} calculated a TVoeD group.")
-            else:
-                await ctx.send("Diese Kombination aus EG Gruppe und Stufe gibt es im TVöD nicht.")
-                logging.info(
-                    f"{ctx.author} tried to calculate a combination of TVoeD group and step that does not exist.")
-        except KeyError:
-            await ctx.send("Diese Entgeldgruppe oder Stufe gibt es im TVöD nicht.")
-            logging.info(
-                f"{ctx.author} tried to calculate a TVoeD group that does not exist.")
-
-    @_calctvoed.error
-    async def _calctvoed_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Dieser Befehl ist noch im Cooldown.")
-            logging.warning(f"{ctx.author} wanted to spam the TVoeD-command!")
-        elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Es fehlt ein Parameter. Bitte !tvoed 'E X'[Leerzeichen] Stufe eingeben.")
-
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
@@ -626,108 +589,6 @@ class Meetings(commands.Cog, name="Meetings"):
             await ctx.send("Der Befehl ist noch im Cooldown.")
             logging.warning(
                 f"{ctx.author} wanted to spam the members of a game in {ctx.message.channel.name}!")
-
-
-class Games(commands.Cog, name="Games"):
-    """
-    Klasse für Videospielinhalte (eigentlich nicht mehr notwendig/vollständig).
-
-    ESAGame:        Zeigt das aktuelle ESA Game auf Twitch an.
-    OWHeld:         Generiert einen OW Helden, supported Rollen und Anzahl.
-    """
-
-    async def cog_check(self, ctx):
-        return await _is_banned(ctx)
-
-    @commands.command(name="ESAGame", aliases=["esagame", "ESA", "esa", "ESAGAME"], brief="Gibt das aktuelle ESA Game aus")
-    async def _esagame(self, ctx):
-        try:
-            USER = "esamarathon"
-            r = requests.get(f'https://api.twitch.tv/helix/search/channels?query={USER}',
-                             headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
-            data = json.loads(r.content)['data']
-            data = list(
-                filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
-
-            if data['game_id'] is not None:
-                gamerequest = requests.get(f'https://api.twitch.tv/helix/games?id={data["game_id"]}',
-                                           headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
-                game = json.loads(gamerequest.content)['data'][0]
-            else:
-                game = {"name": "Irgendwas"}
-
-            await ctx.send(f"Bei ESA wird gerade {game['name']} gespielt!")
-            logging.info(f"{ctx.author} invoked the ESA command.")
-        except IndexError:
-            # Username does not exist or Username is wrong, greetings to Schnabeltier
-            logging.error("ESA Channel not found. Was it deleted or banned?!")
-        except json.decoder.JSONDecodeError:
-            logging.error("Twitch API not available.")
-        except KeyError:
-            logging.error("Twitch API not available.")
-
-    @commands.command(name="OwHeld", aliases=["owhero", "owheld", "OWHeld", "RndHeld", "rndheld", "ow", "OW", "Ow"], brief="Weißt einen zufälligen Helden zu")
-    @commands.check(_is_owchannel)
-    async def _randomowhero(self, ctx, *args):
-        """
-        Lässt einen zufälligen Helden aus Overwatch generieren.
-        Unterstützt sowohl Rolle, als auch Anzahl der Helden.
-        """
-
-        OWPage = requests.get('https://playoverwatch.com/en-us/heroes/#all')
-        OWContent = BeautifulSoup(OWPage.content, "html.parser")
-        OW_Heros = OWContent.find_all(
-            'div', class_='hero-portrait-detailed-container')
-        ListOfSupports = []
-        ListOfTanks = []
-        ListOfDPS = []
-        SelectedHeros = []
-        role = args[0]
-        number = int(args[1])
-        for hero in OW_Heros:
-            if hero.attrs["data-groups"][2:-2] == "SUPPORT":
-                ListOfSupports.append(hero.text)
-            elif hero.attrs["data-groups"][2:-2] == "TANK":
-                ListOfTanks.append(hero.text)
-            elif hero.attrs["data-groups"][2:-2] == "DAMAGE":
-                ListOfDPS.append(hero.text)
-        ListOfAllHeros = ListOfTanks + ListOfDPS + ListOfSupports
-        if role in ["SUPPORT", "support", "Support", "healer", "Healer"] and number < len(ListOfSupports):
-            for _ in range(0, number):
-                SelectedHero = random.SystemRandom().choice(ListOfSupports)
-                ListOfSupports.remove(f"{SelectedHero}")
-                SelectedHeros.append(SelectedHero)
-                SelectedHerosString = ", ".join(SelectedHeros)
-            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
-            logging.info(
-                f"User {ctx.author} raffled a support hero from Overwatch.")
-        elif role in ["DAMAGE", "DPS", "DMG", "Damage", "dmg", "dps", "Dps"] and number < len(ListOfDPS):
-            for _ in range(0, number):
-                SelectedHero = random.SystemRandom().choice(ListOfDPS)
-                ListOfDPS.remove(f"{SelectedHero}")
-                SelectedHeros.append(SelectedHero)
-                SelectedHerosString = ", ".join(SelectedHeros)
-            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
-            logging.info(
-                f"User {ctx.author} raffled a dps hero from Overwatch.")
-        elif role in ["TANK", "tank", "Tank"] and number < len(ListOfTanks):
-            for _ in range(0, number):
-                SelectedHero = random.SystemRandom().choice(ListOfTanks)
-                ListOfTanks.remove(f"{SelectedHero}")
-                SelectedHeros.append(SelectedHero)
-                SelectedHerosString = ", ".join(SelectedHeros)
-            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
-            logging.info(
-                f"User {ctx.author} raffled a tank hero from Overwatch.")
-        elif role in ["all", "All", "ALL", "alle", "Alle"] and number < len(ListOfAllHeros):
-            for _ in range(0, number):
-                SelectedHero = random.SystemRandom().choice(ListOfAllHeros)
-                ListOfAllHeros.remove(f"{SelectedHero}")
-                SelectedHeros.append(SelectedHero)
-                SelectedHerosString = ", ".join(SelectedHeros)
-            await ctx.send(f"Folgende Helden wurden ausgewählt: {SelectedHerosString}")
-            logging.info(
-                f"User {ctx.author} raffled a general hero from Overwatch.")
 
 
 class Administration(commands.Cog, name="Administration"):
@@ -1263,8 +1124,6 @@ if __name__ == '__main__':
     logging.info(f"Extension {Fun.__name__} loaded.")
     bot.add_cog(Meetings(bot))
     logging.info(f"Extension {Meetings.__name__} loaded.")
-    bot.add_cog(Games(bot))
-    logging.info(f"Extension {Games.__name__} loaded.")
     bot.add_cog(Administration(bot))
     logging.info(f"Extension {Administration.__name__} loaded.")
     for File in os.listdir('./cogs'):

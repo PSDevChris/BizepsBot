@@ -7,6 +7,7 @@ from Main import aiohttp
 from Main import RequestTwitchToken
 from Main import json
 from Main import datetime
+from Main import requests
 
 
 class Twitch(commands.Cog):
@@ -46,6 +47,36 @@ class Twitch(commands.Cog):
                     await ctx.respond(f"Dieser Clip wurde bereitgestellt durch {Clip['creator_name']}!\n{Clip['url']}")
         logging.info(
             f"{ctx.author} requested a Twitch Clip, chosen was [{Clip['url']}]")
+
+    @commands.slash_command(name="esagame", description="Gibt das aktuelle ESA Game aus", brief="Gibt das aktuelle ESA Game aus")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def _esagame(self, ctx):
+        try:
+            USER = "esamarathon"
+            r = requests.get(f'https://api.twitch.tv/helix/search/channels?query={USER}',
+                             headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
+            data = json.loads(r.content)['data']
+            data = list(
+                filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
+
+            if data['game_id'] is not None:
+                gamerequest = requests.get(f'https://api.twitch.tv/helix/games?id={data["game_id"]}',
+                                           headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'})
+                game = json.loads(gamerequest.content)['data'][0]
+            else:
+                game = {"name": "Irgendwas"}
+
+            await ctx.respond(f"Bei ESA wird gerade {game['name']} gespielt!")
+            logging.info(f"{ctx.author} invoked the ESA command.")
+        except IndexError:
+            # Username does not exist or Username is wrong, greetings to Schnabeltier
+            logging.error("ESA Channel not found. Was it deleted or banned?!")
+        except json.decoder.JSONDecodeError:
+            logging.error("Twitch API not available.")
+            await ctx.respond(f"Die Twitch API antwortet nicht.", ephemeral=True)
+        except KeyError:
+            logging.error("Twitch API not available.")
+            await ctx.respond(f"Die Twitch API antwortet nicht.", ephemeral=True)
 
 
 def setup(bot):
