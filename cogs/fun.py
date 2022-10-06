@@ -79,7 +79,7 @@ class Fun2(commands.Cog):
             "die Bolo-Avocado ist gleich fertig",
             "denn die Bildschirmzeit ist aufgebraucht",
             "Fehler LC-208", 
-            "denn wir haben Besuch"
+            "denn Elisabot hat Besuch"
         ]
         await ctx.respond(f"Elisabot sagt nein, {random.SystemRandom().choice(ElisabotList)}.")
 
