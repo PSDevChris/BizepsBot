@@ -77,7 +77,9 @@ class Fun2(commands.Cog):
             "denn sie zahlt nicht umsonst Apple TV+",
             "Elisabot will wandern gehen",
             "die Bolo-Avocado ist gleich fertig",
-            "denn die Bildschirmzeit ist aufgebraucht"
+            "denn die Bildschirmzeit ist aufgebraucht",
+            "Fehler LC-208", 
+            "denn wir haben Besuch"
         ]
         await ctx.respond(f"Elisabot sagt nein, {random.SystemRandom().choice(ElisabotList)}.")
 
