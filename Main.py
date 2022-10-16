@@ -77,11 +77,6 @@ def RefreshMemes():
 
 ### Permission Checks ###
 
-
-def _is_owchannel(ctx):
-    return ctx.message.channel.id == 554390037811167363
-
-
 def _is_gamechannel(ctx):
     if isinstance(ctx.channel, discord.channel.DMChannel):
         return False
@@ -245,7 +240,7 @@ class Fun(commands.Cog, name="Schabernack"):
                     RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
                     logging.info(
                         f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
-                    await ctx.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerle!!!", file=discord.File(f"{RandomWedMeme}"))
+                    await ctx.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
                     AllFiles.remove(RandomWedMeme)
                 else:
                     NoWednesdayMemes = list(
@@ -640,7 +635,7 @@ class Administration(commands.Cog, name="Administration"):
             await ctx.send(f"{Member} zur Twitchliste hinzugefügt! Folgender Satz wurde hinterlegt: '{custommsg}'")
             logging.info(
                 f"User {Member} was added to twitchlist with custom message: '{custommsg}'")
-        except:
+        except Exception:
             await ctx.send("Konnte User nicht hinzufügen.")
             logging.error(
                 f"User {Member} could not be added.", exc_info=True)
@@ -653,7 +648,7 @@ class Administration(commands.Cog, name="Administration"):
             _write_json('Settings.json', TwitchUser)
             await ctx.send(f"{Member} wurde aus der Twitchliste entfernt.")
             logging.info(f"User {Member} was removed from twitchlist.")
-        except:
+        except Exception:
             await ctx.send("Konnte User nicht entfernen.")
             logging.error(
                 f"User {Member} could not be removed from twitchlist.", exc_info=True)
@@ -707,98 +702,108 @@ async def TwitchLiveCheck():
         RequestTwitchToken()
 
     TwitchJSON = _read_json('Settings.json')
+    API_Call = ""
+    for index, USER in enumerate(TwitchJSON['Settings']['TwitchUser'].keys()):
+        if index == 0:
+            API_Call = API_Call + f"user_login={USER}"
+        else:
+            API_Call = API_Call + f"&user_login={USER}"
 
-    for USER in TwitchJSON['Settings']['TwitchUser'].keys():
+    try:
+        async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
+            async with TwitchSession.get(f'https://api.twitch.tv/helix/streams?{API_Call}') as rUserData:
+                if rUserData.status == 200:
+                    AllTwitchdata = await rUserData.json()
+                    AllTwitchdata = AllTwitchdata["data"]
+        if AllTwitchdata == []:
+            for USER in TwitchJSON['Settings']['TwitchUser'].keys():
+                if TwitchJSON['Settings']['TwitchUser'][USER]['live'] != False:
+                    TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
+                    _write_json('Settings.json', TwitchJSON)
+        else:
+            for USER in TwitchJSON['Settings']['TwitchUser'].keys():
+                livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
 
-        try:
-            async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
-                async with TwitchSession.get(f'https://api.twitch.tv/helix/search/channels?query={USER}&live_only=True') as rUserData:
-                    if rUserData.status == 200:
-                        data = await rUserData.json()
-                        data = data['data']
-                        if data == []:
-                            if TwitchJSON['Settings']['TwitchUser'][USER]['live'] != False:
-                                TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
-                                _write_json('Settings.json', TwitchJSON)
-                            continue
+                data = list(
+                    filter(lambda x: x["user_login"] == f"{USER}", AllTwitchdata))
+                if data == []:
+                    if livestate is True:
+                        TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
+                        _write_json('Settings.json', TwitchJSON)
+                    continue
+                else:
+                    data = data[0]
+                    custommsg = TwitchJSON['Settings'][
+                        'TwitchUser'][f'{USER}']['custom_msg']
+                    if livestate is False and data['user_login']:
+                        # User went live
+                        if data['game_name']:
+                            game = data['game_name']
                         else:
-                            data = list(
-                                filter(lambda x: x["broadcaster_login"] == f"{USER}", data))
-                            if data == []:
-                                if TwitchJSON['Settings']['TwitchUser'][USER]['live'] != False:
-                                    TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
-                                    _write_json('Settings.json', TwitchJSON)
-                                continue
+                            game = "Irgendwas"
+
+                        if data['user_name']:
+                            Displayname = data['user_name']
+                        else:
+                            Displayname = USER.title()
+                        CurrentTime = int(datetime.datetime.timestamp(
+                            datetime.datetime.now()))
+                        embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
+                            0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.now())
+                        embed.set_image(
+                            url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
+                        async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
+                            async with TwitchSession.get(f'https://api.twitch.tv/helix/users?login={data["user_login"]}') as ProfileData:
+                                if ProfileData.status == 200:
+                                    UserProfile = await ProfileData.json()
+                                    ProfilePicData = UserProfile["data"][0]["profile_image_url"]
+                                else:
+                                    ProfilePicData = ""
+                        embed.set_author(
+                            name=f"{Displayname} ist jetzt live!", icon_url=f"{ProfilePicData}")
+                        embed.set_footer(text="Bizeps_Bot")
+
+                        if USER == 'dota_joker':
+                            await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
+                            logging.info(
+                                f"{Displayname} went live on Twitch! Twitch Notification sent!")
+                            # DM when I go live, requested by Kernie
+                            KernieDM = await bot.fetch_user(628940079913500703)
+                            await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
+                            logging.info(
+                                f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
+                        else:
+                            channel = bot.get_channel(
+                                855140014986625066)
+                            NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
+                            LastMessages = await channel.history(after=NotificationTime).flatten()
+                            if LastMessages:
+                                for message in LastMessages:
+                                    if message.content.startswith(f"**{Displayname}**") is True:
+                                        logging.info(
+                                            f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
+                                        break
+                                else:
+                                    await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
+                                    logging.info(
+                                        f"{Displayname} went live on Twitch! Twitch Twitch Notification sent, because the last Notification is older than 60min!")
                             else:
-                                data = data[0]
-                                livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
-                                custommsg = TwitchJSON['Settings'][
-                                    'TwitchUser'][f'{USER}']['custom_msg']
-                                if livestate is False and data['is_live'] and USER == data['broadcaster_login']:
-                                    # User went live
-                                    if data['game_name']:
-                                        game = data['game_name']
-                                    else:
-                                        game = "Irgendwas"
+                                await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
+                                logging.info(
+                                    f"{Displayname} went live on Twitch! Twitch Notification sent!")
 
-                                    if data['display_name']:
-                                        Displayname = data['display_name']
-                                    else:
-                                        Displayname = USER.title()
-                                    CurrentTime = int(datetime.datetime.timestamp(
-                                        datetime.datetime.now()))
-                                    embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(
-                                        0x772ce8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.now())
-                                    embed.set_image(
-                                        url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
-                                    embed.set_author(
-                                        name=f"{Displayname} ist jetzt live!", icon_url=f"{data['thumbnail_url']}")
-                                    embed.set_footer(text="Bizeps_Bot")
-
-                                    if USER == 'dota_joker':
-                                        await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
-                                        logging.info(
-                                            f"{Displayname} went live on Twitch! Twitch Notification sent!")
-                                        # DM when I go live, requested by Kernie
-                                        KernieDM = await bot.fetch_user(628940079913500703)
-                                        await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
-                                        logging.info(
-                                            f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
-                                    else:
-                                        channel = bot.get_channel(
-                                            703530328836407327)
-                                        NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
-                                        LastMessages = await channel.history(after=NotificationTime).flatten()
-                                        if LastMessages:
-                                            for message in LastMessages:
-                                                if message.content.startswith(f"**{Displayname}**") is True:
-                                                    logging.info(
-                                                        f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
-                                                    break
-                                            else:
-                                                await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
-                                                logging.info(
-                                                    f"{Displayname} went live on Twitch! Twitch Twitch Notification sent, because the last Notification is older than 60min!")
-                                        else:
-                                            await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
-                                            logging.info(
-                                                f"{Displayname} went live on Twitch! Twitch Notification sent!")
-
-                                    if livestate is not data['is_live']:
-                                        TwitchJSON['Settings']['TwitchUser'][USER]['live'] = data['is_live']
-                                        _write_json(
-                                            'Settings.json', TwitchJSON)
-        except IndexError:
-            # Username does not exist or Username is wrong, greetings to Schnabeltier
-            continue
-        except json.decoder.JSONDecodeError:
-            logging.error("ERROR: Twitch API not available.")
-            break
-        except KeyError:
-            logging.error("ERROR: Twitch API not available.")
-            break
-        except:
-            logging.error("ERROR: ", exc_info=True)
+                        TwitchJSON['Settings']['TwitchUser'][USER]['live'] = True
+                        _write_json(
+                            'Settings.json', TwitchJSON)
+    except IndexError:
+        # Username does not exist or Username is wrong, greetings to Schnabeltier
+        logging.error("ERROR: ", exc_info=True)
+    except json.decoder.JSONDecodeError:
+        logging.error("ERROR: Twitch API not available.", exc_info=True)
+    except KeyError:
+        logging.error("ERROR: Twitch API not available.", exc_info=True)
+    except Exception:
+        logging.error("ERROR: ", exc_info=True)
 
 
 @tasks.loop(seconds=60)
@@ -890,108 +895,108 @@ async def GetFreeEpicGames():
 
             if RequestFromEpic.status == 200:
                 JSONFromEpicStore = await RequestFromEpic.json()
-                if JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
-                    for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
-                        if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
-                            PromotionalStartDate = parser.parse(
-                                FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
-                            LaunchingToday = parser.parse(
-                                FreeGame['effectiveDate'])
-
-                            if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.datetime.now().date() or PromotionalStartDate.date() <= datetime.datetime.now().date()):
-                                offers = FreeGame['promotions']['promotionalOffers']
-                                for offer in offers:
-
-                                    FreeGameObject = {
-                                        f"{FreeGame['title']}": {
-                                            "startDate": offer['promotionalOffers'][0]['startDate'],
-                                            "endDate": offer['promotionalOffers'][0]['endDate'],
-                                        }
-                                    }
-
-                                    try:
-
-                                        if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
-                                            pass
-                                        else:
-                                            FreeGamesList['Settings']['FreeEpicGames'].update(
-                                                FreeGameObject)
-                                            _write_json(
-                                                'Settings.json', FreeGamesList)
-                                            EndOfOffer = offer['promotionalOffers'][0]['endDate']
-                                            EndDateOfOffer = parser.parse(
-                                                EndOfOffer).date()
-
-                                            for index in range(len(FreeGame['keyImages'])):
-                                                if FreeGame['keyImages'][index]['type'] == "Thumbnail":
-                                                    EpicImageURL = FreeGame['keyImages'][index]['url']
-                                                    async with EpicSession.get(EpicImageURL) as EpicImageReq:
-                                                        EpicImage = await EpicImageReq.read()
-                                                        break
-                                                elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
-                                                    EpicImageURL = FreeGame['keyImages'][index]['url']
-                                                    async with EpicSession.get(EpicImageURL) as EpicImageReq:
-                                                        EpicImage = await EpicImageReq.read()
-                                                        break
-                                                else:
-                                                    EpicImage = ""
-
-                                            ### Build Embed with chosen vars ###
-                                            EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
-                                                0x1), timestamp=datetime.datetime.now())
-                                            EpicEmbed.set_thumbnail(
-                                                url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
-                                            EpicEmbed.set_author(
-                                                name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
-                                            if FreeGame['productSlug']:
-                                                if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
-                                                    EpicEmbed.add_field(
-                                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['productSlug']})", inline=True)
-                                                    EpicEmbed.add_field(
-                                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['productSlug']}>", inline=True)
-                                                else:
-                                                    EpicEmbed.add_field(
-                                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
-                                                    EpicEmbed.add_field(
-                                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
-                                            elif FreeGame['catalogNs']['mappings'][0]['pageSlug']:
-                                                if "collection" in FreeGame['catalogNs']['mappings'][0]['pageSlug'] or "bundle" in FreeGame['catalogNs']['mappings'][0]['pageSlug'] or "trilogy" in FreeGame['catalogNs']['mappings'][0]['pageSlug']:
-                                                    EpicEmbed.add_field(
-                                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
-                                                    EpicEmbed.add_field(
-                                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
-                                                else:
-                                                    EpicEmbed.add_field(
-                                                        name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
-                                                    EpicEmbed.add_field(
-                                                        name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
-                                            if EpicImageURL:
-                                                EpicImageURL = quote(
-                                                    EpicImageURL, safe=':/')
-                                                EpicEmbed.set_image(
-                                                    url=f"{EpicImageURL}")
-                                            EpicEmbed.set_footer(
-                                                text="Bizeps_Bot")
-
-                                            if EpicImage != "" and EpicImage:
-                                                NumberOfEpicFiles = NumberOfEpicFiles + 1
-                                                EpicImagePath = f"{NumberOfEpicFiles}_epic.jpg"
-                                                with open(f'epic/{EpicImagePath}', 'wb') as write_file:
-                                                    write_file.write(
-                                                        EpicImage)
-                                            await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
-                                            logging.info(
-                                                f"{FreeGame['title']} was added to free Epic Games!")
-
-                                    except json.decoder.JSONDecodeError:
-                                        FreeGamesList['Settings']['FreeEpicGames'] = {
-                                        }
-                                        FreeGamesList['Settings']['FreeEpicGames'].update(
-                                            FreeGameObject)
-                                        _write_json(
-                                            'Settings.json', FreeGamesList)
             else:
                 logging.error("Epic Store is not available!")
+    if JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
+        for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
+            if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
+                PromotionalStartDate = parser.parse(
+                    FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
+                LaunchingToday = parser.parse(
+                    FreeGame['effectiveDate'])
+
+                if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.datetime.now().date() or PromotionalStartDate.date() <= datetime.datetime.now().date()):
+                    offers = FreeGame['promotions']['promotionalOffers']
+                    for offer in offers:
+
+                        FreeGameObject = {
+                            f"{FreeGame['title']}": {
+                                "startDate": offer['promotionalOffers'][0]['startDate'],
+                                "endDate": offer['promotionalOffers'][0]['endDate'],
+                            }
+                        }
+
+                        try:
+
+                            if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
+                                pass
+                            else:
+                                FreeGamesList['Settings']['FreeEpicGames'].update(
+                                    FreeGameObject)
+                                _write_json(
+                                    'Settings.json', FreeGamesList)
+                                EndOfOffer = offer['promotionalOffers'][0]['endDate']
+                                EndDateOfOffer = parser.parse(
+                                    EndOfOffer).date()
+
+                                for index in range(len(FreeGame['keyImages'])):
+                                    if FreeGame['keyImages'][index]['type'] == "Thumbnail":
+                                        EpicImageURL = FreeGame['keyImages'][index]['url']
+                                        async with EpicSession.get(EpicImageURL) as EpicImageReq:
+                                            EpicImage = await EpicImageReq.read()
+                                            break
+                                    elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
+                                        EpicImageURL = FreeGame['keyImages'][index]['url']
+                                        async with EpicSession.get(EpicImageURL) as EpicImageReq:
+                                            EpicImage = await EpicImageReq.read()
+                                            break
+                                    else:
+                                        EpicImage = ""
+
+                                ### Build Embed with chosen vars ###
+                                EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
+                                    0x1), timestamp=datetime.datetime.now())
+                                EpicEmbed.set_thumbnail(
+                                    url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
+                                EpicEmbed.set_author(
+                                    name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                                if FreeGame['productSlug']:
+                                    if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
+                                        EpicEmbed.add_field(
+                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['productSlug']})", inline=True)
+                                        EpicEmbed.add_field(
+                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['productSlug']}>", inline=True)
+                                    else:
+                                        EpicEmbed.add_field(
+                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
+                                        EpicEmbed.add_field(
+                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
+                                elif FreeGame['catalogNs']['mappings'][0]['pageSlug']:
+                                    if "collection" in FreeGame['catalogNs']['mappings'][0]['pageSlug'] or "bundle" in FreeGame['catalogNs']['mappings'][0]['pageSlug'] or "trilogy" in FreeGame['catalogNs']['mappings'][0]['pageSlug']:
+                                        EpicEmbed.add_field(
+                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
+                                        EpicEmbed.add_field(
+                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
+                                    else:
+                                        EpicEmbed.add_field(
+                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
+                                        EpicEmbed.add_field(
+                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
+                                if EpicImageURL:
+                                    EpicImageURL = quote(
+                                        EpicImageURL, safe=':/')
+                                    EpicEmbed.set_image(
+                                        url=f"{EpicImageURL}")
+                                EpicEmbed.set_footer(
+                                    text="Bizeps_Bot")
+
+                                if EpicImage != "" and EpicImage:
+                                    NumberOfEpicFiles = NumberOfEpicFiles + 1
+                                    EpicImagePath = f"{NumberOfEpicFiles}_epic.jpg"
+                                    with open(f'epic/{EpicImagePath}', 'wb') as write_file:
+                                        write_file.write(
+                                            EpicImage)
+                                await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
+                                logging.info(
+                                    f"{FreeGame['title']} was added to free Epic Games!")
+
+                        except json.decoder.JSONDecodeError:
+                            FreeGamesList['Settings']['FreeEpicGames'] = {
+                            }
+                            FreeGamesList['Settings']['FreeEpicGames'].update(
+                                FreeGameObject)
+                            _write_json(
+                                'Settings.json', FreeGamesList)
 
 
 @tasks.loop(minutes=15)
@@ -1003,50 +1008,51 @@ async def _get_free_steamgames():
         async with SteamSession.get(SteamURL) as SteamReq:
             if SteamReq.status == 200:
                 SteamPage = await SteamReq.read()
-                SteamHTML = BeautifulSoup(SteamPage, "html.parser")
-                SteamResult = SteamHTML.find_all(
-                    "a", class_="search_result_row ds_collapse_flag")
-                if SteamResult:
-                    for Result in SteamResult:
-                        SteamGameTitle = Result.find(class_="title").text
-                        if SteamGameTitle:
-                            FreeGameTitleList.append(SteamGameTitle)
-                            if SteamGameTitle not in FreeSteamList['Settings']['FreeSteamGames']:
-                                SteamGameURL = Result['href']
-                                ProdID = Result['data-ds-appid']
-                                ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
+    if SteamPage:
+        SteamHTML = BeautifulSoup(SteamPage, "html.parser")
+        SteamResult = SteamHTML.find_all(
+            "a", class_="search_result_row ds_collapse_flag")
+        if SteamResult:
+            for Result in SteamResult:
+                SteamGameTitle = Result.find(class_="title").text
+                if SteamGameTitle:
+                    FreeGameTitleList.append(SteamGameTitle)
+                    if SteamGameTitle not in FreeSteamList['Settings']['FreeSteamGames']:
+                        SteamGameURL = Result['href']
+                        ProdID = Result['data-ds-appid']
+                        ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
 
-                                SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
-                                    0x6c6c6c), timestamp=datetime.datetime.now())
-                                SteamEmbed.set_thumbnail(
-                                    url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
-                                SteamEmbed.set_author(
-                                    name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
-                                SteamEmbed.add_field(
-                                    name="Besuch mich auf Steam", value=f"{SteamGameURL}", inline=True)
-                                SteamEmbed.add_field(
-                                    name="Hol mich im Launcher", value=f"<Steam://Store/{ProdID}>", inline=True)
-                                SteamImageURL = quote(ImageSrc, safe=':/')
-                                SteamEmbed.set_image(url=f"{SteamImageURL}")
-                                SteamEmbed.set_footer(text="Bizeps_Bot")
-                                await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
-                                FreeSteamList['Settings']['FreeSteamGames'].append(
-                                    SteamGameTitle)
-                                _write_json('Settings.json', FreeSteamList)
-                                # Hack for missing char mapping in logging module
-                                SteamGameTitle = SteamGameTitle.replace(
-                                    "\uFF1A", ": ")
-                                logging.info(
-                                    f"{SteamGameTitle} was added to the free steam game list.")
-
-                    ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
-                        FreeGameTitleList)
-                    for ExpiredGame in ExpiredGames:
-                        FreeSteamList['Settings']['FreeSteamGames'].remove(
-                            ExpiredGame)
-                        logging.info(
-                            f"Removed {ExpiredGame} from free steam game list since it expired.")
+                        SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
+                            0x6c6c6c), timestamp=datetime.datetime.now())
+                        SteamEmbed.set_thumbnail(
+                            url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
+                        SteamEmbed.set_author(
+                            name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                        SteamEmbed.add_field(
+                            name="Besuch mich auf Steam", value=f"{SteamGameURL}", inline=True)
+                        SteamEmbed.add_field(
+                            name="Hol mich im Launcher", value=f"<Steam://Store/{ProdID}>", inline=True)
+                        SteamImageURL = quote(ImageSrc, safe=':/')
+                        SteamEmbed.set_image(url=f"{SteamImageURL}")
+                        SteamEmbed.set_footer(text="Bizeps_Bot")
+                        await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
+                        FreeSteamList['Settings']['FreeSteamGames'].append(
+                            SteamGameTitle)
                         _write_json('Settings.json', FreeSteamList)
+                        # Hack for missing char mapping in logging module
+                        SteamGameTitle = SteamGameTitle.replace(
+                            "\uFF1A", ": ")
+                        logging.info(
+                            f"{SteamGameTitle} was added to the free steam game list.")
+
+            ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
+                FreeGameTitleList)
+            for ExpiredGame in ExpiredGames:
+                FreeSteamList['Settings']['FreeSteamGames'].remove(
+                    ExpiredGame)
+                logging.info(
+                    f"Removed {ExpiredGame} from free steam game list since it expired.")
+                _write_json('Settings.json', FreeSteamList)
 
 ### Bot Events ###
 
