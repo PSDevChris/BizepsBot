@@ -774,7 +774,7 @@ async def TwitchLiveCheck():
                                 f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
                         else:
                             channel = bot.get_channel(
-                                855140014986625066)
+                                703530328836407327)
                             NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
                             LastMessages = await channel.history(after=NotificationTime).flatten()
                             if LastMessages:
