@@ -897,106 +897,106 @@ async def GetFreeEpicGames():
                 JSONFromEpicStore = await RequestFromEpic.json()
             else:
                 logging.error("Epic Store is not available!")
-    if JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
-        for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
-            if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
-                PromotionalStartDate = parser.parse(
-                    FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
-                LaunchingToday = parser.parse(
-                    FreeGame['effectiveDate'])
+            if JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
+                for FreeGame in JSONFromEpicStore['data']['Catalog']['searchStore']['elements']:
+                    if FreeGame['promotions'] is not None and FreeGame['promotions']['promotionalOffers'] != []:
+                        PromotionalStartDate = parser.parse(
+                            FreeGame['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'])
+                        LaunchingToday = parser.parse(
+                            FreeGame['effectiveDate'])
 
-                if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.datetime.now().date() or PromotionalStartDate.date() <= datetime.datetime.now().date()):
-                    offers = FreeGame['promotions']['promotionalOffers']
-                    for offer in offers:
+                        if FreeGame['price']['totalPrice']['discountPrice'] == 0 and (LaunchingToday.date() <= datetime.datetime.now().date() or PromotionalStartDate.date() <= datetime.datetime.now().date()):
+                            offers = FreeGame['promotions']['promotionalOffers']
+                            for offer in offers:
 
-                        FreeGameObject = {
-                            f"{FreeGame['title']}": {
-                                "startDate": offer['promotionalOffers'][0]['startDate'],
-                                "endDate": offer['promotionalOffers'][0]['endDate'],
-                            }
-                        }
+                                FreeGameObject = {
+                                    f"{FreeGame['title']}": {
+                                        "startDate": offer['promotionalOffers'][0]['startDate'],
+                                        "endDate": offer['promotionalOffers'][0]['endDate'],
+                                    }
+                                }
 
-                        try:
+                                try:
 
-                            if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
-                                pass
-                            else:
-                                FreeGamesList['Settings']['FreeEpicGames'].update(
-                                    FreeGameObject)
-                                _write_json(
-                                    'Settings.json', FreeGamesList)
-                                EndOfOffer = offer['promotionalOffers'][0]['endDate']
-                                EndDateOfOffer = parser.parse(
-                                    EndOfOffer).date()
-
-                                for index in range(len(FreeGame['keyImages'])):
-                                    if FreeGame['keyImages'][index]['type'] == "Thumbnail":
-                                        EpicImageURL = FreeGame['keyImages'][index]['url']
-                                        async with EpicSession.get(EpicImageURL) as EpicImageReq:
-                                            EpicImage = await EpicImageReq.read()
-                                            break
-                                    elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
-                                        EpicImageURL = FreeGame['keyImages'][index]['url']
-                                        async with EpicSession.get(EpicImageURL) as EpicImageReq:
-                                            EpicImage = await EpicImageReq.read()
-                                            break
+                                    if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
+                                        pass
                                     else:
-                                        EpicImage = ""
+                                        FreeGamesList['Settings']['FreeEpicGames'].update(
+                                            FreeGameObject)
+                                        _write_json(
+                                            'Settings.json', FreeGamesList)
+                                        EndOfOffer = offer['promotionalOffers'][0]['endDate']
+                                        EndDateOfOffer = parser.parse(
+                                            EndOfOffer).date()
 
-                                ### Build Embed with chosen vars ###
-                                EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
-                                    0x1), timestamp=datetime.datetime.now())
-                                EpicEmbed.set_thumbnail(
-                                    url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
-                                EpicEmbed.set_author(
-                                    name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
-                                if FreeGame['productSlug']:
-                                    if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
-                                        EpicEmbed.add_field(
-                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['productSlug']})", inline=True)
-                                        EpicEmbed.add_field(
-                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['productSlug']}>", inline=True)
-                                    else:
-                                        EpicEmbed.add_field(
-                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
-                                        EpicEmbed.add_field(
-                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
-                                elif FreeGame['catalogNs']['mappings'][0]['pageSlug']:
-                                    if "collection" in FreeGame['catalogNs']['mappings'][0]['pageSlug'] or "bundle" in FreeGame['catalogNs']['mappings'][0]['pageSlug'] or "trilogy" in FreeGame['catalogNs']['mappings'][0]['pageSlug']:
-                                        EpicEmbed.add_field(
-                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
-                                        EpicEmbed.add_field(
-                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
-                                    else:
-                                        EpicEmbed.add_field(
-                                            name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
-                                        EpicEmbed.add_field(
-                                            name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
-                                if EpicImageURL:
-                                    EpicImageURL = quote(
-                                        EpicImageURL, safe=':/')
-                                    EpicEmbed.set_image(
-                                        url=f"{EpicImageURL}")
-                                EpicEmbed.set_footer(
-                                    text="Bizeps_Bot")
+                                        for index in range(len(FreeGame['keyImages'])):
+                                            if FreeGame['keyImages'][index]['type'] == "Thumbnail":
+                                                EpicImageURL = FreeGame['keyImages'][index]['url']
+                                                async with EpicSession.get(EpicImageURL) as EpicImageReq:
+                                                    EpicImage = await EpicImageReq.read()
+                                                    break
+                                            elif FreeGame['keyImages'][index]['type'] == "DieselStoreFrontWide":
+                                                EpicImageURL = FreeGame['keyImages'][index]['url']
+                                                async with EpicSession.get(EpicImageURL) as EpicImageReq:
+                                                    EpicImage = await EpicImageReq.read()
+                                                    break
+                                            else:
+                                                EpicImage = ""
 
-                                if EpicImage != "" and EpicImage:
-                                    NumberOfEpicFiles = NumberOfEpicFiles + 1
-                                    EpicImagePath = f"{NumberOfEpicFiles}_epic.jpg"
-                                    with open(f'epic/{EpicImagePath}', 'wb') as write_file:
-                                        write_file.write(
-                                            EpicImage)
-                                await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
-                                logging.info(
-                                    f"{FreeGame['title']} was added to free Epic Games!")
+                                        ### Build Embed with chosen vars ###
+                                        EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
+                                            0x1), timestamp=datetime.datetime.now())
+                                        EpicEmbed.set_thumbnail(
+                                            url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
+                                        EpicEmbed.set_author(
+                                            name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                                        if FreeGame['productSlug']:
+                                            if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
+                                                EpicEmbed.add_field(
+                                                    name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['productSlug']})", inline=True)
+                                                EpicEmbed.add_field(
+                                                    name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['productSlug']}>", inline=True)
+                                            else:
+                                                EpicEmbed.add_field(
+                                                    name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['productSlug']})", inline=True)
+                                                EpicEmbed.add_field(
+                                                    name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['productSlug']}>", inline=True)
+                                        elif FreeGame['catalogNs']['mappings'][0]['pageSlug']:
+                                            if "collection" in FreeGame['catalogNs']['mappings'][0]['pageSlug'] or "bundle" in FreeGame['catalogNs']['mappings'][0]['pageSlug'] or "trilogy" in FreeGame['catalogNs']['mappings'][0]['pageSlug']:
+                                                EpicEmbed.add_field(
+                                                    name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/bundles/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
+                                                EpicEmbed.add_field(
+                                                    name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/bundles/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
+                                            else:
+                                                EpicEmbed.add_field(
+                                                    name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
+                                                EpicEmbed.add_field(
+                                                    name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
+                                        if EpicImageURL:
+                                            EpicImageURL = quote(
+                                                EpicImageURL, safe=':/')
+                                            EpicEmbed.set_image(
+                                                url=f"{EpicImageURL}")
+                                        EpicEmbed.set_footer(
+                                            text="Bizeps_Bot")
 
-                        except json.decoder.JSONDecodeError:
-                            FreeGamesList['Settings']['FreeEpicGames'] = {
-                            }
-                            FreeGamesList['Settings']['FreeEpicGames'].update(
-                                FreeGameObject)
-                            _write_json(
-                                'Settings.json', FreeGamesList)
+                                        if EpicImage != "" and EpicImage:
+                                            NumberOfEpicFiles = NumberOfEpicFiles + 1
+                                            EpicImagePath = f"{NumberOfEpicFiles}_epic.jpg"
+                                            with open(f'epic/{EpicImagePath}', 'wb') as write_file:
+                                                write_file.write(
+                                                    EpicImage)
+                                        await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
+                                        logging.info(
+                                            f"{FreeGame['title']} was added to free Epic Games!")
+
+                                except json.decoder.JSONDecodeError:
+                                    FreeGamesList['Settings']['FreeEpicGames'] = {
+                                    }
+                                    FreeGamesList['Settings']['FreeEpicGames'].update(
+                                        FreeGameObject)
+                                    _write_json(
+                                        'Settings.json', FreeGamesList)
 
 
 @tasks.loop(minutes=15)
