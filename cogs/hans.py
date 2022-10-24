@@ -1,29 +1,31 @@
 import discord
+import random
 from discord import Option
 from discord.ext import commands
 from Main import _is_banned
 from Main import _read_json
 from Main import logging
-from Main import random
 from Main import _write_json
+
 
 def _refresh_hanstasks():
     HansTasksJSON = _read_json('Settings.json')
     HansTasks = list(HansTasksJSON['Settings']['HansTasks']['Tasks'])
     return HansTasks
 
+
 class HansTaskList(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         self.HansTasks = _refresh_hanstasks()
-    
+
     # Is not working in pycord 2.0 so far
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
 
-
     # Events
+
     @commands.Cog.listener()
     async def on_ready(self):
         pass
@@ -45,12 +47,14 @@ class HansTaskList(commands.Cog):
                     HansOutputLength = 0
                 HansOutputString += HansTaskEntry + "\n"
                 HansOutputLength = HansOutputLength + len(HansTaskEntry)
-            logging.info(f"{ctx.author.name} requested the list of Hans tasks.")
+            logging.info(
+                f"{ctx.author.name} requested the list of Hans tasks.")
             await ctx.respond(f"```{HansOutputString}```")
         elif option == "count":
             AllHansTasks = _read_json('Settings.json')
             HansTaskCount = len(AllHansTasks['Settings']['HansTasks']['Tasks'])
-            logging.info(f"{ctx.author} wanted to know how much tasks Hans has.")
+            logging.info(
+                f"{ctx.author} wanted to know how much tasks Hans has.")
             await ctx.respond(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
         elif (option == "add" and task) or task:
             if "```" not in task:
@@ -58,7 +62,8 @@ class HansTaskList(commands.Cog):
                 AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
                 _write_json('Settings.json', AllHansTasks)
                 self.HansTasks.append(task)
-                logging.info(f"{ctx.author.name} has added {task} to Hans tasks.")
+                logging.info(
+                    f"{ctx.author.name} has added {task} to Hans tasks.")
                 await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
@@ -69,7 +74,8 @@ class HansTaskList(commands.Cog):
                 _refresh_hanstasks()
             HansTask = random.SystemRandom().choice(self.HansTasks)
             self.HansTasks.remove(HansTask)
-            logging.info(f"[{ctx.author.name}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
+            logging.info(
+                f"[{ctx.author.name}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
             await ctx.respond(f"Hans muss {HansTask}...")
 
     @_hanstasks.error
@@ -81,6 +87,7 @@ class HansTaskList(commands.Cog):
             await ctx.respond(f"Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
         else:
             logging.error(f"ERROR: {error}")
+
 
 def setup(bot):
     bot.add_cog(HansTaskList(bot))

@@ -1,11 +1,10 @@
-import discord
+import random
 from discord.ext import commands
 from Main import _is_banned
 from Main import _get_banned_users
 from Main import logging
 from Main import requests
 from Main import BeautifulSoup
-from Main import random
 from Main import json
 
 

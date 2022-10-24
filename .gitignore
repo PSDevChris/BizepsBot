@@ -17,3 +17,6 @@
 !cogs/fun.py
 !cogs/misc.py
 !cogs/twitch.py
+!cogs/meetings.py
+!cogs/counter.py
+!cogs/memes.py

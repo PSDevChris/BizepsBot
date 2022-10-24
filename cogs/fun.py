@@ -1,13 +1,13 @@
 import discord
+import random
 from discord.ext import commands
 from Main import _is_banned
 from Main import _get_banned_users
 from Main import logging
-from Main import random
 import uwuify
 
 
-class Fun2(commands.Cog):
+class Fun(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -78,8 +78,9 @@ class Fun2(commands.Cog):
             "Elisabot will wandern gehen",
             "die Bolo-Avocado ist gleich fertig",
             "denn die Bildschirmzeit ist aufgebraucht",
-            "Fehler LC-208", 
-            "denn Elisabot hat Besuch"
+            "Fehler LC-208",
+            "denn Elisabot hat Besuch",
+            "denn das 800€ Ticket muss genutzt werden"
         ]
         await ctx.respond(f"Elisabot sagt nein, {random.SystemRandom().choice(ElisabotList)}.")
 
@@ -105,6 +106,22 @@ class Fun2(commands.Cog):
         logging.info(
             f"{ctx.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
 
+    @commands.Cog.listener("on_message")
+    async def _uwumsg(self, message):
+        if isinstance(message.channel, discord.channel.DMChannel):
+            pass
+        elif message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693:
+            pass
+        else:
+            if message.author == self.bot.user:
+                return
+            if random.randint(0, 75) == 1:
+                LastMessageContent = message.content
+                flags = uwuify.SMILEY | uwuify.YU
+                await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
+                logging.info(
+                    f"The message [{LastMessageContent}] was UwUed.")
+
     @_zuggisaysno.error
     async def _zuggisaysno_error(self, ctx, error):
         if isinstance(error, discord.errors.CheckFailure):
@@ -120,4 +137,4 @@ class Fun2(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Fun2(bot))
+    bot.add_cog(Fun(bot))

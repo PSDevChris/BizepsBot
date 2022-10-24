@@ -1,9 +1,10 @@
+import random
 from discord import Option
 from discord.ext import commands
 from Main import _is_banned
 from Main import _get_banned_users
-from Main import random
 from Main import logging
+
 
 class Diceroll(commands.Cog):
 
@@ -29,7 +30,8 @@ class Diceroll(commands.Cog):
             await ctx.respond("1")
         else:
             await ctx.respond(f"{random.SystemRandom().randrange(1, abs(maxroll))}")
-            logging.info(f"{ctx.author} rolled with value {maxroll} as max value, negative numbers were turned to absolutes.")
+            logging.info(
+                f"{ctx.author} rolled with value {maxroll} as max value, negative numbers were turned to absolutes.")
 
 
 def setup(bot):

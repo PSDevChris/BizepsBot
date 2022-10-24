@@ -1,4 +1,5 @@
 import discord
+import random
 from discord import Option
 from discord.ext import commands
 from Main import _is_banned
@@ -6,7 +7,6 @@ from Main import _read_json
 from Main import _write_json
 from Main import _get_banned_users
 from Main import logging
-from Main import random
 
 ### Checks ###
 
@@ -108,19 +108,19 @@ class Raffle(commands.Cog, name="Raffle"):
 
     @_start_giveaway.error
     async def _showlog_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
+        if isinstance(error, discord.errors.CheckFailure):
             await ctx.respond("Na na, das darf nur der Admin.")
             logging.warning(f"{ctx.author} wanted to start a giveaway!")
 
     @_stop_giveaway.error
     async def _showlog_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
+        if isinstance(error, discord.errors.CheckFailure):
             await ctx.respond("Na na, das darf nur der Admin.")
             logging.warning(f"{ctx.author} wanted to stop a giveaway!")
 
     @_set_giveaway.error
-    async def _showlog_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
+    async def _setgiveaway_error(self, ctx, error):
+        if isinstance(error, discord.errors.CheckFailure):
             await ctx.respond("Na na, das darf nur der Admin.")
             logging.warning(f"{ctx.author} wanted to set a giveaway!")
 
