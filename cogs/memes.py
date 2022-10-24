@@ -97,7 +97,7 @@ class Memes(commands.Cog):
                 NoWednesdayMemes = list(
                     filter(lambda x: 'Mittwoch' not in x, AllFiles))
             RandomMeme = random.SystemRandom().choice(NoWednesdayMemes)
-            AuthorOfMeme = RandomMeme.split("/")[1].split("#")[0]
+            AuthorOfMeme = RandomMeme.split("/")[-2].split("#")[0]
             logging.info(
                 f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
             await ctx.respond(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
