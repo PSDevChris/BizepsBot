@@ -393,6 +393,11 @@ async def GetFreeEpicGames():
                                         await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
                                         logging.info(
                                             f"{FreeGame['title']} was added to free Epic Games!")
+                                        # Send Games to Schnenk
+                                        SchnenkDM = await bot.fetch_user(257249704872509441)
+                                        await SchnenkDM.send(embed=EpicEmbed)
+                                        logging.info(
+                                            "Free Epic Games were sent to Schnenk.")
 
                                 except json.decoder.JSONDecodeError:
                                     FreeGamesList['Settings']['FreeEpicGames'] = {
