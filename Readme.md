@@ -21,11 +21,8 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 
 ## To Dos ## 
 
-+ Show FreeGames 
 + Extend Discord Pub
 + Split Messages over 2k chars | Needs to be implemented as func
-+ OWC Command that uses 2-2-1 
-+ More Cogs, less Code in the main bot
 + Add Memes via URL
 + Load Settingsfile global and once
-+ Port Usercommands to Slashcommands
++ Make Alertgroups for Kumpels and Kumpelienen
