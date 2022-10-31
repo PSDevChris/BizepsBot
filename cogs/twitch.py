@@ -39,8 +39,8 @@ class Twitch(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_twitch_clip(self, ctx):
         async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as session:
-            # My ID is entered, change it to yours
-            async with session.get(f'https://api.twitch.tv/helix/clips?broadcaster_id=41503263&first=50') as r:
+            # My ID is entered, change it to yours, 1000 Clips are returned at max
+            async with session.get(f'https://api.twitch.tv/helix/clips?broadcaster_id=41503263') as r:
                 if r.status == 200:
                     js = await r.json()
                     Clip = random.SystemRandom().choice(js['data'])
