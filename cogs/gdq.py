@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
+
+import pandas as pd
+import requests
+from dateutil.parser import parse
 from discord import Option
 from discord.ext import commands
-import requests
-import pandas as pd
-from dateutil.parser import parse
-from Main import _is_banned
-from Main import _get_banned_users
-from Main import logging
+
+from Main import _get_banned_users, _is_banned, logging
 
 
 class GDQ(commands.Cog):

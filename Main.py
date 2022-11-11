@@ -1,16 +1,17 @@
 import datetime
-from datetime import timedelta, timezone
 import json
-import os
 import logging
-import discord
-from discord.ext import commands, tasks
-from dateutil import parser
-import requests
-from requests.utils import quote
-from bs4 import BeautifulSoup
+import os
+from datetime import timedelta, timezone
+
 import aiohttp
+import discord
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+from dateutil import parser
+from discord.ext import commands, tasks
+from requests.utils import quote
 
 logging.getLogger("discord").setLevel(logging.WARNING)
 logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.INFO, handlers=[logging.FileHandler(f'./logs/{datetime.datetime.now().date()}_bot.log'),

@@ -1,11 +1,9 @@
 import random
-from Main import discord
+
 from discord.ext import commands
-from Main import _is_banned
-from Main import _get_banned_users
-from Main import logging
-from Main import _read_json
-from Main import _write_json
+
+from Main import (_get_banned_users, _is_banned, _read_json, _write_json,
+                  discord, logging)
 
 
 async def _inc_counter(invoker: discord.ApplicationContext, name: str, incnum: int):

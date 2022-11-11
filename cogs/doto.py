@@ -1,10 +1,9 @@
 import random
+
 from discord import Option
 from discord.ext import commands
-from Main import _is_banned
-from Main import _get_banned_users
-from Main import _read_json
-from Main import logging
+
+from Main import _get_banned_users, _is_banned, _read_json, logging
 
 
 def _refresh_dotojokes():

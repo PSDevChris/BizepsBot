@@ -1,9 +1,6 @@
-from Main import discord
 from discord.ext import commands
-from Main import _is_banned
-from Main import _get_banned_users
-from Main import datetime
-from Main import aiohttp
+
+from Main import _get_banned_users, _is_banned, aiohttp, datetime, discord
 
 
 class xkcd(commands.Cog):
