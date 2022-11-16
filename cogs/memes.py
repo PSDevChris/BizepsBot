@@ -139,7 +139,7 @@ class Memes(commands.Cog):
                             await meme.save(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                             logging.info(
                                 f"{ctx.author} has added the wednesday meme {meme.filename}.")
-                            await ctx.respond("Mittwoch Memes hinzugefügt.")
+                            await ctx.respond("Folgendes Mittwoch Meme hinzugefügt:", file=await meme.to_file())
                             AllFiles.append(
                                 f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                         else:
