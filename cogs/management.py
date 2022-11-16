@@ -156,11 +156,11 @@ class Management(commands.Cog):
         """
         if changearg == "load":
             self.bot.load_extension(f"cogs.{extension}")
-            await ctx.send(f"Extension {extension} wurde geladen und ist jetzt einsatzbereit.")
+            await ctx.respond(f"Extension {extension} wurde geladen und ist jetzt einsatzbereit.")
             logging.info(f"Extension {extension} was loaded.")
         elif changearg == "unload":
             self.bot.unload_extension(f"cogs.{extension}")
-            await ctx.send(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
+            await ctx.respond(f"Extension {extension} wurde entfernt und ist nicht mehr einsatzfähig.")
             logging.info(f"Extension {extension} was unloaded.")
 
     # Error Checking
