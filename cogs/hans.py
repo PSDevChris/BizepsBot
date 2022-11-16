@@ -19,7 +19,7 @@ class HansTaskList(commands.Cog):
         self.bot = bot
         self.HansTasks = _refresh_hanstasks()
 
-    # Is not working in pycord 2.0 so far
+    # Async for cog_check, normal for command_check
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
 

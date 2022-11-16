@@ -418,51 +418,51 @@ async def _get_free_steamgames():
         async with SteamSession.get(SteamURL) as SteamReq:
             if SteamReq.status == 200:
                 SteamPage = await SteamReq.read()
-    if SteamPage:
-        SteamHTML = BeautifulSoup(SteamPage, "html.parser")
-        SteamResult = SteamHTML.find_all(
-            "a", class_="search_result_row ds_collapse_flag")
-        if SteamResult:
-            for Result in SteamResult:
-                SteamGameTitle = Result.find(class_="title").text
-                if SteamGameTitle:
-                    FreeGameTitleList.append(SteamGameTitle)
-                    if SteamGameTitle not in FreeSteamList['Settings']['FreeSteamGames']:
-                        SteamGameURL = Result['href']
-                        ProdID = Result['data-ds-appid']
-                        ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
+                if SteamPage:
+                    SteamHTML = BeautifulSoup(SteamPage, "html.parser")
+                    SteamResult = SteamHTML.find_all(
+                        "a", class_="search_result_row ds_collapse_flag")
+                    if SteamResult:
+                        for Result in SteamResult:
+                            SteamGameTitle = Result.find(class_="title").text
+                            if SteamGameTitle:
+                                FreeGameTitleList.append(SteamGameTitle)
+                                if SteamGameTitle not in FreeSteamList['Settings']['FreeSteamGames']:
+                                    SteamGameURL = Result['href']
+                                    ProdID = Result['data-ds-appid']
+                                    ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
 
-                        SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
-                            0x6c6c6c), timestamp=datetime.datetime.now())
-                        SteamEmbed.set_thumbnail(
-                            url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
-                        SteamEmbed.set_author(
-                            name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
-                        SteamEmbed.add_field(
-                            name="Besuch mich auf Steam", value=f"{SteamGameURL}", inline=True)
-                        SteamEmbed.add_field(
-                            name="Hol mich im Launcher", value=f"<Steam://Store/{ProdID}>", inline=True)
-                        SteamImageURL = quote(ImageSrc, safe=':/')
-                        SteamEmbed.set_image(url=f"{SteamImageURL}")
-                        SteamEmbed.set_footer(text="Bizeps_Bot")
-                        await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
-                        FreeSteamList['Settings']['FreeSteamGames'].append(
-                            SteamGameTitle)
-                        _write_json('Settings.json', FreeSteamList)
-                        # Hack for missing char mapping in logging module
-                        SteamGameTitle = SteamGameTitle.replace(
-                            "\uFF1A", ": ")
-                        logging.info(
-                            f"{SteamGameTitle} was added to the free steam game list.")
+                                    SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
+                                        0x6c6c6c), timestamp=datetime.datetime.now())
+                                    SteamEmbed.set_thumbnail(
+                                        url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
+                                    SteamEmbed.set_author(
+                                        name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                                    SteamEmbed.add_field(
+                                        name="Besuch mich auf Steam", value=f"{SteamGameURL}", inline=True)
+                                    SteamEmbed.add_field(
+                                        name="Hol mich im Launcher", value=f"<Steam://Store/{ProdID}>", inline=True)
+                                    SteamImageURL = quote(ImageSrc, safe=':/')
+                                    SteamEmbed.set_image(url=f"{SteamImageURL}")
+                                    SteamEmbed.set_footer(text="Bizeps_Bot")
+                                    await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
+                                    FreeSteamList['Settings']['FreeSteamGames'].append(
+                                        SteamGameTitle)
+                                    _write_json('Settings.json', FreeSteamList)
+                                    # Hack for missing char mapping in logging module
+                                    SteamGameTitle = SteamGameTitle.replace(
+                                        "\uFF1A", ": ")
+                                    logging.info(
+                                        f"{SteamGameTitle} was added to the free steam game list.")
 
-            ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
-                FreeGameTitleList)
-            for ExpiredGame in ExpiredGames:
-                FreeSteamList['Settings']['FreeSteamGames'].remove(
-                    ExpiredGame)
-                logging.info(
-                    f"Removed {ExpiredGame} from free steam game list since it expired.")
-                _write_json('Settings.json', FreeSteamList)
+                        ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
+                            FreeGameTitleList)
+                        for ExpiredGame in ExpiredGames:
+                            FreeSteamList['Settings']['FreeSteamGames'].remove(
+                                ExpiredGame)
+                            logging.info(
+                                f"Removed {ExpiredGame} from free steam game list since it expired.")
+                            _write_json('Settings.json', FreeSteamList)
 
 ### Bot Events ###
 
