@@ -345,8 +345,14 @@ async def GetFreeEpicGames():
                                                 async with EpicSession.get(EpicImageURL) as EpicImageReq:
                                                     EpicImage = await EpicImageReq.read()
                                                     break
-                                            else:
-                                                EpicImage = ""
+                                            elif FreeGame['keyImages'][index]['type'] == "OfferImageWide":
+                                                EpicImageURL = FreeGame['keyImages'][index]['url']
+                                                async with EpicSession.get(EpicImageURL) as EpicImageReq:
+                                                    EpicImage = await EpicImageReq.read()
+                                                    break
+                                        else:
+                                            EpicImageURL = ""
+                                            EpicImage = ""
 
                                         ### Build Embed with chosen vars ###
                                         EpicEmbed = discord.Embed(title=f"Neues Gratis Epic Game: {FreeGame['title']}!\r\n\nNoch einlösbar bis zum {EndDateOfOffer.day}.{EndDateOfOffer.month}.{EndDateOfOffer.year}!\r\n\n", colour=discord.Colour(
@@ -377,7 +383,7 @@ async def GetFreeEpicGames():
                                                     name="Besuch mich im EGS", value=f"[Epic Games Store](https://store.epicgames.com/de/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']})", inline=True)
                                                 EpicEmbed.add_field(
                                                     name="Hol mich im Launcher", value=f"<com.epicgames.launcher://store/p/{FreeGame['catalogNs']['mappings'][0]['pageSlug']}>", inline=True)
-                                        if EpicImageURL:
+                                        if EpicImageURL != "":
                                             EpicImageURL = quote(
                                                 EpicImageURL, safe=':/')
                                             EpicEmbed.set_image(
