@@ -360,7 +360,7 @@ async def GetFreeEpicGames():
                                         EpicEmbed.set_thumbnail(
                                             url=r'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg')
                                         EpicEmbed.set_author(
-                                            name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                                            name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/avatars/794273832508588062/9267c06d60098704f652d980caa5a43c.png")
                                         if FreeGame['productSlug']:
                                             if "collection" in FreeGame['productSlug'] or "bundle" in FreeGame['productSlug'] or "trilogy" in FreeGame['productSlug']:
                                                 EpicEmbed.add_field(
@@ -443,7 +443,7 @@ async def _get_free_steamgames():
                                     SteamEmbed.set_thumbnail(
                                         url=r'https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png')
                                     SteamEmbed.set_author(
-                                        name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/app-icons/794273832508588062/06ac0fd02fdf7623a38d9a6d72061fa6.png")
+                                        name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/avatars/794273832508588062/9267c06d60098704f652d980caa5a43c.png")
                                     SteamEmbed.add_field(
                                         name="Besuch mich auf Steam", value=f"{SteamGameURL}", inline=True)
                                     SteamEmbed.add_field(
