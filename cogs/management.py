@@ -156,8 +156,6 @@ class Management(commands.Cog):
         """
         if changearg == "load":
             self.bot.load_extension(f"cogs.{extension}")
-            if extension == "checkpycordversion":
-                self.bot.reload_extension('checkpycordversion')
             await ctx.respond(f"Extension {extension} wurde geladen und ist jetzt einsatzbereit.")
             logging.info(f"Extension {extension} was loaded.")
         elif changearg == "unload":
