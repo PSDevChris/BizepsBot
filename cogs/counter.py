@@ -124,7 +124,7 @@ class Counter(commands.Cog):
         await _inc_counter(ctx, "Pipi", 1)
 
     @commands.slash_command(name="dotoluck", description="Erhöht den Dotoluckcounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def _luckcounter(self, ctx):
         await _inc_counter(ctx, "Luck", 1)
 
@@ -148,12 +148,7 @@ class Counter(commands.Cog):
     async def _show_salzcounter(self, ctx):
         await _show_counter(ctx, "Salz")
 
-    @commands.slash_command(name="showschnenk", description="Zeigt den Schnenkocounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_schnenkcounter(self, ctx):
-        await _show_counter(ctx, "Lieferando")
-
-    @commands.slash_command(name="showschnenk", description="Zeigt den Schnenkocounter")
+    @commands.slash_command(name="showlieferando", description="Zeigt den Schnenkocounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_schnenkcounter(self, ctx):
         await _show_counter(ctx, "Lieferando")
