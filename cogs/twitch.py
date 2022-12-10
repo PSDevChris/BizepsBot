@@ -40,7 +40,8 @@ class Twitch(commands.Cog):
                 if r.status == 200:
                     js = await r.json()
                     Clip = random.SystemRandom().choice(js['data'])
-                    await ctx.respond(f"Dieser Clip wurde bereitgestellt durch {Clip['creator_name']}!\n{Clip['url']}")
+                    await ctx.defer()
+                    await ctx.followup.send(f"Dieser Clip wurde bereitgestellt durch {Clip['creator_name']}!\n{Clip['url']}")
         logging.info(
             f"{ctx.author} requested a Twitch Clip, chosen was [{Clip['url']}]")
 
@@ -61,8 +62,8 @@ class Twitch(commands.Cog):
                 game = json.loads(gamerequest.content)['data'][0]
             else:
                 game = {"name": "Irgendwas"}
-
-            await ctx.respond(f"Bei ESA wird gerade {game['name']} gespielt!")
+            await ctx.defer()
+            await ctx.followup.send(f"Bei ESA wird gerade {game['name']} gespielt!")
             logging.info(f"{ctx.author} invoked the ESA command.")
         except IndexError:
             # Username does not exist or Username is wrong, greetings to Schnabeltier

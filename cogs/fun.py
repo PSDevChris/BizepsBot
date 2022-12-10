@@ -32,7 +32,8 @@ class Fun(commands.Cog):
     @commands.slash_command(name="josch", description="Entwickler...", brief="Entwickler...")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _blamedevs(self, ctx):
-        await ctx.respond(file=discord.File('memes/josch700#3680/josch.png'))
+        await ctx.defer()
+        await ctx.followup.send(file=discord.File('memes/josch700#3680/josch.png'))
         logging.info(f"{ctx.author} blamed the devs.")
 
     @commands.slash_command(name="turnup", description="Was für Saft?", brief="Was für Saft?")
@@ -55,7 +56,8 @@ class Fun(commands.Cog):
     async def _lebonk(self, ctx):
         LastMessages = await ctx.channel.history(limit=1).flatten()
         LastMessage = LastMessages[0]
-        await ctx.respond("Die Nachricht wurde gebonkt!", ephemeral=True)
+        await ctx.defer()
+        await ctx.followup.send("Die Nachricht wurde gebonkt!", ephemeral=True)
         await LastMessage.reply(f"Mess with Lechonk, you get the bonk! Du wurdest gebonkt von {ctx.author.name}!", file=discord.File('fun/LeBonk.png'))
 
     @commands.slash_command(name="pub", description="Typos...")

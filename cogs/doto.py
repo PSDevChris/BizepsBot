@@ -45,7 +45,8 @@ class DotoJokes(commands.Cog):
                     DotoOutputLength = 0
                 DotoOutputString += DotoTaskEntry + "\n\n"
                 DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
-            await ctx.respond(f"```{DotoOutputString}```")
+            await ctx.defer()
+            await ctx.followup.send(f"```{DotoOutputString}```")
         elif options == "count":
             DotoJokesJSON = _read_json('Settings.json')
             DotoJokesCount = len(
@@ -55,7 +56,8 @@ class DotoJokes(commands.Cog):
             if len(self.bot.DotoJokes) == 0:
                 _refresh_dotojokes()
             DotoJoke = random.SystemRandom().choice(self.bot.DotoJokes)
-            await ctx.respond(f"{DotoJoke}")
+            await ctx.defer()
+            await ctx.followup.send(f"{DotoJoke}")
             self.bot.DotoJokes.remove(DotoJoke)
 
     @_dotojokes.error

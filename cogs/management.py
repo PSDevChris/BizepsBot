@@ -58,7 +58,8 @@ class Management(commands.Cog):
             LogContent = LogFileRead.readlines()
             LatestLogLines = LogContent[-10:]
             LogOutputInString = "".join(LatestLogLines)
-            await ctx.respond(f"```{LogOutputInString}```")
+            await ctx.defer()
+            await ctx.followup.send(f"```{LogOutputInString}```")
         logging.info(f"{ctx.author} has called for the log.")
 
     @commands.slash_command(name="block", description="Hindert den User am verwenden von Commands")
@@ -111,7 +112,8 @@ class Management(commands.Cog):
             }
             TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
             _write_json('Settings.json', TwitchUser)
-            await ctx.respond(f"{member} zur Twitchliste hinzugefügt! Folgender Satz wurde hinterlegt: '{custommsg}'")
+            await ctx.defer()
+            await ctx.followup.send(f"{member} zur Twitchliste hinzugefügt! Folgender Satz wurde hinterlegt: '{custommsg}'")
             logging.info(
                 f"User {member} was added to twitchlist with custom message: '{custommsg}'")
         except Exception:
@@ -143,7 +145,8 @@ class Management(commands.Cog):
         TwitchSettings = _read_json('Settings.json')
         TwitchUserString = "\n".join(
             TwitchSettings["Settings"]["TwitchUser"].keys())
-        await ctx.respond(f"Folgende User sind hinterlegt:\n```{TwitchUserString}```")
+        await ctx.defer()   
+        await ctx.followup.send(f"Folgende User sind hinterlegt:\n```{TwitchUserString}```")
         logging.info(f"Twitchlist was posted.")
 
     @commands.slash_command(name="extension", description="Verwaltet die Extensions")

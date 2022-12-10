@@ -35,8 +35,9 @@ class Misc(commands.Cog):
         HospRate = CovRate[12].text.strip()
         HospNum = CovRate[13].text.strip()
         HospPerc = CovRate[14].text.strip()
-
-        await ctx.respond(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es im Schnitt {NewAvgWeek} Fälle pro Tag. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
+        
+        await ctx.defer()
+        await ctx.followup.send(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es im Schnitt {NewAvgWeek} Fälle pro Tag. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
                           f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
         logging.info(
             f"User {ctx.author} has requested the COVID numbers.")
@@ -54,7 +55,8 @@ class Misc(commands.Cog):
             RandomRecipIndex = random.randint(0, 30)
             RecipElementName = RecipJSON['itemListElement'][RandomRecipIndex]['name']
             RecipElementURL = RecipJSON['itemListElement'][RandomRecipIndex]['url']
-            await ctx.respond(f"{RecipElementName}\n{RecipElementURL}")
+            await ctx.defer()
+            await ctx.followup.send(f"{RecipElementName}\n{RecipElementURL}")
         else:
             await ctx.respond("Kartoffel API ist leider down T_T")
 

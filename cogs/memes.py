@@ -99,7 +99,8 @@ class Memes(commands.Cog):
             AuthorOfMeme = RandomMeme.split("/")[-2].split("#")[0]
             logging.info(
                 f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
-            await ctx.respond(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
+            await ctx.defer()    
+            await ctx.followup.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
             AllFiles.remove(RandomMeme)
 
     @commands.slash_command(name="mittwoch", description="Gibt ein Mittwochmeme aus, meine Kerle")
@@ -163,7 +164,8 @@ class Memes(commands.Cog):
                 RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
                 logging.info(
                     f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
-                await ctx.respond(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
+                await ctx.defer()
+                await ctx.followup.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
                 AllFiles.remove(RandomWedMeme)
             else:
                 await ctx.respond("Es ist noch nicht Mittwoch, mein Kerl.", ephemeral=True)

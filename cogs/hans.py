@@ -32,7 +32,7 @@ class HansTaskList(commands.Cog):
     # Commands
     @commands.slash_command(name="hans", description="Er hat zu tun!", brief="Er hat zu tun!")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _hanstasks(self, ctx, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count", "add"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
+    async def _hanstasks(self, ctx: discord.context.ApplicationContext, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count", "add"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
         if option == "show":
             AllHansTasks = _read_json('Settings.json')
             HansOutputString = ""
@@ -75,7 +75,8 @@ class HansTaskList(commands.Cog):
             self.HansTasks.remove(HansTask)
             logging.info(
                 f"[{ctx.author.name}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
-            await ctx.respond(f"Hans muss {HansTask}...")
+            await ctx.defer()
+            await ctx.followup.send(f"Hans muss {HansTask}...")
 
     @_hanstasks.error
     async def _hanstasks_error(self, ctx, error):

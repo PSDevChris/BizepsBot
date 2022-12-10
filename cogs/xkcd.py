@@ -31,7 +31,8 @@ class xkcd(commands.Cog):
                     XkcdEmbed.set_image(
                         url=f'{JSONFromXkcd["img"]}')
                     XkcdEmbed.set_footer(text="Bizeps_Bot")
-                    await ctx.respond("", embed=XkcdEmbed)
+                    await ctx.defer()
+                    await ctx.followup.send("", embed=XkcdEmbed)
 
 
 def setup(bot):
