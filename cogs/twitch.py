@@ -1,9 +1,19 @@
+import asyncio
 import random
 
 from discord.ext import commands
 
 from Main import (RequestTwitchToken, _get_banned_users, _is_banned, aiohttp,
-                  datetime, json, logging, requests)
+                  datetime, json, logging, requests, discord)
+
+
+async def _get_twitch_clips():
+    async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as session:
+        # My ID is entered, change it to yours, 1000 Clips are returned at max
+        async with session.get(f'https://api.twitch.tv/helix/clips?broadcaster_id=41503263') as r:
+            if r.status == 200:
+               Clips = await r.json()
+    return Clips
 
 
 class Twitch(commands.Cog):
@@ -21,6 +31,7 @@ class Twitch(commands.Cog):
             else:
                 RequestTwitchToken()
         logging.info("Token successfully loaded for Twitch Class.")
+        self.TwitchClips = asyncio.run(_get_twitch_clips())
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
@@ -34,16 +45,16 @@ class Twitch(commands.Cog):
     @commands.slash_command(name="doto_clip", description="Zeigt einen zufälligen Twitch Clip", brief="Zeigt einen zufälligen Twitch Clip")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_twitch_clip(self, ctx):
-        async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as session:
-            # My ID is entered, change it to yours, 1000 Clips are returned at max
-            async with session.get(f'https://api.twitch.tv/helix/clips?broadcaster_id=41503263') as r:
-                if r.status == 200:
-                    js = await r.json()
-                    Clip = random.SystemRandom().choice(js['data'])
-                    await ctx.defer()
-                    await ctx.followup.send(f"Dieser Clip wurde bereitgestellt durch {Clip['creator_name']}!\n{Clip['url']}")
-        logging.info(
-            f"{ctx.author} requested a Twitch Clip, chosen was [{Clip['url']}]")
+        if self.TwitchClips['data'] == []:
+            self.TwitchClips = _get_twitch_clips()
+            logging.info("Twitch Clips were empty, refreshed the clips.")
+        else:
+            Clip = random.SystemRandom().choice(self.TwitchClips['data'])
+            await ctx.defer()
+            await ctx.followup.send(f"Dieser Clip wurde bereitgestellt durch {Clip['creator_name']}!\n{Clip['url']}")
+            logging.info(
+                f"{ctx.author} requested a Twitch Clip, chosen was [{Clip['url']}]")
+            self.TwitchClips['data'].remove(Clip)
 
     @commands.slash_command(name="esagame", description="Gibt das aktuelle ESA Game aus", brief="Gibt das aktuelle ESA Game aus")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -74,6 +85,26 @@ class Twitch(commands.Cog):
         except KeyError:
             logging.error("Twitch API not available.")
             await ctx.respond(f"Die Twitch API antwortet nicht.", ephemeral=True)
+
+    @_show_twitch_clip.error
+    async def _twitchclip_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
+            logging.warning(f"{ctx.author} wanted to spam the twitchclipcommand!")
+        elif isinstance(error, discord.CheckFailure):
+            await ctx.respond(f"Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
+        else:
+            logging.error(f"ERROR: {error}")
+    
+    @_esagame.error
+    async def _esagame_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
+            logging.warning(f"{ctx.author} wanted to spam the esagamecommand!")
+        elif isinstance(error, discord.CheckFailure):
+            await ctx.respond(f"Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
+        else:
+            logging.error(f"ERROR: {error}")
 
 
 def setup(bot):
