@@ -3,258 +3,44 @@
         "TwitchUser": {
             "dota_joker": {
                 "live": false,
-                "custom_msg": "Der Bizeps brennt wieder!<:dotajoBBizeps:955904830776434728>"
-            },
-            "desschnabeltier": {
-                "live": false,
-                "custom_msg": "Er schl\u00e4ft nicht, er streamt!"
-            },
-            "metasmiths": {
-                "live": false,
-                "custom_msg": "Betretet die Metasph\u00e4re!"
-            },
-            "patti2plays": {
-                "live": false,
-                "custom_msg": "Schaut euch diesen patti-entierten Stream an!"
-            },
-            "argonius_draw": {
-                "live": false,
-                "custom_msg": "Schaut euch diesen ausgezeichneten Stream an! Im wahrsten Sinne des Wortes!\ud83d\udd8c\ufe0f"
-            },
-            "an4rky": {
-                "live": false,
-                "custom_msg": "Ist es ein Valo-rant oder doch etwas anderes? Findet es heraus!"
-            },
-            "travestor": {
-                "live": false,
-                "custom_msg": "Kommt hervor, ein Travestor!"
-            },
-            "zuckerprinzessin": {
-                "live": false,
-                "custom_msg": "S\u00fc\u00dfe Streams, gute Spiele!"
-            },
-            "hanseichlp": {
-                "live": false,
-                "custom_msg": "Es erwartet euch ein BOOMbastisches Erlebnis!"
-            },
-            "schnenko": {
-                "live": false,
-                "custom_msg": "Vielleicht steht er gerade vor einer T\u00fcr!\ud83d\udeaa"
-            },
-            "dedge": {
-                "live": false,
-                "custom_msg": "Er mag auch andere Spiele!"
-            },
-            "w3bba": {
-                "live": false,
-                "custom_msg": ""
-            },
-            "corbitcorin": {
-                "live": false,
-                "custom_msg": "Die Schlachterin diverser GPUs wagt es wieder!"
-            },
-            "g3neziz": {
-                "live": false,
-                "custom_msg": "Schaltet schnell ein, denn er ist Speedrunner und damit vermutlich fast durch!"
-            }
+                "custom_msg": "Der Bizeps brennt wieder!\ud83d\udd25"
+			}
         },
         "Groups": {},
         "Counter": {
-            "Puns": 1,
-            "Leak": 2,
+            "Puns": 3,
+            "Leak": 3,
             "Mobbing": 13,
-            "Salz": 24,
-            "Lieferando": 120,
-            "Pipi": 4
+            "Salz": 35,
+            "Lieferando": 200,
+            "Pipi": 4,
+            "Luck": 74,
+            "LastAboAt": 0
         },
         "Raffle": {
             "Active": false,
             "Title": "",
             "Entries": {}
         },
-        "BannedUsers": [
-        ],
+        "BannedUsers": [],
         "HansTasks": {
             "Tasks": [
-                "schneiden",
-                "rendern",
-                "hochladen",
-                "arbeiten",
-                "eine rauchen",
-                "irgendwelche npm Abh\u00e4ngigkeiten fixen",
-                "Code aus 1986 debuggen",
-                "M\u00f6vius anbeten",
-                "schneidne, renderne, hochladne",
-                "an M\u00f6vius schrauben",
-                "Breath of the Wild spielen",
-                "sich gut erholen",
-                "Doto beim debuggen helfen",
-                "Foxmeister in Mario Kart besiegen",
-                "an seinen chinesischen Nachbarn denken",
-                "den bot mit neuen Aufgaben f\u00fcr Hans f\u00fcttern",
-                "seine Bonit\u00e4t unter Beweis stellen",
-                "Man of Medan mit Schnenk und Doto gucken",
-                "den Flammenwerfer holen",
-                "sich definitiv erschrecken",
-                "Foxmeister bei Wizard zerst\u00f6ren",
-                "ein Tablett Bier f\u00fcr die Band bestellen",
-                "Fuffies durch den Club schmei\u00dfen https://tenor.com/view/money-rain-money-cash-sunglasses-smile-gif-17149896 ",
-                "Doto f\u00fcr seine Shinys mobben",
-                "Phasmophobia mit uns spielen",
-                "50 Meter Cat5-Kabel aus alten Wohnungen klauen",
-                "auf seiner Switch zocken",
-                "muss f\u00fcr die Damen aus der Verwaltung mal wieder eine Spinne klatschen",
-                "mal ganz dringend aufn Pott",
-                "erstmal die Fuffies in Richtung Ordnungsamt schmei\u00dfen, weil er geblitzt wurde",
-                "dem indischen Nachbarn beim Support-Scam zuh\u00f6ren",
-                "telefonieren",
-                "PC Building Simulator spielen",
-                "Geld f\u00fcrs n\u00e4chste Swagbook ranschaffen",
-                "seinem chinesischen Nachbarn noch ne Flasche Wein vorbeibringen",
-                "sich beim Weintasting von einer korpulenten Mid-40er Dame anmaulen lassen",
-                "garnix machen. Hans braucht Hilfe!",
-                "schreiend zuschauen, wie ein Kerbal fast in der Atmosph\u00e4re vergl\u00fcht",
-                "das BSI anrufen",
-                "morgen in den Baumarkt fahren",
-                "Dotos Witze ertragen",
-                "\u00fcber den Bann Button bei Doto hovern",
-                "sich Lyrics f\u00fcr Capital Krah ausdenken",
-                "die Farbe wechseln",
-                "sich die Netzhaut wegbrennen lassen",
-                "Orangensaft im Ritz-Carlton aufwischen",
-                "endlich mal die 50 Meter Cat5-Kabel aus seinem Kofferraum holen und in seiner eigenen Wohnung verlegen",
-                "neuen Wein kaufen",
-                "Festplatten f\u00fcr sein Leak-NAS kaufen",
-                "Rechnungen nachreichen",
-                "einen neuen Boomer-Tweet verfassen",
-                "wieder so tun als w\u00e4re er \u00fcbelst busy",
-                "Widowmakers des cheatens \u00fcberf\u00fchren",
-                "seinen Kopf mit ordentlich Schmackes auf den Tisch schallern, weil die Witze so grausam sind",
-                "4 evaR 2 gethaR sein. iLd\u00fcaimL <33",
-                "sein Auto abholen",
-                "die Cops anrufen und mal nachfragen, warum sie nicht zuerst den Halter des Fahrzeugs anrufen, bevor sie die Karre einfach in Gewahrsam nehmen",
-                "Samstag auf den Flohmarkt gehen",
-                "morgens mit einem Bier vorm Kiosk sitzen und Leute beobachten",
-                "sich von seinem chinesischen Nachbarn Mayonnaise von den Nippeln lecken lassen, weil alles andere Verschwendung von Lebensmitteln w\u00e4re",
-                "auf der Website der Schule noch ein Script dalassen, was auf der Page mit den Fotos der Schulleitung die Bilder aller Personen gegen das des Sch\u00fclersprechers austauscht und alle Namen in 'Hannes :3' \u00e4ndert.",
-                "seit 22 Jahren Auto fahren",
-                "unbedingt mal an Doto lecken, um zu checken, ob er wirklich nach fettigem Kebab schmeckt",
-                "ein Pastinak werden",
-                "einen Virus von Cynthias Mac entfernen",
-                "einen Kompressor kaufen",
-                "Maja einen Gin-Tonic mixen",
-                "noch Lederkleidung machen",
-                "69 Aufgaben erf\u00fcllen",
-                "Lasse die Ukulele nicht liegen lassen",
-                "schon seit 20 Jahren seinen F\u00fchrerschein haben!",
-                "mit XML Schmutz arbeiten",
-                "den Boomern vor ihm an der Kasse 9 Flaschen Sonnenblumen\u00f6l ausreden",
-                "rechnen",
-                "uneheliche Kinder zeugen",
-                "uneheliche Kinder zeugen...schon wieder.",
-                "Zigaretten holen gehen...nachdem er uneheliche Kinder gezeugt hat",
-                "Dotos Witze ertragen",
-                "die Banane rechtzeitig rausholen",
-                "ein Swagbook mit M1 Niklas, eh M1 Max kaufen",
-                "Fu\u00dfg\u00e4nger wegen N\u00f6tigung anzeigen",
-                "Doto nachhaltig sch\u00e4digen",
-                "ein neues Intro/Outro f\u00fcr #SchnenkoNervt aufnehmen",
-                "Spycams in Dotos Schlafzimmer installieren",
-                "Gil Ofarim seinen h\u00e4sslichen Ring aus der Nase rei\u00dfen",
-                "10.000\u20ac monatlich f\u00fcr ein NodeJS-Paket kassieren",
-                "10.000\u20ac monatlich f\u00fcr Version Bumps kassieren",
-                "Doto aufzeigen, dass er bei jeder Nachricht die JSON Datei einliest, der Dulli",
-                "Fullstack Damien dem\u00fctigen",
-                "sich auf Parties vor Luisa verstecken",
-                "das Zelda Plateau Race zwischen Schnenko und Doto gucken",
-                "einen Bot schreiben, der den Bot mit neuen Aufgaben f\u00fcr Hans f\u00fcttert",
-                "dem blonden Ben Barnes die blanke Brust ablecken",
-                "den E-Scooter gleich nach Hause pr\u00fcgeln, Call me Michel Vaillant, Bitchez",
-                "von Simp-Money in einer K\u00fcnstler-WG leben",
-                "lautstark erkl\u00e4ren, dass Obst im Haus ist",
-                "seine Seele an Apple verkaufen und dann trotzdem noch deren D sucken.",
-                "https://tenor.com/view/pingu-dancing-grooving-speed-gif-21903271",
-                "mal sein butthole checken lassen https://tenor.com/view/tom-cardy-butthole-checked-your-butthole-gif-22237405 ",
-                "seine letzten Lebensmittel in den Breiholz einpacken",
-                "Overwatch 2 spielen, weil er einen Betakey hat... Der Knecht",
-                "sich aufregen",
-                "mett werdne",
-                "sich auf seinem Swagphone vertippen",
-                "\u00fcber vollbusige Doto-Photoshops lachen",
-                "vergessen, sein Gyros zu fotografieren",
-                "Zuggi aus ihrem Amtsknechtswahn helfen",
-                "sich mit den Cops streiten",
-                "in Rust coden <:Rust:978920338786254868> ",
-                "um 22 Uhr nochmal in die Stadt aufbrechen. Der Grund: Bier.",
-                "mit Patti Silber 2 in League grinden",
-                "ein funktionierendes Torbj\u00f6rn Turret basteln, falls er demn\u00e4chst mal zum Lasertag eingeladen wird",
-                "den niederl\u00e4ndischen Notfalldienst belauschen",
-                "PRs f\u00fcr den Bizeps_Bot schreiben",
-                "sich ne Banane in sein Ohr stecken",
-                "sich in HansHans umbenennen",
-                "Singularit\u00e4ten erzeugen",
-                "Schei\u00dfe bauen, gebannt werden von der Nutzung des Bots und nicht mehr sein Befehl ausf\u00fchren k\u00f6nnen"
+                "schneiden"
             ]
         },
         "DotoJokes": {
             "Jokes": [
-                "Wenn ich Rinderz\u00fcchter in Deutschland bin, bin ich dann automatisch ein DE-Kuh H\u00e4ndler?",
-                "Ich habe neulich einen Tesla mit Autopilot gekauft und dann war der nicht mal steuerfrei...",
-                "W\u00fcrde ja gerne Grasjokes machen, aber die sind mir zu Ott.",
-                "Wenn Rinder studieren w\u00fcrden, h\u00e4tten sie dann Kuh-militonen?",
-                "Auch wenn ich Chrome benutze, bin ich beim Surfen meist Edge-y unterwegs.",
-                "Bei Schnittstellen bin ich wie der Vater aus Heavy Rain: \n\nIch will nur JSON finden.",
-                "Gute Chefs sind wie KC Rebell Songs, sie ber\u00fchren einen nicht. #Reichelt",
-                "Die Motivation am Montag h\u00e4lt sich in Grenzen, wie Sumoringer.",
-                "Warum nennt man die japanischen Vorfahren eigentlich nicht UwUreinwohner?",
-                "Wie nennt man den Vampir, der immer dieselbe Frau besucht? \n\nGraf Regular.",
-                "Wer Epona sagt, muss auch Eponb sagen, sag ich immer. #ExtremZeldaFan",
-                "Sind wir auf einem Shahak Shapira Standup oder wieso gibt es so wenig zu lachen?",
-                "Ich suche einen Koiboy, denn der ist immer fl\u00fcssig.",
-                "Wenn Aquaman mit allen Meereslebewesen reden kann, ist er dann ein Multilingu-Aal?",
-                "Nach der Luca App wurde aus Smudo sehr schnell Smudon't.",
-                "Mit Hasenchars konnte ich nie viel anfangen... Die waren mir zu... sprunghaft. #FFXIV",
-                "Lass uns aus dem Schnabeltier ein Schnabel-Wir machen. #Schnabi",
-                "Wie nennt man den Zustand, in dem sich ein Fahrgast befindet, wenn die Bahn ohne Info mal wieder nicht kommt? \n\nDer Fahrgast war dann... bahnungslos.",
-                "Welches Tier stellt sich immer wieder die Frage:'Warum?' \n\nEin W-Hai.",
-                "Ich gr\u00fcnde eine t\u00fcrkische Airline und nenne sie: D\u00f6n-Air.",
-                "Ich habe zwar keinen CPL Filter, aber handle oft unreflektiert.",
-                "Wenn meine Verhandlung per VidKo gehalten und meine Unschuld best\u00e4tigt wird, ist mein PC dann eine... Freisprechanlage?",
-                "Was hat der Cryptomarkt mit Hans gemeinsam? \n\nBeides boomt ganz sch\u00f6n.",
-                "Meine Passfotos sind meistens Pass Oh-No's",
-                "Gerade mal beim Bund nach Legalisierung gefragt, die haben gesagt: Cann-a-bis dauern'.",
-                "Muss man als Cryptobro eigentlich einen... Mineeid ablegen?",
-                "Hans ist kein Sprengmeister, aber er boomt trotzdem ganz sch\u00f6n.",
-                "Graveyards hei\u00dfen in metrischen L\u00e4ndern nicht Gravemeter. #TheMoreYouKnow",
-                "Wie verkauft der Bauer sein Gefl\u00fcgel? Im Hahn-dumdrehen.",
-                "Zu bahnbrechenden Entdeckungen z\u00e4hlen unter anderem die vier Jahreszeiten. #\u00d6PNV",
-                "In Super Mario ist die Lage meist... Toad-ernst.",
-                "Ich bin zwar kein ISP Techniker, doch habe viele Anschlusstermine.",
-                "Wenn ich Wasserschlangen nicht vertrage, habe ich dann eine Aal-ergie?",
-                "Was sagen die Mitarbeiter in den Verwaltungen, wenn der Chef sich wieder aufregt?\n\n'Er Dezi-bellt wieder'.",
-                "Meine Brille ist nicht von Microsoft, aber ich C#.",
-                "Was haben deutsche Bauarbeiter mit Entwicklern zu tun? \n\nBeide bedienen den DE-Bagger.",
-                "Wenn ich mich als Promi rar mache, gebe ich dann Interfews?",
-                "Mein Navi ist kein guter Anwalt, aber das Verfahren wird trotzdem eingestellt.",
-                "Wen trifft man im Discounter?\n\nNa, Aldi Menschen, die man kennt!",
-                "Schnenko und T\u00fcren. That's it. That's the joke.",
-                "Fynn Kliemann kann auch ohne Instrument sehr gut etwas vorspielen.",
-                "Was haben Gewichte und Mark Forster Songs gemeinsam? \n\nIch halte von beidem nicht viel.",
-                "Wenn ich das WLAN einer Studi-WG nutze, bin ich dann Teil einer Studentenverbindung?"
+                "Wenn ich Rinderz\u00fcchter in Deutschland bin, bin ich dann automatisch ein DE-Kuh H\u00e4ndler?"
             ]
         },
         "FreeEpicGames": {
-            "Supraland": {
-                "startDate": "2022-06-16T15:00:00.000Z",
-                "endDate": "2022-06-23T15:00:00.000Z"
+            "Eximius: Seize the Frontline": {
+                "startDate": "2022-12-29T16:01:00.000Z",
+                "endDate": "2023-01-05T16:00:00.000Z"
             }
         },
         "FreeSteamGames": [
-            "Tell Me Why",
-            "Tell Me Why: Chapter 2",
-            "Tell Me Why: Chapter 3",
-            "Capcom Arcade Stadium\uff1aSTREET FIGHTER II - The World Warrior -",
-            "ARK: Survival Evolved"
+            "World of Warships \u2014 Starter Pack: Dreadnought"
         ]
     }
 }

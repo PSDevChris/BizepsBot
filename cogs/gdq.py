@@ -47,9 +47,9 @@ class GDQ(commands.Cog):
                         if datetime.timestamp(datetime.now()) < GameTimeStamp and datetime.now().date() <= GameTime.date():
                             if index == 0:
                                 await ctx.respond(f"Zu Beginn von GDQ am {('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag')[GameTime.weekday()]} den {GameTime.date().strftime('%d.%m.%Y')} läuft {runEntry[index]} {runEntry[index+1]} mit {Entry['Runners & Host'][index]}!")
-                            elif index != 0 and option == "spaeter":
+                            elif index != (len(Entry["Run"]) -1) and option == "spaeter": # len -1 because we always need two rows
                                 await ctx.defer()
-                                await ctx.followup.send(f"Bei GDQ läuft als nächstes {runEntry[index+2]} {runEntry[index+3]} von {Entry['Runners & Host'][index+2]}!")
+                                await ctx.followup.send(f"Bei GDQ läuft danach {runEntry[index+2]} {runEntry[index+3]} von {Entry['Runners & Host'][index+2]}!")
                                 logging.info(
                                     f"{ctx.author} wanted to know the current game that is run at GDQ.")
                             else:
