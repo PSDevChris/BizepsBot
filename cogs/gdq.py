@@ -45,7 +45,7 @@ class GDQ(commands.Cog):
                         GameTimeStamp = datetime.timestamp(
                             GameTime + GameDelta)
                         if datetime.timestamp(datetime.now()) < GameTimeStamp and datetime.now().date() <= GameTime.date():
-                            if index == 0:
+                            if index == 0 and not option:
                                 await ctx.respond(f"Zu Beginn von GDQ am {('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag')[GameTime.weekday()]} den {GameTime.date().strftime('%d.%m.%Y')} läuft {runEntry[index]} {runEntry[index+1]} mit {Entry['Runners & Host'][index]}!")
                             elif index != (len(Entry["Run"]) -1) and option == "spaeter": # len -1 because we always need two rows
                                 await ctx.defer()
