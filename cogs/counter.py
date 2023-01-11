@@ -95,73 +95,59 @@ class Counter(commands.Cog):
 
     @commands.slash_command(name="pun", description="Erhöht den Puncounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _puncounter(self, ctx):
-        await _inc_counter(ctx, "Pun", 1)
+    async def _puncounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
+        if option == "show":
+            await _show_counter(ctx, "Pun")
+        else:
+            await _inc_counter(ctx, "Pun", 1)
 
     @commands.slash_command(name="leak", description="Erhöht den Leakcounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _leakcounter(self, ctx):
-        await _inc_counter(ctx, "Leak", 1)
+    async def _leakcounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
+        if option == "show":
+            await _show_counter(ctx, "Leak")
+        else:
+            await _inc_counter(ctx, "Leak", 1)
 
     @commands.slash_command(name="hasssprech", description="Erhöht den Hasssprechcounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _mobbingcounter(self, ctx):
-        await _inc_counter(ctx, "Mobbing", 1)
+    async def _mobbingcounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
+        if option == "show":
+            await _show_counter(ctx, "Mobbing")
+        else:
+            await _inc_counter(ctx, "Mobbing", 1)
 
     @commands.slash_command(name="salz", description="Erhöht den Salzcounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _saltcounter(self, ctx):
-        await _inc_counter(ctx, "Salz", 1)
+    async def _saltcounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
+        if option == "show":
+            await _show_counter(ctx, "Salz")
+        else:
+            await _inc_counter(ctx, "Salz", 1)
 
     @commands.slash_command(name="lieferando", description="Erhöht den Schnenkocounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _schnenkcounter(self, ctx):
-        await _inc_counter(ctx, "Lieferando", 20)
+    async def _schnenkcounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
+        if option == "show":
+            await _show_counter(ctx, "Lieferando")
+        else:
+            await _inc_counter(ctx, "Lieferando", 1)
 
     @commands.slash_command(name="babyblase", description="Erhöht den Pipicounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _pipicounter(self, ctx):
-        await _inc_counter(ctx, "Pipi", 1)
+    async def _pipicounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
+        if option == "show":
+            await _show_counter(ctx, "Pipi")
+        else:
+            await _inc_counter(ctx, "Pipi", 1)
 
     @commands.slash_command(name="dotoluck", description="Erhöht den Dotoluckcounter")
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def _luckcounter(self, ctx):
-        await _inc_counter(ctx, "Luck", 1)
-
-    @commands.slash_command(name="showpun", description="Zeigt den Puncounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_puncounter(self, ctx):
-        await _show_counter(ctx, "Pun")
-
-    @commands.slash_command(name="showleak", description="Zeigt den Leakcounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_leakcounter(self, ctx):
-        await _show_counter(ctx, "Leak")
-
-    @commands.slash_command(name="showhasssprech", description="Zeigt den Hasssprechcounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_mobbingcounter(self, ctx):
-        await _show_counter(ctx, "Mobbing")
-
-    @commands.slash_command(name="showsalz", description="Zeigt den Salzcounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_salzcounter(self, ctx):
-        await _show_counter(ctx, "Salz")
-
-    @commands.slash_command(name="showlieferando", description="Zeigt den Schnenkocounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_schnenkcounter(self, ctx):
-        await _show_counter(ctx, "Lieferando")
-
-    @commands.slash_command(name="showbabyblase", description="Zeigt den Pipicounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_pipicounter(self, ctx):
-        await _show_counter(ctx, "Pipi")
-
-    @commands.slash_command(name="showdotoluck", description="Zeigt den Luckcounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _show_luckcounter(self, ctx):
-        await _show_counter(ctx, "Luck")
+    async def _luckcounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
+        if option == "show":
+            await _show_counter(ctx, "Luck")
+        else:
+            await _inc_counter(ctx, "Luck", 1)
 
     # @_counter.error
     # async def _counter_error(self, ctx, error):

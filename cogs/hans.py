@@ -32,7 +32,7 @@ class HansTaskList(commands.Cog):
     # Commands
     @commands.slash_command(name="hans", description="Er hat zu tun!", brief="Er hat zu tun!")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _hanstasks(self, ctx: discord.context.ApplicationContext, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count", "add"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
+    async def _hanstasks(self, ctx: discord.context.ApplicationContext, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
         if option == "show":
             AllHansTasks = _read_json('Settings.json')
             HansOutputString = ""
@@ -55,7 +55,7 @@ class HansTaskList(commands.Cog):
             logging.info(
                 f"{ctx.author} wanted to know how much tasks Hans has.")
             await ctx.respond(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
-        elif (option == "add" and task) or task:
+        elif task:
             if "```" not in task:
                 AllHansTasks = _read_json('Settings.json')
                 AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
@@ -66,8 +66,6 @@ class HansTaskList(commands.Cog):
                 await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
-        elif option == "add" and not task:
-            await ctx.respond("Hier fehlte der Task, bitte beim hinzufügen angeben.")
         else:
             if self.HansTasks == []:
                 _refresh_hanstasks()
