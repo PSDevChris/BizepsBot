@@ -36,7 +36,7 @@ class Memes(commands.Cog):
     @commands.slash_command(name="meme", description="Gibt ein Zufallsmeme aus, kann auch Memes adden")
     @commands.cooldown(2, 180, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
-    async def _memearchiv(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["add"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
+    async def _memearchiv(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["meme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
         if add:
             LastMessages = await ctx.channel.history(limit=1).flatten()
             if LastMessages[0].author != self.bot.user:
@@ -99,13 +99,13 @@ class Memes(commands.Cog):
             AuthorOfMeme = RandomMeme.split("/")[-2].split("#")[0]
             logging.info(
                 f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
-            await ctx.defer()    
+            await ctx.defer()
             await ctx.followup.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
             AllFiles.remove(RandomMeme)
 
     @commands.slash_command(name="mittwoch", description="Gibt ein Mittwochmeme aus, meine Kerle")
     @commands.cooldown(2, 180, commands.BucketType.user)
-    async def _wedmeme(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["add"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
+    async def _wedmeme(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["mittwochmeme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
         if add:
             LastMessages = await ctx.channel.history(limit=1).flatten()
             if LastMessages[0].author != self.bot.user:

@@ -39,7 +39,7 @@ def RequestTwitchToken():
         'client_id': TWITCH_CLIENT_ID,
         'client_secret': TWITCH_CLIENT_SECRET,
         'grant_type': 'client_credentials'
-    })
+    }, timeout=30)
 
     TWITCHTOKENDATA = json.loads(rTwitchTokenData.content)
     TWITCH_TOKEN = TWITCHTOKENDATA['access_token']
@@ -50,7 +50,7 @@ def RequestTwitchToken():
         data = json.load(TokenJsonRead)
         data['TWITCH_TOKEN'] = TWITCH_TOKEN
         data['TWITCH_TOKEN_EXPIRES'] = TWITCH_TOKEN_EXPIRES
-    with open('TOKEN.json', 'w') as write_file:
+    with open('TOKEN.json', 'w', encoding="UTF-8") as write_file:
         json.dump(data, write_file)
     logging.info("New Twitch Token requested.")
 
@@ -122,8 +122,8 @@ async def TwitchLiveCheck():
                     AllTwitchdata = AllTwitchdata["data"]
         if AllTwitchdata == []:
             for USER in TwitchJSON['Settings']['TwitchUser'].keys():
-                if TwitchJSON['Settings']['TwitchUser'][USER]['live'] != False:
-                    TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
+                if TwitchJSON['Settings']['TwitchUser'][USER]['live'] is not False:
+                    TwitchJSON['Settings']['TwitchUser'][USER]['live'] is False
                     _write_json('Settings.json', TwitchJSON)
         else:
             for USER in TwitchJSON['Settings']['TwitchUser'].keys():
@@ -167,20 +167,29 @@ async def TwitchLiveCheck():
                         embed.set_author(
                             name=f"{Displayname} ist jetzt live!", icon_url=f"{ProfilePicData}")
                         embed.set_footer(text="Bizeps_Bot")
-
+                        NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
                         if USER == 'dota_joker':
-                            await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
-                            logging.info(
-                                f"{Displayname} went live on Twitch! Twitch Notification sent!")
-                            # DM when I go live, requested by Kernie
-                            KernieDM = await bot.fetch_user(628940079913500703)
-                            await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
-                            logging.info(
-                                f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
+                            DotoChannel = bot.get_channel(
+                                539547495567720492)
+                            LastMessages = await DotoChannel.history(after=NotificationTime).flatten()
+                            if LastMessages:
+                                for message in LastMessages:
+                                    if message.content.startswith(f"**{Displayname}**") is True:
+                                        logging.info(
+                                            f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
+                                        break
+                                else:
+                                    await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
+                                    logging.info(
+                                        f"{Displayname} went live on Twitch! Twitch Notification sent!")
+                                    # DM when I go live, requested by Kernie
+                                    KernieDM = await bot.fetch_user(628940079913500703)
+                                    await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
+                                    logging.info(
+                                        f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
                         else:
                             channel = bot.get_channel(
                                 703530328836407327)
-                            NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
                             LastMessages = await channel.history(after=NotificationTime).flatten()
                             if LastMessages:
                                 for message in LastMessages:
@@ -449,7 +458,8 @@ async def _get_free_steamgames():
                                     SteamEmbed.add_field(
                                         name="Hol mich im Launcher", value=f"<Steam://Store/{ProdID}>", inline=True)
                                     SteamImageURL = quote(ImageSrc, safe=':/')
-                                    SteamEmbed.set_image(url=f"{SteamImageURL}")
+                                    SteamEmbed.set_image(
+                                        url=f"{SteamImageURL}")
                                     SteamEmbed.set_footer(text="Bizeps_Bot")
                                     await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
                                     FreeSteamList['Settings']['FreeSteamGames'].append(
@@ -502,7 +512,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
     if message.content.startswith("!"):
-        if (await _is_banned(message)):
+        if await _is_banned(message):
             # This line needs to be added so the commands are actually processed
             await bot.process_commands(message)
 
@@ -522,7 +532,7 @@ if __name__ == '__main__':
 
     ### General Settings ###
 
-    with open("TOKEN.json", "r") as TOKENFILE:
+    with open("TOKEN.json", "r", encoding="UTF-8") as TOKENFILE:
         TOKENDATA = json.load(TOKENFILE)
         TOKEN = TOKENDATA['DISCORD_TOKEN']
         TWITCH_CLIENT_ID = TOKENDATA['TWITCH_CLIENT_ID']
@@ -546,7 +556,7 @@ if __name__ == '__main__':
             logging.info(f"Extension {File[:-3]} loaded.")
     if "cogs.management" not in bot.extensions.keys():
         bot.load_extension("cogs.management")
-        logging.info(f"Extension management loaded.")
+        logging.info("Extension management loaded.")
     ### Run Bot ###
 
     bot.run(TOKEN)
