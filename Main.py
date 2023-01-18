@@ -122,8 +122,8 @@ async def TwitchLiveCheck():
                     AllTwitchdata = AllTwitchdata["data"]
         if AllTwitchdata == []:
             for USER in TwitchJSON['Settings']['TwitchUser'].keys():
-                if TwitchJSON['Settings']['TwitchUser'][USER]['live'] is not False:
-                    TwitchJSON['Settings']['TwitchUser'][USER]['live'] is False
+                if TwitchJSON['Settings']['TwitchUser'][USER]['live']:
+                    TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
                     _write_json('Settings.json', TwitchJSON)
         else:
             for USER in TwitchJSON['Settings']['TwitchUser'].keys():
@@ -132,7 +132,7 @@ async def TwitchLiveCheck():
                 data = list(
                     filter(lambda x: x["user_login"] == f"{USER}", AllTwitchdata))
                 if data == []:
-                    if livestate is True:
+                    if livestate:
                         TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
                         _write_json('Settings.json', TwitchJSON)
                     continue
@@ -174,7 +174,7 @@ async def TwitchLiveCheck():
                             LastMessages = await DotoChannel.history(after=NotificationTime).flatten()
                             if LastMessages:
                                 for message in LastMessages:
-                                    if message.content.startswith(f"**{Displayname}**") is True:
+                                    if message.content.startswith(f"**{Displayname}**"):
                                         logging.info(
                                             f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
                                         break
@@ -193,7 +193,7 @@ async def TwitchLiveCheck():
                             LastMessages = await channel.history(after=NotificationTime).flatten()
                             if LastMessages:
                                 for message in LastMessages:
-                                    if message.content.startswith(f"**{Displayname}**") is True:
+                                    if message.content.startswith(f"**{Displayname}**"):
                                         logging.info(
                                             f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
                                         break
