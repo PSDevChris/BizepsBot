@@ -25,6 +25,7 @@ class Misc(commands.Cog):
     @commands.slash_command(name="corona", description="Gibt aktuelle Coronazahlen aus")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _coronazahlen(self, ctx):
+        await ctx.defer()
         CovURL = "https://www.corona-in-zahlen.de/weltweit/deutschland/"
         CovHTML = requests.get(CovURL)
         CovResult = BeautifulSoup(CovHTML.content, "html.parser")
@@ -35,16 +36,16 @@ class Misc(commands.Cog):
         HospRate = CovRate[12].text.strip()
         HospNum = CovRate[13].text.strip()
         HospPerc = CovRate[14].text.strip()
-        
-        await ctx.defer()
+
         await ctx.followup.send(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es im Schnitt {NewAvgWeek} Fälle pro Tag. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
-                          f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
+                                f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
         logging.info(
             f"User {ctx.author} has requested the COVID numbers.")
 
     @commands.slash_command(name="zucker", description="Zuckersüß")
     @commands.cooldown(2, 30, commands.BucketType.user)
     async def _zuggishow(self, ctx):
+        await ctx.defer()
         RandomIndex = random.randrange(0, 990, 30)
         RecipURL = requests.get(
             f"https://www.chefkoch.de/rs/s{RandomIndex}/kartoffel/Rezepte.html")
@@ -55,7 +56,6 @@ class Misc(commands.Cog):
             RandomRecipIndex = random.randint(0, 30)
             RecipElementName = RecipJSON['itemListElement'][RandomRecipIndex]['name']
             RecipElementURL = RecipJSON['itemListElement'][RandomRecipIndex]['url']
-            await ctx.defer()
             await ctx.followup.send(f"{RecipElementName}\n{RecipElementURL}")
         else:
             await ctx.respond("Kartoffel API ist leider down T_T")

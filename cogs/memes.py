@@ -37,6 +37,7 @@ class Memes(commands.Cog):
     @commands.cooldown(2, 180, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
     async def _memearchiv(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["meme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
+        await ctx.defer()
         if add:
             LastMessages = await ctx.channel.history(limit=1).flatten()
             if LastMessages[0].author != self.bot.user:
@@ -52,16 +53,16 @@ class Memes(commands.Cog):
                             await meme.save(f"{os.getcwd() + '/memes/'}{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                             AllFiles.append(
                                 f"{os.getcwd() + '/memes/'}{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                            await ctx.respond("Memes hinzugefügt.")
+                            await ctx.followup.send("Memes hinzugefügt.")
                             logging.info(
                                 f"{ctx.author} has added a meme, filename was {meme.filename}.")
                         else:
                             logging.error(
                                 f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
                 else:
-                    await ctx.respond("Bitte das Meme als Anhang einreichen.")
+                    await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
             else:
-                await ctx.respond("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
+                await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         elif collect:
             Message = collect
             if Message.author != self.bot.user:
@@ -74,7 +75,7 @@ class Memes(commands.Cog):
                     for index, meme in enumerate(Message.attachments):
                         if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
                             await meme.save(f"{os.getcwd() + '/memes/'}{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                            await ctx.respond("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
+                            await ctx.followup.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
                             AllFiles.append(
                                 f"{os.getcwd() + '/memes/'}{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                             logging.info(
@@ -83,9 +84,9 @@ class Memes(commands.Cog):
                             logging.error(
                                 f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
                 else:
-                    await ctx.respond("Bitte das Meme als Anhang einreichen.")
+                    await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
             else:
-                await ctx.respond("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
+                await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         else:
             if len(AllFiles) == 0:
                 RefreshMemes()
@@ -99,7 +100,6 @@ class Memes(commands.Cog):
             AuthorOfMeme = RandomMeme.split("/")[-2].split("#")[0]
             logging.info(
                 f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
-            await ctx.defer()
             await ctx.followup.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
             AllFiles.remove(RandomMeme)
 

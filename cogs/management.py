@@ -103,6 +103,7 @@ class Management(commands.Cog):
     @commands.has_role("Admin")
     async def _addtotwitchlist(self, ctx, member: str, custommsg: str):
         try:
+            await ctx.defer()
             TwitchUser = _read_json('Settings.json')
             TwitchMember = {
                 f"{member.lower()}": {
@@ -112,7 +113,6 @@ class Management(commands.Cog):
             }
             TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
             _write_json('Settings.json', TwitchUser)
-            await ctx.defer()
             await ctx.followup.send(f"{member} zur Twitchliste hinzugefügt! Folgender Satz wurde hinterlegt: '{custommsg}'")
             logging.info(
                 f"User {member} was added to twitchlist with custom message: '{custommsg}'")
@@ -145,7 +145,7 @@ class Management(commands.Cog):
         TwitchSettings = _read_json('Settings.json')
         TwitchUserString = "\n".join(
             TwitchSettings["Settings"]["TwitchUser"].keys())
-        await ctx.defer()   
+        await ctx.defer()
         await ctx.followup.send(f"Folgende User sind hinterlegt:\n```{TwitchUserString}```")
         logging.info(f"Twitchlist was posted.")
 

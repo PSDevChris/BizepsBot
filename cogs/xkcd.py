@@ -21,6 +21,7 @@ class xkcd(commands.Cog):
     @commands.slash_command(name="xkcd", description="Postet das aktuelle xkcd Comic", brief="Postet das aktuelle xkcd Comic")
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def _show_xkcd(self, ctx):
+        await ctx.defer()
         XkcdURL = "https://xkcd.com/info.0.json"
         async with aiohttp.ClientSession() as XkcdSession:
             async with XkcdSession.get(XkcdURL) as RequestToXkcd:
@@ -31,7 +32,6 @@ class xkcd(commands.Cog):
                     XkcdEmbed.set_image(
                         url=f'{JSONFromXkcd["img"]}')
                     XkcdEmbed.set_footer(text="Bizeps_Bot")
-                    await ctx.defer()
                     await ctx.followup.send("", embed=XkcdEmbed)
 
 

@@ -12,7 +12,7 @@ async def _get_twitch_clips():
         # My ID is entered, change it to yours, 1000 Clips are returned at max
         async with session.get(f'https://api.twitch.tv/helix/clips?broadcaster_id=41503263') as r:
             if r.status == 200:
-               Clips = await r.json()
+                Clips = await r.json()
     return Clips
 
 
@@ -90,12 +90,13 @@ class Twitch(commands.Cog):
     async def _twitchclip_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
-            logging.warning(f"{ctx.author} wanted to spam the twitchclipcommand!")
+            logging.warning(
+                f"{ctx.author} wanted to spam the twitchclipcommand!")
         elif isinstance(error, discord.CheckFailure):
             await ctx.respond(f"Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
         else:
             logging.error(f"ERROR: {error}")
-    
+
     @_esagame.error
     async def _esagame_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):

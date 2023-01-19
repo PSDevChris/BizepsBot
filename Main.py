@@ -46,7 +46,7 @@ def RequestTwitchToken():
     TWITCH_TOKEN_EXPIRES = datetime.datetime.timestamp(
         datetime.datetime.now()) + TWITCHTOKENDATA['expires_in']
 
-    with open('TOKEN.json') as TokenJsonRead:
+    with open('TOKEN.json', encoding="UTF-8") as TokenJsonRead:
         data = json.load(TokenJsonRead)
         data['TWITCH_TOKEN'] = TWITCH_TOKEN
         data['TWITCH_TOKEN_EXPIRES'] = TWITCH_TOKEN_EXPIRES
