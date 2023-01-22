@@ -131,7 +131,7 @@ class Counter(commands.Cog):
         if option == "show":
             await _show_counter(ctx, "Lieferando")
         else:
-            await _inc_counter(ctx, "Lieferando", 1)
+            await _inc_counter(ctx, "Lieferando", 25)
 
     @commands.slash_command(name="babyblase", description="Erhöht den Pipicounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
