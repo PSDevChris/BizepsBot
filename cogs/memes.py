@@ -55,10 +55,10 @@ class Memes(commands.Cog):
                                 f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                             await ctx.followup.send("Memes hinzugefügt.")
                             logging.info(
-                                f"{ctx.author} has added a meme, filename was {meme.filename}.")
+                                f"{ctx.author} has added a meme, filename was [{meme.filename}].")
                         else:
                             logging.error(
-                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was [{meme.filename}], size was [{meme.size}]!")
                 else:
                     await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
             else:
@@ -79,10 +79,10 @@ class Memes(commands.Cog):
                             AllFiles.append(
                                 f"{os.getcwd() + '/memes/'}{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                             logging.info(
-                                f"{ctx.author} has collected the meme {meme.filename}.")
+                                f"{ctx.author} has collected the meme [{meme.filename}].")
                         else:
                             logging.error(
-                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was [{meme.filename}], size was [{meme.size}]!")
                 else:
                     await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
             else:
@@ -90,6 +90,8 @@ class Memes(commands.Cog):
         else:
             if len(AllFiles) == 0:
                 RefreshMemes()
+            NoWednesdayMemes = list(
+                filter(lambda x: 'Mittwoch' not in x, AllFiles))
             if NoWednesdayMemes == []:
                 RefreshMemes()
             NoWednesdayMemes = list(
@@ -119,10 +121,10 @@ class Memes(commands.Cog):
                                 f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                             await ctx.followup.send("Mittwoch Memes hinzugefügt.")
                             logging.info(
-                                f"{ctx.author} has added a wednesday meme. Name was {meme.filename}")
+                                f"{ctx.author} has added a wednesday meme. Name was [{meme.filename}]")
                         else:
                             logging.error(
-                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was [{meme.filename}], size was [{meme.size}]!")
                 else:
                     await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
             else:
@@ -144,7 +146,7 @@ class Memes(commands.Cog):
                                 f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                         else:
                             logging.error(
-                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was {meme.filename}, size was {meme.size}!")
+                                f"ERROR: Meme was not under 8mb or not a supported format. Filename was [{meme.filename}], size was [{meme.size}]!")
                 else:
                     await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
             else:
