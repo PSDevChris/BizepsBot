@@ -39,20 +39,20 @@ class Memes(commands.Cog):
     async def _memearchiv(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["meme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
         await ctx.defer()
         if add:
-            LastMessages = await ctx.channel.history(limit=1).flatten()
-            if LastMessages[0].author != self.bot.user:
-                if os.path.exists(f"{os.getcwd() + '/memes/'}{LastMessages[0].author}") == False:
+            LastMessages = await ctx.channel.history(limit=2).flatten()
+            if LastMessages[1].author != self.bot.user:
+                if os.path.exists(f"{os.getcwd() + '/memes/'}{LastMessages[1].author}") == False:
                     os.mkdir(
-                        f"{os.getcwd() + '/memes/'}{LastMessages[0].author}")
+                        f"{os.getcwd() + '/memes/'}{LastMessages[1].author}")
                 NumberOfMemes = next(
-                    os.walk(f"{os.getcwd() + '/memes/'}{LastMessages[0].author}"))[2]
+                    os.walk(f"{os.getcwd() + '/memes/'}{LastMessages[1].author}"))[2]
                 NumberOfFiles = len(NumberOfMemes)
-                if LastMessages[0].attachments:
-                    for index, meme in enumerate(LastMessages[0].attachments):
+                if LastMessages[1].attachments:
+                    for index, meme in enumerate(LastMessages[1].attachments):
                         if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
-                            await meme.save(f"{os.getcwd() + '/memes/'}{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                            await meme.save(f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                             AllFiles.append(
-                                f"{os.getcwd() + '/memes/'}{LastMessages[0].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
+                                f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                             await ctx.followup.send("Memes hinzugefügt.")
                             logging.info(
                                 f"{ctx.author} has added a meme, filename was {meme.filename}.")
@@ -90,12 +90,10 @@ class Memes(commands.Cog):
         else:
             if len(AllFiles) == 0:
                 RefreshMemes()
-            NoWednesdayMemes = list(
-                filter(lambda x: 'Mittwoch' not in x, AllFiles))
             if NoWednesdayMemes == []:
                 RefreshMemes()
-                NoWednesdayMemes = list(
-                    filter(lambda x: 'Mittwoch' not in x, AllFiles))
+            NoWednesdayMemes = list(
+                filter(lambda x: 'Mittwoch' not in x, AllFiles))
             RandomMeme = random.SystemRandom().choice(NoWednesdayMemes)
             AuthorOfMeme = RandomMeme.split("/")[-2].split("#")[0]
             logging.info(
@@ -108,13 +106,13 @@ class Memes(commands.Cog):
     async def _wedmeme(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["mittwochmeme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
         await ctx.defer()
         if add:
-            LastMessages = await ctx.channel.history(limit=1).flatten()
-            if LastMessages[0].author != self.bot.user:
+            LastMessages = await ctx.channel.history(limit=2).flatten()
+            if LastMessages[1].author != self.bot.user:
                 NumberOfMemes = next(
                     os.walk(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#"))[2]
                 NumberOfFiles = len(NumberOfMemes)
-                if LastMessages[0].attachments:
-                    for index, meme in enumerate(LastMessages[0].attachments):
+                if LastMessages[1].attachments:
+                    for index, meme in enumerate(LastMessages[1].attachments):
                         if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
                             await meme.save(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                             AllFiles.append(
@@ -161,7 +159,8 @@ class Memes(commands.Cog):
                         filter(lambda x: 'Mittwoch' in x, AllFiles))
                 RandomWedMeme = random.SystemRandom().choice(WednesdayMemes)
                 MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen",
-                                     "kerligen", "verehrten", "memigen", "standhaften", "stabilen"]
+                                     "kerligen", "verehrten", "memigen",
+                                     "standhaften", "stabilen", "froschigen"]
                 RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
                 logging.info(
                     f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
