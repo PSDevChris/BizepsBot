@@ -236,7 +236,8 @@ async def GameReminder():
                 groups["Settings"]["Groups"][f"{reminder}"]["id"])
             ReminderMembers = ", ".join(
                 groups["Settings"]["Groups"][f"{reminder}"]["members"])
-            await Remindchannel.send(f" Das Spiel geht los! Mit dabei sind: {ReminderMembers}")
+            ReminderTheme = groups["Settings"]["Groups"][f"{reminder}"]["theme"]
+            await Remindchannel.send(f" Es geht los mit {ReminderTheme}! Mit dabei sind: {ReminderMembers}")
             logging.info(f"Meeting in {reminder} started!")
             FoundList.append(reminder)
     if FoundList:

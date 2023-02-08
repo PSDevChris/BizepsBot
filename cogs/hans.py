@@ -62,7 +62,7 @@ class HansTaskList(commands.Cog):
                 _write_json('Settings.json', AllHansTasks)
                 self.HansTasks.append(task)
                 logging.info(
-                    f"{ctx.author.name} has added {task} to Hans tasks.")
+                    f"{ctx.author} has added {task} to Hans tasks.")
                 await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
@@ -72,7 +72,7 @@ class HansTaskList(commands.Cog):
             HansTask = random.SystemRandom().choice(self.HansTasks)
             self.HansTasks.remove(HansTask)
             logging.info(
-                f"[{ctx.author.name}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
+                f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
             await ctx.defer()
             await ctx.followup.send(f"Hans muss {HansTask}...")
 

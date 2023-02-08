@@ -18,10 +18,10 @@ class Meetings(commands.Cog):
 
     !Game [Uhrzeit]:        Erstellt eine Verabredung zur Uhrzeit im Format HH:mm
     !Join                   Tritt der Verabredung bei
-    !RemGame                Löscht die Verabredung
-    !LeaveGame              Verlässt die Verabredung, ist man Owner, wird diese gelöscht
-    !UpdateGame [Uhrzeit]   Aktualisiert die Verabredung auf die angegebene Uhrzeit
-    !ShowGame               Zeigt die Verabredung in diesem Channel
+    !RemGame                Löscht den Erinnerer
+    !LeaveGame              Verlässt den Erinnerer, ist man Owner, wird diese gelöscht
+    !UpdateGame [Uhrzeit]   Aktualisiert den Erinnerer auf die angegebene Uhrzeit
+    !ShowGame               Zeigt die Erinnerer in diesem Channel
     """
 
     def __init__(self, bot):
@@ -36,12 +36,12 @@ class Meetings(commands.Cog):
     async def on_ready(self):
         pass
 
-    @commands.slash_command(name="startgame", description="Startet eine Verabredung")
+    @commands.slash_command(name="startgame", description="Startet einen Erinnerer")
     @commands.check(_is_gamechannel)
-    async def _playgame(self, ctx, timearg):
+    async def _playgame(self, ctx, time, theme):
         try:
             CurrentDate = datetime.datetime.now()
-            GameTime = datetime.datetime.strptime(timearg, "%H:%M").time()
+            GameTime = datetime.datetime.strptime(time, "%H:%M").time()
             GameDateTime = datetime.datetime.combine(CurrentDate, GameTime)
             GameDateTimeTimestamp = GameDateTime.timestamp()
         except ValueError:
@@ -54,6 +54,7 @@ class Meetings(commands.Cog):
             f"{ctx.channel.name}": {
                 "id": ctx.channel.id,
                 "owner": ctx.author.mention,
+                "theme": theme,
                 "time": GameDateTimeTimestamp,
                 "members": [f"{ctx.author.mention}"]
             }
@@ -65,27 +66,27 @@ class Meetings(commands.Cog):
             if not groups:
                 groups["Settings"]["Groups"].update(group)
                 _write_json('Settings.json', groups)
-                await ctx.respond("Die Spielrunde wurde eröffnet!")
+                await ctx.respond(f"Der Erinnerer wurde erstellt mit dem Thema {theme} um {time}!")
                 logging.info(
-                    f"Meeting started in {ctx.channel.name}.")
+                    f"Meeting started in {ctx.channel.name} with theme: [{theme}] at {time}.")
             else:
                 if ctx.channel.name in groups["Settings"]["Groups"].keys():
                     await ctx.respond(f"{ctx.author.name}, hier ist schon eine Spielrunde geplant. Joine einfach mit !join")
                 else:
                     groups["Settings"]["Groups"].update(group)
                     _write_json('Settings.json', groups)
-                    await ctx.respond("Die Spielrunde wurde eröffnet!")
+                    await ctx.respond(f"Der Erinnerer wurde erstellt mit dem Thema {theme} um {time}!")
                     logging.info(
-                        f"Meeting started in {ctx.channel.name}.")
+                        f"Meeting started in {ctx.channel.name} with theme: [{theme}] at {time}.")
         except json.decoder.JSONDecodeError:
             groups = {}
             groups["Settings"]["Groups"].update(group)
             _write_json('Settings.json', groups)
-            await ctx.respond("Die Spielrunde wurde eröffnet!")
+            await ctx.respond(f"Der Erinnerer wurde erstellt mit dem Thema {theme} um {time}!")
             logging.warning(
                 f"The settingsfile is corrupted, overwrote the file and started meeting in {ctx.channel.name}!")
 
-    @commands.slash_command(name="showgame", description="Zeigt die Mitglieder der Verabredung")
+    @commands.slash_command(name="showgame", description="Zeigt die Mitglieder des Erinnerers")
     @commands.check(_is_gamechannel)
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def _showgame(self, ctx):
@@ -94,38 +95,40 @@ class Meetings(commands.Cog):
         if ctx.channel.name in GameSettings["Settings"]["Groups"].keys():
             GameMembersString = "\n".join(
                 GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["members"])
-            await ctx.respond(f"Folgende Personen sind verabredet:\n{GameMembersString}")
+            ReminderTheme = GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
+            ReminderTime = GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["time"]
+            await ctx.respond(f"Folgende Personen sind verabredet zum {ReminderTheme} um {ReminderTime}:\n{GameMembersString}")
         else:
             await ctx.respond("Hier gibt es noch keine Verabredung.")
 
-    @commands.slash_command(name="joingame", description="Tritt einer Verabredung bei")
+    @commands.slash_command(name="joingame", description="Tritt einem Erinnerer bei")
     @commands.check(_is_gamechannel)
     async def _joingame(self, ctx):
         CurrentChannel = ctx.channel.name
         groups = _read_json('Settings.json')
 
         if ctx.channel.name in groups["Settings"]["Groups"].keys() and ctx.author.mention in groups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
-            await ctx.respond(f"{ctx.author.name}, du bist bereits als Teilnehmer im geplanten Spiel.")
+            await ctx.respond(f"{ctx.author.name}, du bist bereits als Teilnehmer im geplanten Erinnerer.")
         elif ctx.channel.name in groups["Settings"]["Groups"].keys() and f"{ctx.author.mention}" not in groups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             groups["Settings"]["Groups"][f"{CurrentChannel}"]["members"].append(
                 f"{ctx.author.mention}")
-            await ctx.respond(f"{ctx.author.mention}, du wurdest dem Spiel hinzugefügt.")
+            await ctx.respond(f"{ctx.author.mention}, du wurdest dem Erinnerer hinzugefügt.")
             logging.info(
                 f"{ctx.author} joined the meeting in {ctx.channel.name}.")
             _write_json('Settings.json', groups)
         else:
             await ctx.respond("In diesem Channel wurde noch kein Spiel geplant.")
 
-    @commands.slash_command(name="updategame", description="Verschiebt das Spiel auf die gewünschte Zeit")
+    @commands.slash_command(name="updategame", description="Verschiebt den Erinnerer auf die gewünschte Zeit")
     @commands.check(_is_gamechannel)
-    async def _movegame(self, ctx, timearg):
+    async def _movegame(self, ctx, time):
         CurrentChannel = ctx.channel.name
         groups = _read_json('Settings.json')
 
         if ctx.channel.name in groups["Settings"]["Groups"].keys() and ctx.author.mention == groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             try:
                 CurrentDate = datetime.datetime.now()
-                GameTime = datetime.datetime.strptime(timearg, "%H:%M").time()
+                GameTime = datetime.datetime.strptime(time, "%H:%M").time()
                 GameDateTime = datetime.datetime.combine(CurrentDate, GameTime)
                 GameDateTimeTimestamp = GameDateTime.timestamp()
             except ValueError:
@@ -134,62 +137,66 @@ class Meetings(commands.Cog):
                     f"{ctx.author} entered a wrong time for the updategamecommand!")
                 return
 
+            ReminderTheme = groups["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
             groups["Settings"]["Groups"][f"{CurrentChannel}"]["time"] = GameDateTimeTimestamp
             _write_json('Settings.json', groups)
-            await ctx.respond(f"Die Uhrzeit der Verabredung wurde auf {timearg} geändert.")
+            await ctx.respond(f"Die Uhrzeit des Erinnerers für {ReminderTheme} wurde auf {time} geändert.")
             logging.info(
-                f"{ctx.author} moved the meeting in {CurrentChannel} to {timearg}.")
+                f"{ctx.author} moved the meeting in {CurrentChannel} for {ReminderTheme} to {time}.")
         elif ctx.channel.name in groups["Settings"]["Groups"].keys() and ctx.author.mention != groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             await ctx.respond("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er es verschiebt!")
             logging.warning(
-                f"{ctx.author} tried to move the meeting in {CurrentChannel} but is not the owner!")
+                f"{ctx.author} tried to move the meeting for {ReminderTheme} in {CurrentChannel} but is not the owner!")
         elif ctx.channel.name not in groups["Settings"]["Groups"].keys():
             await ctx.respond("Hier gibt es noch keine Verabredung. Starte doch eine!")
 
-    @commands.slash_command(name="deletegame", description="Löscht die Verabredung")
+    @commands.slash_command(name="deletegame", description="Löscht den Erinnerer")
     @commands.check(_is_gamechannel)
     async def _gameremover(self, ctx):
         CurrentChannel = ctx.channel.name
         groups = _read_json('Settings.json')
+        ReminderTheme = groups["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
         if ctx.channel.name in groups["Settings"]["Groups"].keys() and ctx.author.mention == groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             groups["Settings"]["Groups"].pop(CurrentChannel)
             _write_json('Settings.json', groups)
-            await ctx.respond("Die Verabredung in diesem Channel wurde gelöscht.")
+            await ctx.respond(f"Der Erinnerer für {ReminderTheme} in diesem Channel wurde gelöscht.")
             logging.info(
                 f"{ctx.author} deleted the meeting in {CurrentChannel}.")
         elif ctx.channel.name in groups["Settings"]["Groups"].keys() and ctx.author.mention != groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
-            await ctx.respond("Na na, du bist nicht der Besitzer dieser Verabredung! Frag bitte den Besitzer, ob er diese löscht!")
+            await ctx.respond("Na na, du bist nicht der Besitzer dieses Erinners! Frag bitte den Besitzer, ob er diese löscht!")
             logging.warning(
-                f"{ctx.author} tried to delete a meeting in {CurrentChannel} but is not the owner!")
+                f"{ctx.author} tried to delete a meeting in {CurrentChannel} for {ReminderTheme} but is not the owner!")
         elif ctx.channel.name not in groups["Settings"]["Groups"].keys():
-            await ctx.respond("Hier gibt es noch keine Verabredung. Starte doch eine!")
+            await ctx.respond("Hier gibt es noch keinen Erinnerer. Starte doch eine!")
 
-    @commands.slash_command(name="leavegame", description="Verlässt die aktuelle Verabredung")
+    @commands.slash_command(name="leavegame", description="Verlässt den aktuellen Erinnerer")
     @commands.check(_is_gamechannel)
     async def _leavegame(self, ctx):
         CurrentChannel = ctx.channel.name
         StartedGroups = _read_json('Settings.json')
+        ReminderTheme = StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
+        ReminderTime = StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["time"]
         if ctx.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.author.mention == StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             StartedGroups["Settings"]["Groups"].pop(CurrentChannel)
             _write_json('Settings.json', StartedGroups)
-            await ctx.respond(f"{ctx.author.mention}, die Verabredung in diesem Channel wurde gelöscht, da du der Besitzer warst.")
+            await ctx.respond(f"{ctx.author.mention}, der Erinnerer für {ReminderTheme} um {ReminderTime} in diesem Channel wurde gelöscht, da du der Besitzer warst.")
             logging.info(
-                f"{ctx.author} left the meeting in {CurrentChannel} and was the owner. Meeting deleted.")
+                f"{ctx.author} left the meeting for {ReminderTheme} in {CurrentChannel} and was the owner. Meeting deleted.")
         elif ctx.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.author.mention in StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"].remove(
                 ctx.author.mention)
-            await ctx.respond(f"{ctx.author.mention}, du wurdest aus der Verabredung entfernt.")
+            await ctx.respond(f"{ctx.author.mention}, du wurdest aus dem Erinnerer für {ReminderTheme} um {ReminderTime} entfernt.")
             logging.info(
-                f"{ctx.author} removed from meeting in {CurrentChannel}.")
+                f"{ctx.author} removed from meeting for {ReminderTheme} in {CurrentChannel}.")
             _write_json('Settings.json', StartedGroups)
         elif ctx.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.author.mention not in StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
-            await ctx.respond(f"{ctx.author.mention}, du bist der Verabredung nicht beigetreten und wurdest daher auch nicht entfernt.")
+            await ctx.respond(f"{ctx.author.mention}, du bist dem Erinnerer für {ReminderTheme} nicht beigetreten und wurdest daher auch nicht entfernt.")
             logging.info(
-                f"{ctx.author} wanted to leave the meeting in {CurrentChannel}, but was not a member.")
+                f"{ctx.author} wanted to leave the meeting for {ReminderTheme} in {CurrentChannel}, but was not a member.")
         else:
-            await ctx.respond(f"{ctx.author.mention}, hier gibt es keine Verabredung, die du verlassen könntest.")
+            await ctx.respond(f"{ctx.author.mention}, hier gibt es keinen Erinnerer, den du verlassen könntest.")
             logging.info(
-                f"{ctx.author} wanted to leave a meeting in {CurrentChannel}, but there was none.")
+                f"{ctx.author} wanted to leave a meeting for {ReminderTheme} in {CurrentChannel}, but there was none.")
 
     ## Error Handling for Meetings Cog ###
 
