@@ -96,8 +96,9 @@ class Meetings(commands.Cog):
             GameMembersString = "\n".join(
                 GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["members"])
             ReminderTheme = GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
-            ReminderTime = GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["time"]
-            await ctx.respond(f"Folgende Personen sind verabredet zum {ReminderTheme} um {ReminderTime}:\n{GameMembersString}")
+            ReminderTime = datetime.datetime.fromtimestamp(
+                GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["time"], tz=datetime.datetime.utcnow().astimezone().tzinfo)
+            await ctx.respond(f"Folgende Personen sind verabredet zum {ReminderTheme} um {ReminderTime:%H:%M}:\n{GameMembersString}")
         else:
             await ctx.respond("Hier gibt es noch keine Verabredung.")
 
@@ -175,17 +176,18 @@ class Meetings(commands.Cog):
         CurrentChannel = ctx.channel.name
         StartedGroups = _read_json('Settings.json')
         ReminderTheme = StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
-        ReminderTime = StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["time"]
+        ReminderTime = datetime.datetime.fromtimestamp(
+            StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["time"], tz=datetime.datetime.utcnow().astimezone().tzinfo)
         if ctx.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.author.mention == StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             StartedGroups["Settings"]["Groups"].pop(CurrentChannel)
             _write_json('Settings.json', StartedGroups)
-            await ctx.respond(f"{ctx.author.mention}, der Erinnerer für {ReminderTheme} um {ReminderTime} in diesem Channel wurde gelöscht, da du der Besitzer warst.")
+            await ctx.respond(f"{ctx.author.mention}, der Erinnerer für {ReminderTheme} um {ReminderTime:%H:%M} in diesem Channel wurde gelöscht, da du der Besitzer warst.")
             logging.info(
                 f"{ctx.author} left the meeting for {ReminderTheme} in {CurrentChannel} and was the owner. Meeting deleted.")
         elif ctx.channel.name in StartedGroups["Settings"]["Groups"].keys() and ctx.author.mention in StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["members"].remove(
                 ctx.author.mention)
-            await ctx.respond(f"{ctx.author.mention}, du wurdest aus dem Erinnerer für {ReminderTheme} um {ReminderTime} entfernt.")
+            await ctx.respond(f"{ctx.author.mention}, du wurdest aus dem Erinnerer für {ReminderTheme} um {ReminderTime:%H:%M} entfernt.")
             logging.info(
                 f"{ctx.author} removed from meeting for {ReminderTheme} in {CurrentChannel}.")
             _write_json('Settings.json', StartedGroups)
