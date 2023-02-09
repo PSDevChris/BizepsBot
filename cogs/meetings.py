@@ -93,8 +93,11 @@ class Meetings(commands.Cog):
         CurrentChannel = ctx.channel.name
         GameSettings = _read_json('Settings.json')
         if ctx.channel.name in GameSettings["Settings"]["Groups"].keys():
-            GameMembersString = "\n".join(
-                GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["members"])
+            CleanUsernames = []
+            for user in GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
+                CleanUsername = await self.bot.get_or_fetch_user(user[2:-1])
+                CleanUsernames.append(CleanUsername.display_name)
+            GameMembersString = "\n".join(CleanUsernames)
             ReminderTheme = GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
             ReminderTime = datetime.datetime.fromtimestamp(
                 GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["time"], tz=datetime.datetime.utcnow().astimezone().tzinfo)
