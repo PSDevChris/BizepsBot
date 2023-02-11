@@ -124,6 +124,12 @@ class Fun(commands.Cog):
                 logging.info(
                     f"The message [{LastMessageContent}] was UwUed.")
 
+    @_lebonk.error
+    async def _bonk_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuche in {int(error.retry_after)} Sekunden nochmal jemand zu bonken.", ephemeral=True)
+            logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
+
     @_zuggisaysno.error
     async def _zuggisaysno_error(self, ctx, error):
         if isinstance(error, discord.errors.CheckFailure):
