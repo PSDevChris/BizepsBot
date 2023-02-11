@@ -56,7 +56,7 @@ class Fun(commands.Cog):
     async def _lebonk(self, ctx):
         LastMessages = await ctx.channel.history(limit=1).flatten()
         LastMessage = LastMessages[0]
-        ctx.defer(ephemeral=True)
+        await ctx.defer(ephemeral=True)
         await ctx.followup.send("Die Nachricht wurde gebonkt!")
         await LastMessage.reply(f"Mess with Lechonk, you get the bonk! Du wurdest gebonkt von {ctx.author.name}!", file=discord.File('fun/LeBonk.png'))
 
