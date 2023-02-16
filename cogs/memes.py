@@ -106,8 +106,8 @@ class Memes(commands.Cog):
     @commands.slash_command(name="mittwoch", description="Gibt ein Mittwochmeme aus, meine Kerle")
     @commands.cooldown(2, 180, commands.BucketType.user)
     async def _wedmeme(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["mittwochmeme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
-        await ctx.defer()
         if add:
+            await ctx.defer()
             LastMessages = await ctx.channel.history(limit=2).flatten()
             if LastMessages[1].author != self.bot.user:
                 NumberOfMemes = next(
@@ -130,6 +130,7 @@ class Memes(commands.Cog):
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         elif collect:
+            await ctx.defer()
             Message = collect
             if Message.author != self.bot.user:
                 NumberOfMemes = next(
@@ -153,6 +154,7 @@ class Memes(commands.Cog):
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         else:
             if datetime.datetime.now().isoweekday() == 3:
+                await ctx.defer()
                 WednesdayMemes = list(
                     filter(lambda x: 'Mittwoch' in x, AllFiles))
                 if WednesdayMemes == []:
@@ -169,7 +171,8 @@ class Memes(commands.Cog):
                 await ctx.followup.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
                 AllFiles.remove(RandomWedMeme)
             else:
-                await ctx.followup.send("Es ist noch nicht Mittwoch, mein Kerl.", ephemeral=True)
+                await ctx.defer(ephemeral=True)
+                await ctx.followup.send("Es ist noch nicht Mittwoch, mein Kerl.")
 
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error):
