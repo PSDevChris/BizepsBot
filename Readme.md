@@ -4,7 +4,7 @@
 
 This bot was created as my first project in Python.  
 Before that I mostly scripted in PowerShell which is still my main language.  
-Since discord.py was discontinued, the bot was ported to py-cord and slash commands will be implemented step by step.  
+Since discord.py was discontinued, the bot was ported to py-cord and slash commands are fully implemented.  
 
 ## About the bot ## 
 
@@ -21,8 +21,9 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 
 ## To Dos ## 
 
-+ Extend Discord Pub
 + Split Messages over 2k chars | Needs to be implemented as func
 + Add Memes via URL
 + Load Settingsfile global and once
 + Make Alertgroups for Kumpels and Kumpelienen
++ Add ESA Marathon Schedule
++ Make a Subscriber cog where User can add themselves to Alertgroups
