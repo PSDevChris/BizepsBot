@@ -73,7 +73,7 @@ async def _show_counter(invoker: discord.ApplicationContext, name: str):
             return
     data = _read_json('Settings.json')
     logging.info(
-        f"{invoker.author.name} requested the current counter for {InvokedVar} with invokeparameter {name}.")
+        f"{invoker.author.name} requested the current counter for {InvokedVar}.")
     await invoker.respond(ReplyTxt.replace("###REPLACE###", f"{data['Settings']['Counter'][f'{InvokedVar}']}"))
 
 

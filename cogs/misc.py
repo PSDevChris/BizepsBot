@@ -31,13 +31,11 @@ class Misc(commands.Cog):
         CovResult = BeautifulSoup(CovHTML.content, "html.parser")
         CovRate = CovResult.find_all("p", class_="card-title")
         WeeklyInz = CovRate[3].text.strip()
-        NewCovCases = CovRate[9].text.strip()
-        NewAvgWeek = CovRate[10].text.strip()
-        HospRate = CovRate[12].text.strip()
-        HospNum = CovRate[13].text.strip()
-        HospPerc = CovRate[14].text.strip()
+        HospRate = CovRate[9].text.strip()
+        HospNum = CovRate[10].text.strip()
+        HospPerc = CovRate[11].text.strip()
 
-        await ctx.followup.send(f"Seit gestern gab es {NewCovCases} neue COVID-19 Fälle, in den letzten 7 Tagen waren es im Schnitt {NewAvgWeek} Fälle pro Tag. Die Inzidenz liegt bei {WeeklyInz}.\n\n"
+        await ctx.followup.send(f"Die Inzidenz liegt bei {WeeklyInz}.\n\n"
                                 f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
         logging.info(
             f"User {ctx.author} has requested the COVID numbers.")
