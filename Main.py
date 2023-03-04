@@ -178,15 +178,23 @@ async def TwitchLiveCheck():
                                         logging.info(
                                             f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification under 60min olds!")
                                         break
-                                else:
-                                    await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
-                                    logging.info(
-                                        f"{Displayname} went live on Twitch! Twitch Notification sent!")
-                                    # DM when I go live, requested by Kernie
-                                    KernieDM = await bot.fetch_user(628940079913500703)
-                                    await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
-                                    logging.info(
-                                        f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
+                                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
+                                logging.info(
+                                    f"{Displayname} went live on Twitch! Twitch Notification sent!")
+                                # DM when I go live, requested by Kernie
+                                KernieDM = await bot.fetch_user(628940079913500703)
+                                await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
+                                logging.info(
+                                    f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
+                            else:
+                                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
+                                logging.info(
+                                    f"{Displayname} went live on Twitch! Twitch Notification sent!")
+                                # DM when I go live, requested by Kernie
+                                KernieDM = await bot.fetch_user(628940079913500703)
+                                await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
+                                logging.info(
+                                    f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")    
                         else:
                             channel = bot.get_channel(
                                 703530328836407327)
