@@ -15,6 +15,7 @@ def RefreshMemes():
         for FileName in Files:
             if FileName.endswith(('gif', 'jpg', 'png', 'jpeg')):
                 AllFiles.append(f"{MemeFolder}/{FileName}")
+    logging.info("Refreshed Memelist.")
     return AllFiles
 
 
