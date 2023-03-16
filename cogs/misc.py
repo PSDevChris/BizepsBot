@@ -22,24 +22,6 @@ class Misc(commands.Cog):
 
     # Commands
 
-    @commands.slash_command(name="corona", description="Gibt aktuelle Coronazahlen aus")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _coronazahlen(self, ctx):
-        await ctx.defer()
-        CovURL = "https://www.corona-in-zahlen.de/weltweit/deutschland/"
-        CovHTML = requests.get(CovURL)
-        CovResult = BeautifulSoup(CovHTML.content, "html.parser")
-        CovRate = CovResult.find_all("p", class_="card-title")
-        WeeklyInz = CovRate[3].text.strip()
-        HospRate = CovRate[9].text.strip()
-        HospNum = CovRate[10].text.strip()
-        HospPerc = CovRate[11].text.strip()
-
-        await ctx.followup.send(f"Die Inzidenz liegt bei {WeeklyInz}.\n\n"
-                                f"Die Hospitalisierungsrate liegt bei {HospRate}, dies entspricht {HospNum} Menschen und {HospPerc} der Intensivbetten\U0001F637")
-        logging.info(
-            f"User {ctx.author} has requested the COVID numbers.")
-
     @commands.slash_command(name="zucker", description="Zuckersüß")
     @commands.cooldown(2, 30, commands.BucketType.user)
     async def _zuggishow(self, ctx):

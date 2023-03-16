@@ -196,7 +196,7 @@ async def TwitchLiveCheck():
                                 KernieDM = await bot.fetch_user(628940079913500703)
                                 await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
                                 logging.info(
-                                    f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")    
+                                    f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
                         else:
                             channel = bot.get_channel(
                                 703530328836407327)
@@ -275,18 +275,23 @@ async def TrashReminder():
             await MyDiscordUser.send(f"Die nächste schwarze Tonne ist morgen am: {entry}")
             logging.info(
                 f"Reminder for black garbage can which is collected on {entry} sent!")
+            break
+
     for entry in MuellListe["Blaue Tonne"].dropna():
         EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
         if tomorrowClean == EntryDate:
             await MyDiscordUser.send(f"Die nächste blaue Tonne ist morgen am: {entry}")
             logging.info(
                 f"Reminder for blue garbage can which is collected on {entry} sent!")
+            break
+
     for entry in MuellListe["Gelbe Saecke"].dropna():
         EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
         if tomorrowClean == EntryDate:
             await MyDiscordUser.send(f"Die nächsten gelben Säcke sind morgen am: {entry}")
             logging.info(
                 f"Reminder for yellow trashbag which is collected on {entry} sent!")
+            break
 
 
 @tasks.loop(time=datetime.time(hour=17, minute=5, second=0, tzinfo=datetime.datetime.utcnow().astimezone().tzinfo))
