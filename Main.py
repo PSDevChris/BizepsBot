@@ -500,6 +500,7 @@ async def _get_free_steamgames():
 @tasks.loop(minutes=20)
 async def _get_free_goggames():
     FreeGOGList = _read_json('Settings.json')
+    
     GOGURL = "https://www.gog.com/"
     async with aiohttp.ClientSession() as GOGSession:
         async with GOGSession.get(GOGURL) as GOGReq:
@@ -513,26 +514,27 @@ async def _get_free_goggames():
                         GOGGameURL = f"http://www.gog.com{GOGPage[0]['ng-href']}"
                         GOGGameTitle = GOGPage[0].find_all(
                             'span', 'giveaway-banner__title')
-                        GOGGameTitle = GOGGameTitle[-1].text.split()[-1]
-                        GOGImageURL = GOGPage[0].find_all(
-                            'source', attrs={'srcset': True})
-                        GOGImageURL = f"http:{GOGImageURL[-1]['srcset'].split(',')[-1].split()[0]}"
+                        if GOGGameTitle not in FreeGOGList['Settings']['FreeGOGGames']:  
+                            GOGGameTitle = GOGGameTitle[-1].text.split()[-1]
+                            GOGImageURL = GOGPage[0].find_all(
+                                'source', attrs={'srcset': True})
+                            GOGImageURL = f"http:{GOGImageURL[-1]['srcset'].split(',')[-1].split()[0]}"
 
-                        GOGEmbed = discord.Embed(title=f"Neues Gratis GOG Game: {GOGGameTitle}!\r\n\n", colour=discord.Colour(
-                            0xffffff), timestamp=datetime.datetime.now())
-                        GOGEmbed.set_thumbnail(
-                            url=r'https://www.gog.com/blog/wp-content/uploads/2022/01/gogcomlogo-1.jpeg')
-                        GOGEmbed.set_author(
-                            name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/avatars/794273832508588062/9267c06d60098704f652d980caa5a43c.png")
-                        GOGEmbed.add_field(
-                            name="Besuch mich auf GOG", value=f"{GOGGameURL}", inline=True)
-                        GOGEmbed.set_image(
-                            url=f"{GOGImageURL}")
-                        GOGEmbed.set_footer(text="Bizeps_Bot")
-                        await bot.get_channel(539553203570606090).send(embed=GOGEmbed)
-                        FreeGOGList['Settings']['FreeGOGGames'].append(
-                            GOGGameTitle)
-                        _write_json('Settings.json', FreeGOGList)
+                            GOGEmbed = discord.Embed(title=f"Neues Gratis GOG Game: {GOGGameTitle}!\r\n\n", colour=discord.Colour(
+                                0xffffff), timestamp=datetime.datetime.now())
+                            GOGEmbed.set_thumbnail(
+                                url=r'https://www.gog.com/blog/wp-content/uploads/2022/01/gogcomlogo-1.jpeg')
+                            GOGEmbed.set_author(
+                                name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/avatars/794273832508588062/9267c06d60098704f652d980caa5a43c.png")
+                            GOGEmbed.add_field(
+                                name="Besuch mich auf GOG", value=f"{GOGGameURL}", inline=True)
+                            GOGEmbed.set_image(
+                                url=f"{GOGImageURL}")
+                            GOGEmbed.set_footer(text="Bizeps_Bot")
+                            await bot.get_channel(539553203570606090).send(embed=GOGEmbed)
+                            FreeGOGList['Settings']['FreeGOGGames'].append(
+                                GOGGameTitle)
+                            _write_json('Settings.json', FreeGOGList)
                     else:
                         for FreeGameEntry in FreeGOGList['Settings']['FreeGOGGames'].keys():
                             FreeGOGList['Settings']['FreeGOGGames'].pop(
