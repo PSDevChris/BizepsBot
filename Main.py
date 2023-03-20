@@ -496,6 +496,51 @@ async def _get_free_steamgames():
                                 f"Removed {ExpiredGame} from free steam game list since it expired.")
                             _write_json('Settings.json', FreeSteamList)
 
+
+@tasks.loop(minutes=20)
+async def _get_free_goggames():
+    FreeGOGList = _read_json('Settings.json')
+    GOGURL = "https://www.gog.com/"
+    async with aiohttp.ClientSession() as GOGSession:
+        async with GOGSession.get(GOGURL) as GOGReq:
+            if GOGReq.status == 200:
+                GOGHTML = await GOGReq.read()
+                if GOGHTML:
+                    GOGResult = BeautifulSoup(GOGHTML, "html.parser")
+                    GOGPage = GOGResult.find_all(
+                        "a", class_="container giveaway-banner giveaway-banner--with-consent is-loading")
+                    if GOGPage != []:
+                        GOGGameURL = f"http://www.gog.com{GOGPage[0]['ng-href']}"
+                        GOGGameTitle = GOGPage[0].find_all(
+                            'span', 'giveaway-banner__title')
+                        GOGGameTitle = GOGGameTitle[-1].text.split()[-1]
+                        GOGImageURL = GOGPage[0].find_all(
+                            'source', attrs={'srcset': True})
+                        GOGImageURL = f"http:{GOGImageURL[-1]['srcset'].split(',')[-1].split()[0]}"
+
+                        GOGEmbed = discord.Embed(title=f"Neues Gratis GOG Game: {GOGGameTitle}!\r\n\n", colour=discord.Colour(
+                            0xffffff), timestamp=datetime.datetime.now())
+                        GOGEmbed.set_thumbnail(
+                            url=r'https://www.gog.com/blog/wp-content/uploads/2022/01/gogcomlogo-1.jpeg')
+                        GOGEmbed.set_author(
+                            name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/avatars/794273832508588062/9267c06d60098704f652d980caa5a43c.png")
+                        GOGEmbed.add_field(
+                            name="Besuch mich auf GOG", value=f"{GOGGameURL}", inline=True)
+                        GOGEmbed.set_image(
+                            url=f"{GOGImageURL}")
+                        GOGEmbed.set_footer(text="Bizeps_Bot")
+                        await bot.get_channel(539553203570606090).send(embed=GOGEmbed)
+                        FreeGOGList['Settings']['FreeGOGGames'].append(
+                            GOGGameTitle)
+                        _write_json('Settings.json', FreeGOGList)
+                    else:
+                        for FreeGameEntry in FreeGOGList['Settings']['FreeGOGGames'].keys():
+                            FreeGOGList['Settings']['FreeGOGGames'].pop(
+                                FreeGameEntry)
+                            logging.info(
+                                f"{FreeGameEntry} removed from free GOG Games, since it expired!")
+                            _write_json('Settings.json', FreeGOGList)
+
 ### Bot Events ###
 
 
@@ -517,6 +562,8 @@ async def on_ready():
         GetFreeEpicGames.start()
     if not _get_free_steamgames.is_running():
         _get_free_steamgames.start()
+    if not _get_free_goggames.is_running():
+        _get_free_goggames.start()
     RefreshMemes()
 
 
