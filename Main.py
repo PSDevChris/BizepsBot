@@ -113,7 +113,7 @@ async def TwitchLiveCheck():
         if index == 0:
             API_Call.write(f"user_login={USER}")
         else:
-            API_Call.write(f"user_login={USER}")
+            API_Call.write(f"&user_login={USER}")
 
     try:
         async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
