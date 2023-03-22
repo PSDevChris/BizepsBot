@@ -500,7 +500,7 @@ async def _get_free_steamgames():
 @tasks.loop(minutes=20)
 async def _get_free_goggames():
     FreeGOGList = _read_json('Settings.json')
-    
+
     GOGURL = "https://www.gog.com/"
     async with aiohttp.ClientSession() as GOGSession:
         async with GOGSession.get(GOGURL) as GOGReq:
@@ -515,7 +515,7 @@ async def _get_free_goggames():
                         GOGGameTitle = GOGPage[0].find_all(
                             'span', 'giveaway-banner__title')
                         GOGGameTitle = GOGGameTitle[-1].text.split()[-1]
-                        if GOGGameTitle not in FreeGOGList['Settings']['FreeGOGGames']:  
+                        if GOGGameTitle not in FreeGOGList['Settings']['FreeGOGGames']:
                             GOGImageURL = GOGPage[0].find_all(
                                 'source', attrs={'srcset': True})
                             GOGImageURL = f"http:{GOGImageURL[-1]['srcset'].split(',')[-1].split()[0]}"
@@ -535,13 +535,16 @@ async def _get_free_goggames():
                             FreeGOGList['Settings']['FreeGOGGames'].append(
                                 GOGGameTitle)
                             _write_json('Settings.json', FreeGOGList)
+                            logging.info(
+                                f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
                     else:
                         for FreeGameEntry in FreeGOGList['Settings']['FreeGOGGames'].keys():
                             FreeGOGList['Settings']['FreeGOGGames'].pop(
                                 FreeGameEntry)
+                            _write_json('Settings.json', FreeGOGList)
                             logging.info(
                                 f"{FreeGameEntry} removed from free GOG Games, since it expired!")
-                            _write_json('Settings.json', FreeGOGList)
+
 
 ### Bot Events ###
 
@@ -576,10 +579,9 @@ async def on_message(message):
     """
     if message.author == bot.user:
         return
-    if message.content.startswith("!"):
-        if await _is_banned(message):
-            # This line needs to be added so the commands are actually processed
-            await bot.process_commands(message)
+    if await _is_banned(message):
+        # This line needs to be added so the commands are actually processed
+        await bot.process_commands(message)
 
 
 @bot.event

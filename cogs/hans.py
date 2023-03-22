@@ -1,3 +1,4 @@
+import io
 import random
 
 import discord
@@ -35,20 +36,23 @@ class HansTaskList(commands.Cog):
     async def _hanstasks(self, ctx: discord.context.ApplicationContext, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
         if option == "show":
             AllHansTasks = _read_json('Settings.json')
-            HansOutputString = ""
+            HansOutputBuffer = io.StringIO()
             HansOutputLength = 0
             await ctx.respond(f"Hans hat folgende Tasks:\n")
             for HansTaskEntry in AllHansTasks['Settings']['HansTasks']['Tasks']:
                 HansOutputLength += len(HansTaskEntry)
                 if HansOutputLength >= 1994:
-                    await ctx.respond(f"```{HansOutputString}```")
-                    HansOutputString = ""
+                    await ctx.respond(f"```{HansOutputBuffer.getvalue()}```")
+                    HansOutputBuffer.truncate(0)
+                    HansOutputBuffer.seek(0)  # Needs to be done in Python 3
                     HansOutputLength = 0
-                HansOutputString += HansTaskEntry + "\n"
+                HansOutputBuffer.write(HansTaskEntry + "\n")
                 HansOutputLength = HansOutputLength + len(HansTaskEntry)
+            if HansOutputLength > 0:
+                await ctx.respond(f"```{HansOutputBuffer.getvalue()}```")
+            HansOutputBuffer.close()
             logging.info(
                 f"{ctx.author.name} requested the list of Hans tasks.")
-            await ctx.respond(f"```{HansOutputString}```")
         elif option == "count":
             AllHansTasks = _read_json('Settings.json')
             HansTaskCount = len(AllHansTasks['Settings']['HansTasks']['Tasks'])

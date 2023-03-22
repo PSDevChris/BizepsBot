@@ -1,3 +1,4 @@
+import io
 import random
 
 from discord import Option
@@ -9,6 +10,7 @@ from Main import _get_banned_users, _is_banned, _read_json, logging
 def _refresh_dotojokes():
     DotoJokesJSON = _read_json('Settings.json')
     DotoJokes = list(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+    logging.info("Refreshed the list of Doto Jokes.")
     return DotoJokes
 
 
@@ -33,30 +35,35 @@ class DotoJokes(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _dotojokes(self, ctx, options: Option(str, "Zeigt oder zählt die Witze", choices=["show", "count"], required=False)):
         if options == "show":
+            await ctx.defer()
             DotoJokesJSON = _read_json('Settings.json')
-            DotoOutputString = ""
+            DotoOutputBuffer = io.StringIO()
             DotoOutputLength = 0
             await ctx.respond(f"Doto hat folgende Gagfeuerwerke gezündet:\n")
             for DotoTaskEntry in DotoJokesJSON['Settings']['DotoJokes']['Jokes']:
                 DotoOutputLength += len(DotoTaskEntry)
                 if DotoOutputLength >= 1994:
-                    await ctx.respond(f"```{DotoOutputString}```")
-                    DotoOutputString = ""
+                    await ctx.respond(f"```{DotoOutputBuffer.getvalue()}```")
+                    DotoOutputBuffer.truncate(0)
+                    DotoOutputBuffer.seek(0)  # Needs to be done in Python 3
                     DotoOutputLength = 0
-                DotoOutputString += DotoTaskEntry + "\n\n"
+                DotoOutputBuffer.write(DotoTaskEntry + "\n\n")
                 DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
-            await ctx.defer()
-            await ctx.followup.send(f"```{DotoOutputString}```")
+            if DotoOutputLength > 0:
+                await ctx.followup.send(f"```{DotoOutputBuffer.getvalue()}```")
+            DotoOutputBuffer.close()
+            logging.info(
+                f"{ctx.author} requested the list of Doto Jokes.")
         elif options == "count":
             DotoJokesJSON = _read_json('Settings.json')
             DotoJokesCount = len(
                 DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
             await ctx.respond(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
         else:
+            await ctx.defer()
             if len(self.bot.DotoJokes) == 0:
                 _refresh_dotojokes()
             DotoJoke = random.SystemRandom().choice(self.bot.DotoJokes)
-            await ctx.defer()
             await ctx.followup.send(f"{DotoJoke}")
             self.bot.DotoJokes.remove(DotoJoke)
 
