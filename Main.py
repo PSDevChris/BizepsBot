@@ -1,3 +1,4 @@
+import io
 import datetime
 import json
 import logging
@@ -107,16 +108,17 @@ async def TwitchLiveCheck():
         RequestTwitchToken()
 
     TwitchJSON = _read_json('Settings.json')
-    API_Call = ""
+    API_Call = io.StringIO()
     for index, USER in enumerate(TwitchJSON['Settings']['TwitchUser'].keys()):
         if index == 0:
-            API_Call = API_Call + f"user_login={USER}"
+            API_Call.write(f"user_login={USER}")
         else:
-            API_Call = API_Call + f"&user_login={USER}"
+            API_Call.write(f"user_login={USER}")
 
     try:
         async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
-            async with TwitchSession.get(f'https://api.twitch.tv/helix/streams?{API_Call}') as rUserData:
+            async with TwitchSession.get(f'https://api.twitch.tv/helix/streams?{API_Call.getvalue()}') as rUserData:
+                API_Call.close()
                 if rUserData.status == 200:
                     AllTwitchdata = await rUserData.json()
                     AllTwitchdata = AllTwitchdata["data"]
