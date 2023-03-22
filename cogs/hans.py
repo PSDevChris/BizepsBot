@@ -52,7 +52,7 @@ class HansTaskList(commands.Cog):
                 await ctx.respond(f"```{HansOutputBuffer.getvalue()}```")
             HansOutputBuffer.close()
             logging.info(
-                f"{ctx.author.name} requested the list of Hans tasks.")
+                f"{ctx.author} requested the list of Hans tasks.")
         elif option == "count":
             AllHansTasks = _read_json('Settings.json')
             HansTaskCount = len(AllHansTasks['Settings']['HansTasks']['Tasks'])
@@ -71,13 +71,13 @@ class HansTaskList(commands.Cog):
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
         else:
+            await ctx.defer()
             if self.HansTasks == []:
                 _refresh_hanstasks()
             HansTask = random.SystemRandom().choice(self.HansTasks)
             self.HansTasks.remove(HansTask)
             logging.info(
                 f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
-            await ctx.defer()
             await ctx.followup.send(f"Hans muss {HansTask}...")
 
     @_hanstasks.error

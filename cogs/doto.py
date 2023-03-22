@@ -64,6 +64,8 @@ class DotoJokes(commands.Cog):
             if len(self.bot.DotoJokes) == 0:
                 _refresh_dotojokes()
             DotoJoke = random.SystemRandom().choice(self.bot.DotoJokes)
+            logging.info(
+                f"{ctx.author} requested a Doto Joke, the joke was {DotoJoke}.")
             await ctx.followup.send(f"{DotoJoke}")
             self.bot.DotoJokes.remove(DotoJoke)
 
