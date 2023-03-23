@@ -75,6 +75,11 @@ def RefreshMemes():
                 AllFiles.append(f"{MemeFolder}/{FileName}")
     return AllFiles
 
+
+def _load_settings_file():
+    bot.Settings = _read_json('Settings.json')
+    return bot.Settings
+
 ### Permission Checks ###
 
 
@@ -240,7 +245,7 @@ async def GameReminder():
     """
 
     CurrentTime = datetime.datetime.timestamp(datetime.datetime.now())
-    groups = _read_json('Settings.json')
+    groups = bot.Settings
     FoundList = []
     for reminder in groups["Settings"]["Groups"].keys():
         if CurrentTime > groups["Settings"]["Groups"][f"{reminder}"]["time"]:
@@ -600,6 +605,7 @@ async def on_command_error(ctx, error):
 if __name__ == '__main__':
 
     ### General Settings ###
+    _load_settings_file()
 
     with open("TOKEN.json", "r", encoding="UTF-8") as TOKENFILE:
         TOKENDATA = json.load(TOKENFILE)
@@ -626,6 +632,7 @@ if __name__ == '__main__':
     if "cogs.management" not in bot.extensions.keys():
         bot.load_extension("cogs.management")
         logging.info("Extension management loaded.")
+
     ### Run Bot ###
 
     bot.run(TOKEN)

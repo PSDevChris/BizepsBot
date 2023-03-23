@@ -35,7 +35,7 @@ class HansTaskList(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _hanstasks(self, ctx: discord.context.ApplicationContext, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
         if option == "show":
-            AllHansTasks = _read_json('Settings.json')
+            AllHansTasks = self.bot.Settings
             HansOutputBuffer = io.StringIO()
             HansOutputLength = 0
             await ctx.respond(f"Hans hat folgende Tasks:\n")
@@ -54,14 +54,14 @@ class HansTaskList(commands.Cog):
             logging.info(
                 f"{ctx.author} requested the list of Hans tasks.")
         elif option == "count":
-            AllHansTasks = _read_json('Settings.json')
+            AllHansTasks = self.bot.Settings
             HansTaskCount = len(AllHansTasks['Settings']['HansTasks']['Tasks'])
             logging.info(
                 f"{ctx.author} wanted to know how much tasks Hans has.")
             await ctx.respond(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
         elif task:
             if "```" not in task:
-                AllHansTasks = _read_json('Settings.json')
+                AllHansTasks = self.bot.Settings
                 AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
                 _write_json('Settings.json', AllHansTasks)
                 self.HansTasks.append(task)

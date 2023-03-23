@@ -61,7 +61,7 @@ class Meetings(commands.Cog):
         }
 
         try:
-            groups = _read_json('Settings.json')
+            groups = self.bot.Settings
 
             if not groups:
                 groups["Settings"]["Groups"].update(group)
@@ -91,7 +91,7 @@ class Meetings(commands.Cog):
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def _showgame(self, ctx):
         CurrentChannel = ctx.channel.name
-        GameSettings = _read_json('Settings.json')
+        GameSettings = self.bot.Settings
         if ctx.channel.name in GameSettings["Settings"]["Groups"].keys():
             CleanUsernames = []
             for user in GameSettings["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
@@ -109,7 +109,7 @@ class Meetings(commands.Cog):
     @commands.check(_is_gamechannel)
     async def _joingame(self, ctx):
         CurrentChannel = ctx.channel.name
-        groups = _read_json('Settings.json')
+        groups = self.bot.Settings
 
         if ctx.channel.name in groups["Settings"]["Groups"].keys() and ctx.author.mention in groups["Settings"]["Groups"][f"{CurrentChannel}"]["members"]:
             await ctx.respond(f"{ctx.author.name}, du bist bereits als Teilnehmer im geplanten Erinnerer.")
@@ -127,7 +127,7 @@ class Meetings(commands.Cog):
     @commands.check(_is_gamechannel)
     async def _movegame(self, ctx, time):
         CurrentChannel = ctx.channel.name
-        groups = _read_json('Settings.json')
+        groups = self.bot.Settings
 
         if ctx.channel.name in groups["Settings"]["Groups"].keys() and ctx.author.mention == groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             try:
@@ -158,7 +158,7 @@ class Meetings(commands.Cog):
     @commands.check(_is_gamechannel)
     async def _gameremover(self, ctx):
         CurrentChannel = ctx.channel.name
-        groups = _read_json('Settings.json')
+        groups = self.bot.Settings
         ReminderTheme = groups["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
         if ctx.channel.name in groups["Settings"]["Groups"].keys() and ctx.author.mention == groups["Settings"]["Groups"][f"{CurrentChannel}"]["owner"]:
             groups["Settings"]["Groups"].pop(CurrentChannel)
@@ -177,7 +177,7 @@ class Meetings(commands.Cog):
     @commands.check(_is_gamechannel)
     async def _leavegame(self, ctx):
         CurrentChannel = ctx.channel.name
-        StartedGroups = _read_json('Settings.json')
+        StartedGroups = self.bot.Settings
         ReminderTheme = StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["theme"]
         ReminderTime = datetime.datetime.fromtimestamp(
             StartedGroups["Settings"]["Groups"][f"{CurrentChannel}"]["time"], tz=datetime.datetime.utcnow().astimezone().tzinfo)

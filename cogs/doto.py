@@ -36,7 +36,7 @@ class DotoJokes(commands.Cog):
     async def _dotojokes(self, ctx, options: Option(str, "Zeigt oder zählt die Witze", choices=["show", "count"], required=False)):
         if options == "show":
             await ctx.defer()
-            DotoJokesJSON = _read_json('Settings.json')
+            DotoJokesJSON = self.bot.Settings
             DotoOutputBuffer = io.StringIO()
             DotoOutputLength = 0
             await ctx.respond(f"Doto hat folgende Gagfeuerwerke gezündet:\n")
@@ -55,7 +55,7 @@ class DotoJokes(commands.Cog):
             logging.info(
                 f"{ctx.author} requested the list of Doto Jokes.")
         elif options == "count":
-            DotoJokesJSON = _read_json('Settings.json')
+            DotoJokesJSON = self.bot.Settings
             DotoJokesCount = len(
                 DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
             await ctx.respond(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
@@ -65,7 +65,7 @@ class DotoJokes(commands.Cog):
                 _refresh_dotojokes()
             DotoJoke = random.SystemRandom().choice(self.bot.DotoJokes)
             logging.info(
-                f"{ctx.author} requested a Doto Joke, the joke was {DotoJoke}.")
+                f"{ctx.author} requested a Doto Joke, the joke was [{DotoJoke}].")
             await ctx.followup.send(f"{DotoJoke}")
             self.bot.DotoJokes.remove(DotoJoke)
 
