@@ -42,7 +42,7 @@ class Subscriber(commands.Cog):
 
     # Commands
     @commands.slash_command(name="subscribe", description="Füge dich Benachrichtigungsgruppen hinzu!", brief="Füge dich Benachrichtigungsgruppen hinzu")
-    @commands.cooldown(1, 100, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def _subscribe(self, ctx):
 
         TwitchUserView = discord.ui.View()
