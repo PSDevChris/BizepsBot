@@ -536,10 +536,10 @@ async def _get_free_goggames():
                         "a", class_="container giveaway-banner giveaway-banner--with-consent is-loading")
                     if GOGPage != []:
                         GOGGameURL = f"http://www.gog.com{GOGPage[0]['ng-href']}"
-                        GOGGameTitle = GOGPage[0].find_all(
+                        GOGGameTitleBanner = GOGPage[0].find_all(
                             'span', 'giveaway-banner__title')
                         GOGGameTitle = " ".join(
-                            GOGGameTitle[-1].text.split()[1:])
+                            GOGGameTitleBanner[-1].text.split()[1:])
                         if GOGGameTitle not in FreeGOGList['Settings']['FreeGOGGames']:
                             GOGImageURL = GOGPage[0].find_all(
                                 'source', attrs={'srcset': True})
