@@ -54,6 +54,16 @@ class Subscriber(commands.Cog):
 
         await ctx.respond(view=TwitchUserView, ephemeral=True)
 
+    @_subscribe.error
+    async def _subscribe_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
+            logging.warning(f"{ctx.author} wanted to spam the hanscommand!")
+        elif isinstance(error, discord.CheckFailure):
+            await ctx.respond(f"Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
+        else:
+            logging.error(f"ERROR: {error}")
+
 
 def setup(bot):
     bot.add_cog(Subscriber(bot))
