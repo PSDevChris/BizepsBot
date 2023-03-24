@@ -1,5 +1,5 @@
-import io
 import datetime
+import io
 import json
 import logging
 import os
@@ -545,8 +545,8 @@ async def _get_free_goggames():
                             logging.info(
                                 f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
                     else:
-                        for FreeGameEntry in FreeGOGList['Settings']['FreeGOGGames'].keys():
-                            FreeGOGList['Settings']['FreeGOGGames'].pop(
+                        for FreeGameEntry in FreeGOGList['Settings']['FreeGOGGames']:
+                            FreeGOGList['Settings']['FreeGOGGames'].remove(
                                 FreeGameEntry)
                             _write_json('Settings.json', FreeGOGList)
                             logging.info(
