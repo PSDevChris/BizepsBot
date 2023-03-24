@@ -121,19 +121,36 @@ async def TwitchLiveCheck():
             API_Call.write(f"&user_login={USER}")
 
     try:
+        # YOU NEED TO CHANGE THIS IF YOU WANT TO USE YOUR SERVER
+        guild = bot.get_guild(539546796473712650)
         async with aiohttp.ClientSession(headers={'Authorization': f'Bearer {TWITCH_TOKEN}', 'Client-Id': f'{TWITCH_CLIENT_ID}'}) as TwitchSession:
             async with TwitchSession.get(f'https://api.twitch.tv/helix/streams?{API_Call.getvalue()}') as rUserData:
                 API_Call.close()
                 if rUserData.status == 200:
                     AllTwitchdata = await rUserData.json()
                     AllTwitchdata = AllTwitchdata["data"]
+
+        # No one is live
         if AllTwitchdata == []:
             for USER in TwitchJSON['Settings']['TwitchUser'].keys():
                 if TwitchJSON['Settings']['TwitchUser'][USER]['live']:
                     TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
                     _write_json('Settings.json', TwitchJSON)
+
+        # Someone is live
         else:
             for USER in TwitchJSON['Settings']['TwitchUser'].keys():
+
+                # Create Alertgroups if missing
+                twitchuserrole = discord.utils.get(
+                    guild.roles, name=f"{USER} Alert")
+                if twitchuserrole is None:
+                    await guild.create_role(name=f"{USER} Alert")
+                    logging.info(
+                        f"Created Twitch Alertgroup for {USER} since there was none.")
+                    twitchuserrole = discord.utils.get(
+                        guild.roles, name=f"{USER} Alert")
+
                 livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
 
                 data = list(
@@ -186,7 +203,7 @@ async def TwitchLiveCheck():
                                             f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification is under 60min olds!")
                                         break
                                     else:
-                                        await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
+                                        await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
                                         logging.info(
                                             f"{Displayname} went live on Twitch! Twitch Notification sent!")
                                         # DM when I go live, requested by Kernie
@@ -196,7 +213,7 @@ async def TwitchLiveCheck():
                                             f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
                                         break
                             else:
-                                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} @everyone", embed=embed)
+                                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
                                 logging.info(
                                     f"{Displayname} went live on Twitch! Twitch Notification sent!")
                                 # DM when I go live, requested by Kernie
@@ -215,11 +232,11 @@ async def TwitchLiveCheck():
                                             f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification is under 60min olds!")
                                         break
                                 else:
-                                    await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
+                                    await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
                                     logging.info(
                                         f"{Displayname} went live on Twitch! Twitch Twitch Notification sent, because the last Notification is older than 60min!")
                             else:
-                                await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg}", embed=embed)
+                                await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
                                 logging.info(
                                     f"{Displayname} went live on Twitch! Twitch Notification sent!")
 

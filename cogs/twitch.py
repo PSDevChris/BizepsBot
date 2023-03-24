@@ -4,7 +4,7 @@ import random
 from discord.ext import commands
 
 from Main import (RequestTwitchToken, _get_banned_users, _is_banned, aiohttp,
-                  datetime, json, logging, requests, discord)
+                  datetime, discord, json, logging, requests)
 
 
 async def _get_twitch_clips():

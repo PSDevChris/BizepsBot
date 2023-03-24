@@ -125,11 +125,16 @@ class Management(commands.Cog):
     @discord.default_permissions(administrator=True)
     @commands.cooldown(3, 900, commands.BucketType.user)
     @commands.has_role("Admin")
-    async def _deltwitchmember(self, ctx, member: str):
+    async def _deltwitchmember(self, ctx: commands.context.Context, member: str):
         try:
             TwitchUser = _read_json('Settings.json')
             TwitchUser['Settings']['TwitchUser'].pop(f"{member.lower()}")
             _write_json('Settings.json', TwitchUser)
+            twitchuserrole = discord.utils.get(
+                ctx.guild.roles, name=f"{member.lower()} Alert")
+            if twitchuserrole is not None:  # if it is None role is already gone
+                await twitchuserrole.delete()
+            logging.info(f"Removed Alertgroup for {member.lower()}.")
             await ctx.respond(f"{member} wurde aus der Twitchliste entfernt.")
             logging.info(f"User {member} was removed from twitchlist.")
         except Exception:
