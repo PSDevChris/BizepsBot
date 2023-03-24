@@ -23,7 +23,5 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 
 + Split Messages over 2k chars | Needs to be implemented as func
 + Add Memes via URL
-+ Load Settingsfile global and once
-+ Make Alertgroups for Kumpels and Kumpelienen
++ Load Settingsfile global and once | Started
 + Add ESA Marathon Schedule
-+ Make a Subscriber cog where User can add themselves to Alertgroups
