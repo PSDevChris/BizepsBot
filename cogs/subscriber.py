@@ -16,12 +16,12 @@ class TwitchButton(discord.ui.Button):
             interaction.guild.roles, name=f"{creator} Alert")
         if role not in user.roles:
             await interaction.user.add_roles(role)
-            await interaction.followup.send(f"Du wurdest der Rolle {role.mention} hinzugefügt.", ephemeral=True)
+            await interaction.followup.send(f"Du wurdest der Rolle {role.name} hinzugefügt.", ephemeral=True)
             logging.info(
                 f"{user} added himself to the alertgroup for {role.name}.")
         else:
             await interaction.user.remove_roles(role)
-            await interaction.followup.send(f"Du wurdest aus der Rolle {role.mention} entfernt.", ephemeral=True)
+            await interaction.followup.send(f"Du wurdest aus der Rolle {role.name} entfernt.", ephemeral=True)
             logging.info(
                 f"{user} removed himself from the alertgroup of {role.name}.")
 
