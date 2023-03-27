@@ -3,6 +3,7 @@ import io
 import json
 import logging
 import os
+import zoneinfo
 from datetime import timedelta, timezone
 
 import aiohttp
@@ -280,7 +281,7 @@ async def GameReminder():
         _write_json('Settings.json', groups)
 
 
-@tasks.loop(time=datetime.time(hour=17, minute=0, second=0, tzinfo=datetime.datetime.utcnow().astimezone().tzinfo))
+@tasks.loop(time=datetime.time(hour=17, minute=0, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def TrashReminder():
     """
     Prüft einmal um 17 Uhr ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
@@ -318,7 +319,7 @@ async def TrashReminder():
             break
 
 
-@tasks.loop(time=datetime.time(hour=17, minute=5, second=0, tzinfo=datetime.datetime.utcnow().astimezone().tzinfo))
+@tasks.loop(time=datetime.time(hour=17, minute=5, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def GetFreeEpicGames():
 
     AllEpicFiles = next(os.walk("epic/"))[2]
