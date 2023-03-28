@@ -192,7 +192,7 @@ async def TwitchLiveCheck():
                         embed.set_author(
                             name=f"{Displayname} ist jetzt live!", icon_url=f"{ProfilePicData}")
                         embed.set_footer(text="Bizeps_Bot")
-                        NotificationTime = datetime.datetime.utcnow() - timedelta(minutes=60)
+                        NotificationTime = datetime.datetime.now() - timedelta(minutes=60)
                         if USER == 'dota_joker':
                             DotoChannel = bot.get_channel(
                                 539547495567720492)
