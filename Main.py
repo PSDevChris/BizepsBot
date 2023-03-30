@@ -281,6 +281,7 @@ async def GameReminder():
         _write_json('Settings.json', groups)
 
 
+# this needs a fix discussed in https://github.com/Pycord-Development/pycord/issues/1990
 @tasks.loop(time=datetime.time(hour=17, minute=0, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def TrashReminder():
     """
@@ -319,6 +320,7 @@ async def TrashReminder():
             break
 
 
+# this needs a fix discussed in https://github.com/Pycord-Development/pycord/issues/1990
 @tasks.loop(time=datetime.time(hour=17, minute=5, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def GetFreeEpicGames():
 
