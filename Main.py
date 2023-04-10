@@ -294,7 +294,7 @@ async def TrashReminder():
     tomorrowClean = tomorrowNow.replace(
         hour=00, minute=00, second=00, microsecond=00)
     # categorial DFs reduce memory usage
-    MuellListe = pd.read_csv('Muell.csv', sep=";", dtype='category')
+    MuellListe = pd.read_csv('Muell.csv', sep=";", engine='pyarrow', dtype='category')
     for entry in MuellListe["Schwarze Tonne"].dropna():
         EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
         if tomorrowClean == EntryDate:
@@ -521,7 +521,7 @@ async def _get_free_steamgames():
                                 ExpiredGame)
                             logging.info(
                                 f"Removed {ExpiredGame} from free steam game list since it expired.")
-                            _write_json('Settings.json', FreeSteamList)
+                        _write_json('Settings.json', FreeSteamList)
 
 
 @tasks.loop(minutes=20)
@@ -569,9 +569,9 @@ async def _get_free_goggames():
                         for FreeGameEntry in FreeGOGList['Settings']['FreeGOGGames']:
                             FreeGOGList['Settings']['FreeGOGGames'].remove(
                                 FreeGameEntry)
-                            _write_json('Settings.json', FreeGOGList)
                             logging.info(
                                 f"{FreeGameEntry} removed from free GOG Games, since it expired!")
+                        _write_json('Settings.json', FreeGOGList)
 
 
 ### Bot Events ###
