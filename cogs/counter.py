@@ -11,7 +11,7 @@ async def _inc_counter(invoker: discord.ApplicationContext, name: str, incnum: i
     data['Settings']['Counter'][f'{name.title()}'] = data['Settings']['Counter'][f'{name.title()}'] + incnum
     LastAboNumber = data['Settings']['Counter']['LastAboAt']
     NewResult = data['Settings']['Counter'][f'{name}']
-    if name == "luck" and ((NewResult - LastAboNumber) + random.SystemRandom().randint(0, 50) >= (LastAboNumber+100)):
+    if name == "Luck" and ((NewResult - LastAboNumber) + random.SystemRandom().randint(0, 50) >= (LastAboNumber+100)):
         logging.info(
             f"{invoker.author.name} increased the counter of {name} with invokeparameter {name} and had dotoluck. Subs are given out next stream.")
         await invoker.respond(f"Doto hatte schon wieder Glück! Damit hat er {NewResult} Mal unverschämtes Glück gehabt! Als Strafe verschenkt er im nächsten Stream {random.SystemRandom().randint(1,3)} Abos!")
