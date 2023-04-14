@@ -459,6 +459,7 @@ async def GetFreeEpicGames():
                                             "Free Epic Games were sent to Schnenk.")
 
                                 except json.decoder.JSONDecodeError:
+                                    logging.error("ERROR: Something bad happend with the json decoding! The Free EpicGames list was created again!", exc_info=True)
                                     FreeGamesList['Settings']['FreeEpicGames'] = {
                                     }
                                     FreeGamesList['Settings']['FreeEpicGames'].update(
