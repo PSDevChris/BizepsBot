@@ -201,7 +201,7 @@ async def TwitchLiveCheck():
                                 for message in LastMessages:
                                     if message.content.startswith(f"**{Displayname}**"):
                                         logging.info(
-                                            f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification is under 60min olds!")
+                                            f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification is under 60min old!")
                                         break
                                     else:
                                         await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
@@ -230,7 +230,7 @@ async def TwitchLiveCheck():
                                 for message in LastMessages:
                                     if message.content.startswith(f"**{Displayname}**"):
                                         logging.info(
-                                            f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification is under 60min olds!")
+                                            f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification is under 60min old!")
                                         break
                                 else:
                                     await channel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
