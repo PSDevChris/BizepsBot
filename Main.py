@@ -137,6 +137,7 @@ async def TwitchLiveCheck():
                 if TwitchJSON['Settings']['TwitchUser'][USER]['live']:
                     TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
                     _write_json('Settings.json', TwitchJSON)
+                    bot.Settings = TwitchJSON
 
         # Someone is live
         else:
@@ -160,6 +161,7 @@ async def TwitchLiveCheck():
                     if livestate:
                         TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
                         _write_json('Settings.json', TwitchJSON)
+                        bot.Settings = TwitchJSON
                     continue
                 else:
                     data = data[0]
@@ -244,6 +246,7 @@ async def TwitchLiveCheck():
                         TwitchJSON['Settings']['TwitchUser'][USER]['live'] = True
                         _write_json(
                             'Settings.json', TwitchJSON)
+                        bot.Settings = TwitchJSON
     except IndexError:
         # Username does not exist or Username is wrong, greetings to Schnabeltier
         logging.error("ERROR: ", exc_info=True)
