@@ -32,6 +32,7 @@ class Management(commands.Cog):
         DotoJokesJSON = _read_json('Settings.json')
         DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
         _write_json('Settings.json', DotoJokesJSON)
+        self.bot.Settings = DotoJokesJSON
         self.bot.DotoJokes.append(joke)
         await ctx.respond(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
 

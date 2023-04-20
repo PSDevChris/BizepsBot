@@ -64,6 +64,7 @@ class HansTaskList(commands.Cog):
                 AllHansTasks = self.bot.Settings
                 AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
                 _write_json('Settings.json', AllHansTasks)
+                self.bot.Settings = AllHansTasks
                 self.HansTasks.append(task)
                 logging.info(
                     f"{ctx.author} has added {task} to Hans tasks.")
