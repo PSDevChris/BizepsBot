@@ -100,6 +100,7 @@ class Counter(commands.Cog):
             await _show_counter(ctx, "Pun")
         else:
             await _inc_counter(ctx, "Pun", 1)
+            self.bot.Settings = _read_json('Settings.json')
 
     @commands.slash_command(name="leak", description="Erhöht den Leakcounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -108,6 +109,7 @@ class Counter(commands.Cog):
             await _show_counter(ctx, "Leak")
         else:
             await _inc_counter(ctx, "Leak", 1)
+            self.bot.Settings = _read_json('Settings.json')
 
     @commands.slash_command(name="hasssprech", description="Erhöht den Hasssprechcounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -116,6 +118,7 @@ class Counter(commands.Cog):
             await _show_counter(ctx, "Mobbing")
         else:
             await _inc_counter(ctx, "Mobbing", 1)
+            self.bot.Settings = _read_json('Settings.json')
 
     @commands.slash_command(name="salz", description="Erhöht den Salzcounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -124,6 +127,7 @@ class Counter(commands.Cog):
             await _show_counter(ctx, "Salz")
         else:
             await _inc_counter(ctx, "Salz", 1)
+            self.bot.Settings = _read_json('Settings.json')
 
     @commands.slash_command(name="lieferando", description="Erhöht den Schnenkocounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -132,6 +136,7 @@ class Counter(commands.Cog):
             await _show_counter(ctx, "Lieferando")
         else:
             await _inc_counter(ctx, "Lieferando", 25)
+            self.bot.Settings = _read_json('Settings.json')
 
     @commands.slash_command(name="babyblase", description="Erhöht den Pipicounter")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -140,6 +145,7 @@ class Counter(commands.Cog):
             await _show_counter(ctx, "Pipi")
         else:
             await _inc_counter(ctx, "Pipi", 1)
+            self.bot.Settings = _read_json('Settings.json')
 
     @commands.slash_command(name="dotoluck", description="Erhöht den Dotoluckcounter")
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -148,6 +154,7 @@ class Counter(commands.Cog):
             await _show_counter(ctx, "Luck")
         else:
             await _inc_counter(ctx, "Luck", 1)
+            self.bot.Settings = _read_json('Settings.json')
 
     # @_counter.error
     # async def _counter_error(self, ctx, error):
