@@ -132,12 +132,15 @@ async def TwitchLiveCheck():
                     AllTwitchdata = AllTwitchdata["data"]
 
         # No one is live
-        if AllTwitchdata == []:
+        if AllTwitchdata == [] and rUserData.status == 200:
             for USER in TwitchJSON['Settings']['TwitchUser'].keys():
                 if TwitchJSON['Settings']['TwitchUser'][USER]['live']:
                     TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
                     _write_json('Settings.json', TwitchJSON)
                     bot.Settings = TwitchJSON
+        
+        elif AllTwitchdata and rUserData.status != 200:
+            pass
 
         # Someone is live
         else:
