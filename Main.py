@@ -139,7 +139,7 @@ async def TwitchLiveCheck():
                     _write_json('Settings.json', TwitchJSON)
                     bot.Settings = TwitchJSON
         
-        elif AllTwitchdata and rUserData.status != 200:
+        elif AllTwitchdata is None and rUserData.status != 200:
             pass
 
         # Someone is live
