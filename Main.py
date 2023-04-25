@@ -138,7 +138,7 @@ async def TwitchLiveCheck():
                     TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
                     _write_json('Settings.json', TwitchJSON)
                     bot.Settings = TwitchJSON
-        
+
         elif AllTwitchdata is None and rUserData.status != 200:
             pass
 
@@ -287,8 +287,9 @@ async def GameReminder():
         _write_json('Settings.json', groups)
         bot.Settings = groups
 
-
 # this needs a fix discussed in https://github.com/Pycord-Development/pycord/issues/1990
+
+
 @tasks.loop(time=datetime.time(hour=17, minute=0, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def TrashReminder():
     """
@@ -468,7 +469,8 @@ async def GetFreeEpicGames():
                                             "Free Epic Games were sent to Schnenk.")
 
                                 except json.decoder.JSONDecodeError:
-                                    logging.error("ERROR: Something bad happend with the json decoding! The Free EpicGames list was created again!", exc_info=True)
+                                    logging.error(
+                                        "ERROR: Something bad happend with the json decoding! The Free EpicGames list was created again!", exc_info=True)
                                     FreeGamesList['Settings']['FreeEpicGames'] = {
                                     }
                                     FreeGamesList['Settings']['FreeEpicGames'].update(
@@ -520,6 +522,8 @@ async def _get_free_steamgames():
                                         SteamGameTitle)
                                     _write_json('Settings.json', FreeSteamList)
                                     bot.Settings = FreeSteamList
+                                    logging.info(
+                                        "Overwritten by Free Steam Game")
                                     # Hack for missing char mapping in logging module
                                     SteamGameTitle = SteamGameTitle.replace(
                                         "\uFF1A", ": ")
@@ -533,8 +537,8 @@ async def _get_free_steamgames():
                                 ExpiredGame)
                             logging.info(
                                 f"Removed {ExpiredGame} from free steam game list since it expired.")
-                        _write_json('Settings.json', FreeSteamList)
-                        bot.Settings = FreeSteamList
+                            _write_json('Settings.json', FreeSteamList)
+                            bot.Settings = FreeSteamList
 
 
 @tasks.loop(minutes=20)
@@ -585,8 +589,8 @@ async def _get_free_goggames():
                                 FreeGameEntry)
                             logging.info(
                                 f"{FreeGameEntry} removed from free GOG Games, since it expired!")
-                        _write_json('Settings.json', FreeGOGList)
-                        bot.Settings = FreeGOGList
+                            _write_json('Settings.json', FreeGOGList)
+                            bot.Settings = FreeGOGList
 
 
 ### Bot Events ###
