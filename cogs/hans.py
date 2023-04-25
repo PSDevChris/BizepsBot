@@ -61,14 +61,17 @@ class HansTaskList(commands.Cog):
             await ctx.respond(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
         elif task:
             if "```" not in task:
-                AllHansTasks = self.bot.Settings
-                AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
-                _write_json('Settings.json', AllHansTasks)
-                self.bot.Settings = AllHansTasks
-                self.HansTasks.append(task)
-                logging.info(
-                    f"{ctx.author} has added {task} to Hans tasks.")
-                await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
+                if task not in self.bot.Settings['Settings']['HansTasks']['Tasks']:
+                    AllHansTasks = self.bot.Settings
+                    AllHansTasks['Settings']['HansTasks']['Tasks'].append(task)
+                    _write_json('Settings.json', AllHansTasks)
+                    self.bot.Settings = AllHansTasks
+                    self.HansTasks.append(task)
+                    logging.info(
+                        f"{ctx.author} has added {task} to Hans tasks.")
+                    await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
+                else:
+                    await ctx.respond("Diese Aufgabe hat Hans bereits. Er macht Dinge ungern doppelt.")
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
         else:
