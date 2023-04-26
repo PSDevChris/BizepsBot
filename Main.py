@@ -522,8 +522,6 @@ async def _get_free_steamgames():
                                         SteamGameTitle)
                                     _write_json('Settings.json', FreeSteamList)
                                     bot.Settings = FreeSteamList
-                                    logging.info(
-                                        "Overwritten by Free Steam Game")
                                     # Hack for missing char mapping in logging module
                                     SteamGameTitle = SteamGameTitle.replace(
                                         "\uFF1A", ": ")
