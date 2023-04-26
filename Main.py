@@ -351,8 +351,8 @@ async def GetFreeEpicGames():
             FreeGamesList['Settings']['FreeEpicGames'].pop(EndedOffer)
             logging.info(
                 f"{EndedOffer} removed from free Epic Games, since it expired!")
-        _write_json('Settings.json', FreeGamesList)
-        bot.Settings = FreeGamesList
+            _write_json('Settings.json', FreeGamesList)
+            bot.Settings = FreeGamesList
 
     EpicStoreURL = 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
 
