@@ -26,6 +26,29 @@ class TwitchButton(discord.ui.Button):
                 f"{user} removed himself from the alertgroup of {role.name}.")
 
 
+class FreeStuffButton(discord.ui.Button):
+
+    def __init__(self, label, customid):
+        super().__init__(label=label, custom_id=customid, style=discord.ButtonStyle.green)
+
+    async def callback(self, interaction: discord.interactions.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        stuff = self.custom_id.replace('Button', '')
+        user = interaction.user
+        role = discord.utils.get(
+            interaction.guild.roles, name=f"Free {stuff}Alert")
+        if role not in user.roles:
+            await interaction.user.add_roles(role)
+            await interaction.followup.send(f"Du wurdest der Rolle {role.name} hinzugefügt.", ephemeral=True)
+            logging.info(
+                f"{user} added himself to the alertgroup for {role.name}.")
+        else:
+            await interaction.user.remove_roles(role)
+            await interaction.followup.send(f"Du wurdest aus der Rolle {role.name} entfernt.", ephemeral=True)
+            logging.info(
+                f"{user} removed himself from the alertgroup of {role.name}.")
+
+
 class Subscriber(commands.Cog):
 
     def __init__(self, bot):
@@ -45,14 +68,26 @@ class Subscriber(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _subscribe(self, ctx):
 
-        TwitchUserView = discord.ui.View()
+        SubscribeUserView = discord.ui.View()
         Settings = _read_json('Settings.json')
         for twitchuser in sorted(Settings['Settings']['TwitchUser'].keys()):
             twitchuserbutton = TwitchButton(
                 f"{twitchuser} abonnieren", f"{twitchuser}Button")
-            TwitchUserView.add_item(twitchuserbutton)
+            SubscribeUserView.add_item(twitchuserbutton)
+        FreeSteamButton = FreeStuffButton(
+            "Gratis Steam-Games abonnieren", f"Steam Game Button")
+        FreeEpicButton = FreeStuffButton(
+            "Gratis Epic-Games abonnieren", f"Epic Game Button")
+        FreeGOGButton = FreeStuffButton(
+            "Gratis GOG-Games abonnieren", f"GOG Game Button")
+        FreeOWLButton = FreeStuffButton(
+            "Gratis OWL-Tokens abonnieren", f"OWL Tokens Button")
+        SubscribeUserView.add_item(FreeSteamButton)
+        SubscribeUserView.add_item(FreeEpicButton)
+        SubscribeUserView.add_item(FreeGOGButton)
+        SubscribeUserView.add_item(FreeOWLButton)
 
-        await ctx.respond(view=TwitchUserView, ephemeral=True)
+        await ctx.respond(view=SubscribeUserView, ephemeral=True)
 
     @_subscribe.error
     async def _subscribe_error(self, ctx, error):

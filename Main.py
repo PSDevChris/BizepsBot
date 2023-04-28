@@ -459,7 +459,11 @@ async def GetFreeEpicGames():
                                             with open(f'epic/{EpicImagePath}', 'wb') as write_file:
                                                 write_file.write(
                                                     EpicImage)
-                                        await bot.get_channel(539553203570606090).send(embed=EpicEmbed)
+                                        guild = bot.get_guild(
+                                            539546796473712650)
+                                        EpicRole = discord.utils.get(
+                                            guild.roles, name="Free Epic Game Alert")
+                                        await bot.get_channel(539553203570606090).send(content=f"{EpicRole.mention}", embed=EpicEmbed)
                                         logging.info(
                                             f"{FreeGame['title']} was added to free Epic Games!")
                                         # Send Games to Schnenk
@@ -517,7 +521,10 @@ async def _get_free_steamgames():
                                     SteamEmbed.set_image(
                                         url=f"{SteamImageURL}")
                                     SteamEmbed.set_footer(text="Bizeps_Bot")
-                                    await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
+                                    guild = bot.get_guild(539546796473712650)
+                                    SteamRole = discord.utils.get(
+                                        guild.roles, name="Free Steam Game Alert")
+                                    await bot.get_channel(539553203570606090).send(content=f"{SteamRole.mention}", embed=SteamEmbed)
                                     FreeSteamList['Settings']['FreeSteamGames'].append(
                                         SteamGameTitle)
                                     _write_json('Settings.json', FreeSteamList)
@@ -574,7 +581,10 @@ async def _get_free_goggames():
                             GOGEmbed.set_image(
                                 url=f"{GOGImageURL}")
                             GOGEmbed.set_footer(text="Bizeps_Bot")
-                            await bot.get_channel(539553203570606090).send(embed=GOGEmbed)
+                            guild = bot.get_guild(539546796473712650)
+                            GOGRole = discord.utils.get(
+                                guild.roles, name="Free GOG Game Alert")
+                            await bot.get_channel(539553203570606090).send(content=f"{GOGRole.mention}", embed=GOGEmbed)
                             FreeGOGList['Settings']['FreeGOGGames'].append(
                                 GOGGameTitle)
                             _write_json('Settings.json', FreeGOGList)
