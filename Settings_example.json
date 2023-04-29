@@ -4,7 +4,7 @@
             "dota_joker": {
                 "live": false,
                 "custom_msg": "Der Bizeps brennt wieder!\ud83d\udd25"
-			}
+            }
         },
         "Groups": {},
         "Counter": {
@@ -41,6 +41,10 @@
         },
         "FreeSteamGames": [
             "World of Warships \u2014 Starter Pack: Dreadnought"
-        ]
+        ],
+        "FreeGOGGames": [
+            "Under The Moon"
+        ],
+        "LiveOWLMatches": []
     }
 }
