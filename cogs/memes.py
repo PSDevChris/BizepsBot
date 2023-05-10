@@ -64,7 +64,7 @@ class Memes(commands.Cog):
                     else:
                         await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
                 else:
-                    ctx.followup.send(
+                    await ctx.followup.send(
                         "Das Meme stammt von dir, jemand anderes muss es in die Sammlung aufnehmen.")
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
@@ -92,7 +92,7 @@ class Memes(commands.Cog):
                     else:
                         await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
                 else:
-                    ctx.followup.send(
+                    await ctx.followup.send(
                         "Das Meme stammt von dir, jemand anderes muss es in die Sammlung aufnehmen.")
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
@@ -138,7 +138,7 @@ class Memes(commands.Cog):
                     else:
                         await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
                 else:
-                    ctx.followup.send(
+                    await ctx.followup.send(
                         "Das Mittwoch-Meme stammt von dir, jemand anderes muss es in die Sammlung aufnehmen.")
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
@@ -165,7 +165,7 @@ class Memes(commands.Cog):
                     else:
                         await ctx.followup.send("Bitte das Meme als Anhang einreichen.")
                 else:
-                    ctx.followup.send(
+                    await ctx.followup.send(
                         "Das Mittwoch-Meme stammt von dir, jemand anderes muss es in die Sammlung aufnehmen.")
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
