@@ -48,7 +48,7 @@ async def _show_counter(invoker: discord.ApplicationContext, name: str):
         case ("Pun" | "pun"):
             InvokedVar = "Puns"
             ReplyTxt = "Es gab bereits ###REPLACE### Gagfeuerwerke im Discord!"
-        case ("Salz" | "Salz"):
+        case ("Salz" | "salz"):
             InvokedVar = "Salz"
             ReplyTxt = "Bisher wurden ###REPLACE### Salzstreuer geleert!<:salt:826091230156161045>"
         case ("Leak" | "leak"):
@@ -97,9 +97,9 @@ class Counter(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _puncounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
         if option == "show":
-            await _show_counter(ctx, "Pun")
+            await _show_counter(ctx, "Puns")
         else:
-            await _inc_counter(ctx, "Pun", 1)
+            await _inc_counter(ctx, "Puns", 1)
             self.bot.Settings = _read_json('Settings.json')
 
     @commands.slash_command(name="leak", description="Erhöht den Leakcounter")
