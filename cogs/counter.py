@@ -18,7 +18,7 @@ async def _inc_counter(invoker: discord.ApplicationContext, name: str, incnum: i
         data['Settings']['Counter']['LastAboAt'] = NewResult
     else:
         match (name):
-            case ("Pun" | "pun"):
+            case ("Puns" | "puns"):
                 ReplyTxt = "Es wurde bereits ###REPLACE### Mal ein Gagfeuerwerk gezündet!"
             case ("Salz" | "salz"):
                 ReplyTxt = "Man konnte sich schon ###REPLACE### Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>"
