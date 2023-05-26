@@ -498,6 +498,7 @@ async def _get_free_steamgames():
                     SteamResult = SteamHTML.find_all(
                         "a", class_="search_result_row ds_collapse_flag")
                     if SteamResult:
+                        NotifiedUsers = False  # Check if we already pinged the role
                         for Result in SteamResult:
                             SteamGameTitle = Result.find(class_="title").text
                             if SteamGameTitle:
@@ -506,7 +507,6 @@ async def _get_free_steamgames():
                                     SteamGameURL = Result['href']
                                     ProdID = Result['data-ds-appid']
                                     ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
-
                                     SteamEmbed = discord.Embed(title=f"Neues Gratis Steam Game: {SteamGameTitle}!\r\n\n", colour=discord.Colour(
                                         0x6c6c6c), timestamp=datetime.datetime.now())
                                     SteamEmbed.set_thumbnail(
@@ -521,10 +521,15 @@ async def _get_free_steamgames():
                                     SteamEmbed.set_image(
                                         url=f"{SteamImageURL}")
                                     SteamEmbed.set_footer(text="Bizeps_Bot")
-                                    guild = bot.get_guild(539546796473712650)
-                                    SteamRole = discord.utils.get(
-                                        guild.roles, name="Free Steam Game Alert")
-                                    await bot.get_channel(539553203570606090).send(content=f"{SteamRole.mention}", embed=SteamEmbed)
+                                    if NotifiedUsers is False:
+                                        guild = bot.get_guild(
+                                            539546796473712650)
+                                        SteamRole = discord.utils.get(
+                                            guild.roles, name="Free Steam Game Alert")
+                                        await bot.get_channel(539553203570606090).send(content=f"{SteamRole.mention}", embed=SteamEmbed)
+                                        NotifiedUsers = True
+                                    else:
+                                        await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
                                     FreeSteamList['Settings']['FreeSteamGames'].append(
                                         SteamGameTitle)
                                     _write_json('Settings.json', FreeSteamList)
