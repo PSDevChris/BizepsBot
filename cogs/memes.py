@@ -13,7 +13,7 @@ def RefreshMemes():
     # Easiest way to walk was with a replace
     for MemeFolder, MemberFolder, Files in os.walk(os.getcwd() + "/memes/"):
         for FileName in Files:
-            if FileName.endswith(('gif', 'jpg', 'png', 'jpeg')):
+            if FileName.endswith(('gif', 'jpg', 'png', 'jpeg', 'webp')):
                 AllFiles.append(f"{MemeFolder}/{FileName}")
     logging.info("Refreshed Memelist.")
     return AllFiles
@@ -51,7 +51,7 @@ class Memes(commands.Cog):
                     NumberOfFiles = len(NumberOfMemes)
                     if LastMessages[1].attachments:
                         for index, meme in enumerate(LastMessages[1].attachments):
-                            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
+                            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg', 'webp')) and meme.size <= 8000000:
                                 await meme.save(f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                                 AllFiles.append(
                                     f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
@@ -79,7 +79,7 @@ class Memes(commands.Cog):
                     NumberOfFiles = len(NumberOfMemes)
                     if Message.attachments:
                         for index, meme in enumerate(Message.attachments):
-                            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
+                            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg', 'webp')) and meme.size <= 8000000:
                                 await meme.save(f"{os.getcwd() + '/memes/'}{Message.author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                                 await ctx.followup.send("Dieses spicy Meme wurde eingesammelt.", file=await meme.to_file())
                                 AllFiles.append(
@@ -125,7 +125,7 @@ class Memes(commands.Cog):
                     NumberOfFiles = len(NumberOfMemes)
                     if LastMessages[1].attachments:
                         for index, meme in enumerate(LastMessages[1].attachments):
-                            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
+                            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg', 'webp')) and meme.size <= 8000000:
                                 await meme.save(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                                 AllFiles.append(
                                     f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
@@ -152,7 +152,7 @@ class Memes(commands.Cog):
                     NumberOfFiles = len(NumberOfMemes)
                     if Message.attachments:
                         for index, meme in enumerate(Message.attachments):
-                            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg')) and meme.size <= 8000000:
+                            if meme.filename.lower().endswith(('gif', 'jpg', 'png', 'jpeg', 'webp')) and meme.size <= 8000000:
                                 await meme.save(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{meme.filename}")
                                 logging.info(
                                     f"{ctx.author} has added the wednesday meme {meme.filename}.")
