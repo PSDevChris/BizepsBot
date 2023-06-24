@@ -33,7 +33,7 @@ class Fun(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _blamedevs(self, ctx):
         await ctx.defer()
-        await ctx.followup.send(file=discord.File('memes/josch700#3680/josch.png'))
+        await ctx.followup.send(file=discord.File('memes/josch700#0/josch.png'))
         logging.info(f"{ctx.author} blamed the devs.")
 
     @commands.slash_command(name="turnup", description="Was für Saft?", brief="Was für Saft?")
