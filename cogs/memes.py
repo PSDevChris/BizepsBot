@@ -37,7 +37,7 @@ class Memes(commands.Cog):
     @commands.slash_command(name="meme", description="Gibt ein Zufallsmeme aus, kann auch Memes adden")
     @commands.cooldown(2, 180, commands.BucketType.user)
     @commands.has_permissions(attach_files=True)
-    async def _memearchiv(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["meme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
+    async def _memearchiv(self, ctx, add: discord.Option(str, "Hinzufügen des zuletzt geposteten Memes ", choices=["meme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per collect und Message ID", required=False)):
         await ctx.defer()
         if add:
             LastMessages = await ctx.channel.history(limit=2).flatten()
@@ -114,7 +114,7 @@ class Memes(commands.Cog):
 
     @commands.slash_command(name="mittwoch", description="Gibt ein Mittwochmeme aus, meine Kerle")
     @commands.cooldown(2, 180, commands.BucketType.user)
-    async def _wedmeme(self, ctx, add: discord.Option(str, "Hinzufügen von Memes per add oder collect", choices=["mittwochmeme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per add oder collect", required=False)):
+    async def _wedmeme(self, ctx, add: discord.Option(str, "Hinzufügen des zuletzt geposteten Mittwochmemes per add", choices=["mittwochmeme"], required=False), collect: discord.Option(commands.MessageConverter, "Hinzufügen eines Mittwochmemes per collect und Message ID", required=False)):
         if add:
             await ctx.defer()
             LastMessages = await ctx.channel.history(limit=2).flatten()
