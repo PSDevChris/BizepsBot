@@ -29,10 +29,8 @@ class Management(commands.Cog):
     @commands.has_role("Admin")
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def _add_dotojoke(self, ctx, joke: Option(str, "Besagter Witz", required=True)):
-        DotoJokesJSON = _read_json('Settings.json')
-        DotoJokesJSON['Settings']['DotoJokes']['Jokes'].append(joke)
-        _write_json('Settings.json', DotoJokesJSON)
-        self.bot.Settings = DotoJokesJSON
+        self.bot.Settings['Settings']['DotoJokes']['Jokes'].append(joke)
+        _write_json('Settings.json', self.bot.Settings)
         self.bot.DotoJokes.append(joke)
         await ctx.respond(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
 
@@ -51,7 +49,6 @@ class Management(commands.Cog):
         """
         Zeigt die letzten 10 Einträge des Logs.
         """
-
         AllLogFiles = next(os.walk("logs/"))[2]
         SortedLogFiles = sorted(AllLogFiles)
         LatestLogFile = SortedLogFiles[-1]
@@ -68,11 +65,10 @@ class Management(commands.Cog):
     @commands.has_any_role("Admin", "Moderatoren")
     async def _banuser(self, ctx, user: discord.Member):
         UserString = str(user)
-        BannedUserJSON = _read_json('Settings.json')
-        BannedUsers = BannedUserJSON['Settings']['BannedUsers']
+        BannedUsers = self.bot.Settings['Settings']['BannedUsers']
         if UserString not in BannedUsers:
             BannedUsers.append(UserString)
-            _write_json('Settings.json', BannedUserJSON)
+            _write_json('Settings.json', self.bot.Settings)
             await ctx.respond(f"User {UserString} wurde für Befehle gebannt.")
             logging.info(f"User {UserString} was banned from using commands.")
             _get_banned_users()
@@ -84,11 +80,10 @@ class Management(commands.Cog):
     @commands.has_any_role("Admin", "Moderatoren")
     async def _unbanuser(self, ctx, user: discord.Member):
         UserString = str(user)
-        BannedUserJSON = _read_json('Settings.json')
-        BannedUsers = BannedUserJSON['Settings']['BannedUsers']
+        BannedUsers = self.bot.Settings['Settings']['BannedUsers']
         if UserString in BannedUsers:
             BannedUsers.remove(UserString)
-            _write_json('Settings.json', BannedUserJSON)
+            _write_json('Settings.json', self.bot.Settings)
             await ctx.respond(f"Der User {UserString} wurde entbannt.")
             logging.info(f"User {UserString} was unbanned.")
             _get_banned_users()
@@ -105,15 +100,14 @@ class Management(commands.Cog):
     async def _addtotwitchlist(self, ctx, member: str, custommsg: str):
         try:
             await ctx.defer()
-            TwitchUser = _read_json('Settings.json')
             TwitchMember = {
                 f"{member.lower()}": {
                     "live": False,
                     "custom_msg": f"{custommsg}"
                 }
             }
-            TwitchUser['Settings']['TwitchUser'].update(TwitchMember)
-            _write_json('Settings.json', TwitchUser)
+            self.bot.Settings['Settings']['TwitchUser'].update(TwitchMember)
+            _write_json('Settings.json', self.bot.Settings)
             await ctx.followup.send(f"{member} zur Twitchliste hinzugefügt! Folgender Satz wurde hinterlegt: '{custommsg}'")
             logging.info(
                 f"User {member} was added to twitchlist with custom message: '{custommsg}'")
@@ -128,9 +122,9 @@ class Management(commands.Cog):
     @commands.has_role("Admin")
     async def _deltwitchmember(self, ctx: commands.context.Context, member: str):
         try:
-            TwitchUser = _read_json('Settings.json')
-            TwitchUser['Settings']['TwitchUser'].pop(f"{member.lower()}")
-            _write_json('Settings.json', TwitchUser)
+            self.bot.Settings['Settings']['TwitchUser'].pop(
+                f"{member.lower()}")
+            _write_json('Settings.json', self.bot.Settings)
             twitchuserrole = discord.utils.get(
                 ctx.guild.roles, name=f"{member.lower()} Alert")
             if twitchuserrole is not None:  # if it is None role is already gone
@@ -148,9 +142,8 @@ class Management(commands.Cog):
     @commands.cooldown(3, 900, commands.BucketType.user)
     @commands.has_role("Admin")
     async def _showtwitchmembers(self, ctx):
-        TwitchSettings = _read_json('Settings.json')
         TwitchUserString = "\n".join(
-            TwitchSettings["Settings"]["TwitchUser"].keys())
+            self.bot.Settings["Settings"]["TwitchUser"].keys())
         await ctx.defer()
         await ctx.followup.send(f"Folgende User sind hinterlegt:\n```{TwitchUserString}```")
         logging.info(f"Twitchlist was posted.")

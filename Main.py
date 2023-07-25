@@ -113,9 +113,8 @@ async def TwitchLiveCheck():
     if datetime.datetime.timestamp(datetime.datetime.now()) > TWITCH_TOKEN_EXPIRES:
         RequestTwitchToken()
 
-    TwitchJSON = _read_json('Settings.json')
     API_Call = io.StringIO()
-    for index, USER in enumerate(TwitchJSON['Settings']['TwitchUser'].keys()):
+    for index, USER in enumerate(bot.Settings['Settings']['TwitchUser'].keys()):
         if index == 0:
             API_Call.write(f"user_login={USER}")
         else:
@@ -133,18 +132,17 @@ async def TwitchLiveCheck():
 
         # No one is live
         if AllTwitchdata == [] and rUserData.status == 200:
-            for USER in TwitchJSON['Settings']['TwitchUser'].keys():
-                if TwitchJSON['Settings']['TwitchUser'][USER]['live']:
-                    TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
-                    _write_json('Settings.json', TwitchJSON)
-                    bot.Settings = TwitchJSON
+            for USER in bot.Settings['Settings']['TwitchUser'].keys():
+                if bot.Settings['Settings']['TwitchUser'][USER]['live']:
+                    bot.Settings['Settings']['TwitchUser'][USER]['live'] = False
+                    _write_json('Settings.json', bot.Settings)
 
         elif AllTwitchdata is None and rUserData.status != 200:
             pass
 
         # Someone is live
         else:
-            for USER in TwitchJSON['Settings']['TwitchUser'].keys():
+            for USER in bot.Settings['Settings']['TwitchUser'].keys():
 
                 # Create Alertgroups if missing
                 twitchuserrole = discord.utils.get(
@@ -156,19 +154,18 @@ async def TwitchLiveCheck():
                     twitchuserrole = discord.utils.get(
                         guild.roles, name=f"{USER} Alert")
 
-                livestate = TwitchJSON['Settings']['TwitchUser'][f'{USER}']['live']
+                livestate = bot.Settings['Settings']['TwitchUser'][f'{USER}']['live']
 
                 data = list(
                     filter(lambda x: x["user_login"] == f"{USER}", AllTwitchdata))
                 if data == []:
                     if livestate:
-                        TwitchJSON['Settings']['TwitchUser'][USER]['live'] = False
-                        _write_json('Settings.json', TwitchJSON)
-                        bot.Settings = TwitchJSON
+                        bot.Settings['Settings']['TwitchUser'][USER]['live'] = False
+                        _write_json('Settings.json', bot.Settings)
                     continue
                 else:
                     data = data[0]
-                    custommsg = TwitchJSON['Settings'][
+                    custommsg = bot.Settings['Settings'][
                         'TwitchUser'][f'{USER}']['custom_msg']
                     if livestate is False and data['user_login']:
                         # User went live
@@ -246,10 +243,9 @@ async def TwitchLiveCheck():
                                 logging.info(
                                     f"{Displayname} went live on Twitch! Twitch Notification sent!")
 
-                        TwitchJSON['Settings']['TwitchUser'][USER]['live'] = True
+                        bot.Settings['Settings']['TwitchUser'][USER]['live'] = True
                         _write_json(
-                            'Settings.json', TwitchJSON)
-                        bot.Settings = TwitchJSON
+                            'Settings.json', bot.Settings)
     except IndexError:
         # Username does not exist or Username is wrong, greetings to Schnabeltier
         logging.error("ERROR: ", exc_info=True)
@@ -269,23 +265,21 @@ async def GameReminder():
     """
 
     CurrentTime = datetime.datetime.timestamp(datetime.datetime.now())
-    groups = bot.Settings
     FoundList = []
-    for reminder in groups["Settings"]["Groups"].keys():
-        if CurrentTime > groups["Settings"]["Groups"][f"{reminder}"]["time"]:
+    for reminder in bot.Settings["Settings"]["Groups"].keys():
+        if CurrentTime > bot.Settings["Settings"]["Groups"][f"{reminder}"]["time"]:
             Remindchannel = bot.get_channel(
-                groups["Settings"]["Groups"][f"{reminder}"]["id"])
+                bot.Settings["Settings"]["Groups"][f"{reminder}"]["id"])
             ReminderMembers = ", ".join(
-                groups["Settings"]["Groups"][f"{reminder}"]["members"])
-            ReminderTheme = groups["Settings"]["Groups"][f"{reminder}"]["theme"]
+                bot.Settings["Settings"]["Groups"][f"{reminder}"]["members"])
+            ReminderTheme = bot.Settings["Settings"]["Groups"][f"{reminder}"]["theme"]
             await Remindchannel.send(f" Es geht los mit {ReminderTheme}! Mit dabei sind: {ReminderMembers}")
             logging.info(f"Meeting in {reminder} started!")
             FoundList.append(reminder)
     if FoundList:
         for reminder in FoundList:
-            groups["Settings"]["Groups"].pop(f'{reminder}')
-        _write_json('Settings.json', groups)
-        bot.Settings = groups
+            bot.Settings["Settings"]["Groups"].pop(f'{reminder}')
+        _write_json('Settings.json', bot.Settings)
 
 # this needs a fix discussed in https://github.com/Pycord-Development/pycord/issues/1990
 
@@ -334,25 +328,22 @@ async def GetFreeEpicGames():
 
     AllEpicFiles = next(os.walk("epic/"))[2]
     NumberOfEpicFiles = len(AllEpicFiles)
-
-    FreeGamesList = _read_json('Settings.json')
     CurrentTime = datetime.datetime.now(timezone.utc)
     EndedOffers = []
 
-    for FreeGameEntry in FreeGamesList['Settings']['FreeEpicGames'].keys():
+    for FreeGameEntry in bot.Settings['Settings']['FreeEpicGames'].keys():
 
         GameEndDate = parser.parse(
-            FreeGamesList['Settings']['FreeEpicGames'][f"{FreeGameEntry}"]["endDate"])
+            bot.Settings['Settings']['FreeEpicGames'][f"{FreeGameEntry}"]["endDate"])
         if CurrentTime > GameEndDate:
             EndedOffers.append(FreeGameEntry)
 
     if EndedOffers:
         for EndedOffer in EndedOffers:
-            FreeGamesList['Settings']['FreeEpicGames'].pop(EndedOffer)
+            bot.Settings['Settings']['FreeEpicGames'].pop(EndedOffer)
             logging.info(
                 f"{EndedOffer} removed from free Epic Games, since it expired!")
-            _write_json('Settings.json', FreeGamesList)
-            bot.Settings = FreeGamesList
+            _write_json('Settings.json', bot.Settings)
 
     EpicStoreURL = 'https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=de&country=DE&allowCountries=DE'
 
@@ -384,14 +375,13 @@ async def GetFreeEpicGames():
 
                                 try:
 
-                                    if FreeGame['title'] in FreeGamesList['Settings']['FreeEpicGames'].keys():
+                                    if FreeGame['title'] in bot.Settings['Settings']['FreeEpicGames'].keys():
                                         pass
                                     else:
-                                        FreeGamesList['Settings']['FreeEpicGames'].update(
+                                        bot.Settings['Settings']['FreeEpicGames'].update(
                                             FreeGameObject)
                                         _write_json(
-                                            'Settings.json', FreeGamesList)
-                                        bot.Settings = FreeGamesList
+                                            'Settings.json', bot.Settings)
                                         EndOfOffer = offer['promotionalOffers'][0]['endDate']
                                         EndDateOfOffer = parser.parse(
                                             EndOfOffer).date()
@@ -475,19 +465,17 @@ async def GetFreeEpicGames():
                                 except json.decoder.JSONDecodeError:
                                     logging.error(
                                         "ERROR: Something bad happend with the json decoding! The Free EpicGames list was created again!", exc_info=True)
-                                    FreeGamesList['Settings']['FreeEpicGames'] = {
+                                    bot.Settings['Settings']['FreeEpicGames'] = {
                                     }
-                                    FreeGamesList['Settings']['FreeEpicGames'].update(
+                                    bot.Settings['Settings']['FreeEpicGames'].update(
                                         FreeGameObject)
                                     _write_json(
-                                        'Settings.json', FreeGamesList)
-                                    bot.Settings = FreeGamesList
+                                        'Settings.json', bot.Settings)
 
 
 @tasks.loop(minutes=15)
 async def _get_free_steamgames():
     FreeGameTitleList = []
-    FreeSteamList = _read_json('Settings.json')
     SteamURL = "https://store.steampowered.com/search/?maxprice=free&specials=1"
     async with aiohttp.ClientSession() as SteamSession:
         async with SteamSession.get(SteamURL) as SteamReq:
@@ -503,7 +491,7 @@ async def _get_free_steamgames():
                             SteamGameTitle = Result.find(class_="title").text
                             if SteamGameTitle:
                                 FreeGameTitleList.append(SteamGameTitle)
-                                if SteamGameTitle not in FreeSteamList['Settings']['FreeSteamGames']:
+                                if SteamGameTitle not in bot.Settings['Settings']['FreeSteamGames']:
                                     SteamGameURL = Result['href']
                                     ProdID = Result['data-ds-appid']
                                     ImageSrc = f"https://cdn.akamai.steamstatic.com/steam/apps/{ProdID}/header.jpg"
@@ -530,31 +518,27 @@ async def _get_free_steamgames():
                                         NotifiedUsers = True
                                     else:
                                         await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
-                                    FreeSteamList['Settings']['FreeSteamGames'].append(
+                                    bot.Settings['Settings']['FreeSteamGames'].append(
                                         SteamGameTitle)
-                                    _write_json('Settings.json', FreeSteamList)
-                                    bot.Settings = FreeSteamList
+                                    _write_json('Settings.json', bot.Settings)
                                     # Hack for missing char mapping in logging module
                                     SteamGameTitle = SteamGameTitle.replace(
                                         "\uFF1A", ": ")
                                     logging.info(
                                         f"{SteamGameTitle} was added to the free steam game list.")
 
-                        ExpiredGames = set(FreeSteamList['Settings']['FreeSteamGames']).difference(
+                        ExpiredGames = set(bot.Settings['Settings']['FreeSteamGames']).difference(
                             FreeGameTitleList)
                         for ExpiredGame in ExpiredGames:
-                            FreeSteamList['Settings']['FreeSteamGames'].remove(
+                            bot.Settings['Settings']['FreeSteamGames'].remove(
                                 ExpiredGame)
                             logging.info(
                                 f"Removed {ExpiredGame} from free steam game list since it expired.")
-                            _write_json('Settings.json', FreeSteamList)
-                            bot.Settings = FreeSteamList
+                            _write_json('Settings.json', bot.Settings)
 
 
 @tasks.loop(minutes=20)
 async def _get_free_goggames():
-    FreeGOGList = _read_json('Settings.json')
-
     GOGURL = "https://www.gog.com/"
     async with aiohttp.ClientSession() as GOGSession:
         async with GOGSession.get(GOGURL) as GOGReq:
@@ -570,7 +554,7 @@ async def _get_free_goggames():
                             'span', 'giveaway-banner__title')
                         GOGGameTitle = " ".join(
                             GOGGameTitleBanner[-1].text.split()[1:])
-                        if GOGGameTitle not in FreeGOGList['Settings']['FreeGOGGames']:
+                        if GOGGameTitle not in bot.Settings['Settings']['FreeGOGGames']:
                             GOGImageURL = GOGPage[0].find_all(
                                 'source', attrs={'srcset': True})
                             GOGImageURL = f"http:{GOGImageURL[-1]['srcset'].split(',')[-1].split()[0]}"
@@ -590,20 +574,18 @@ async def _get_free_goggames():
                             GOGRole = discord.utils.get(
                                 guild.roles, name="Free GOG Game Alert")
                             await bot.get_channel(539553203570606090).send(content=f"{GOGRole.mention}", embed=GOGEmbed)
-                            FreeGOGList['Settings']['FreeGOGGames'].append(
+                            bot.Settings['Settings']['FreeGOGGames'].append(
                                 GOGGameTitle)
-                            _write_json('Settings.json', FreeGOGList)
-                            bot.Settings = FreeGOGList
+                            _write_json('Settings.json', bot.Settings)
                             logging.info(
                                 f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
                     else:
-                        for FreeGameEntry in FreeGOGList['Settings']['FreeGOGGames']:
-                            FreeGOGList['Settings']['FreeGOGGames'].remove(
+                        for FreeGameEntry in bot.Settings['Settings']['FreeGOGGames']:
+                            bot.Settings['Settings']['FreeGOGGames'].remove(
                                 FreeGameEntry)
                             logging.info(
                                 f"{FreeGameEntry} removed from free GOG Games, since it expired!")
-                            _write_json('Settings.json', FreeGOGList)
-                            bot.Settings = FreeGOGList
+                            _write_json('Settings.json', bot.Settings)
 
 
 ### Bot Events ###

@@ -69,8 +69,7 @@ class Subscriber(commands.Cog):
     async def _subscribe(self, ctx):
 
         SubscribeUserView = discord.ui.View()
-        Settings = _read_json('Settings.json')
-        for twitchuser in sorted(Settings['Settings']['TwitchUser'].keys()):
+        for twitchuser in sorted(self.bot.Settings['Settings']['TwitchUser'].keys()):
             twitchuserbutton = TwitchButton(
                 f"{twitchuser} abonnieren", f"{twitchuser}Button")
             SubscribeUserView.add_item(twitchuserbutton)
