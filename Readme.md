@@ -9,7 +9,7 @@ Since discord.py was discontinued, the bot was ported to py-cord and slash comma
 ## About the bot ## 
 
 Most of the settings are configurable via the Settings.json, an example is provided.  
-There are a few hardcoded checks, if you want your bot to work in every channel, you can just delete them.  
+There are a few hardcoded IDs, you can just delete or replace them.  
 For some functionality like Twitch notifications, tokens are needed, this is also provided via an example file.  
 Some stuff like the trash reminder is only for my personal use, the functionality is pretty simple but you will need to provide the file yourself.  
 This is by all means a **fun** project and should not be considered for production environments.
@@ -22,6 +22,4 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 ## To Dos ## 
 
 + Split Messages over 2k chars | Needs to be implemented as func
-+ Add Memes via URL
-+ Load Settingsfile global and once | Started
 + Add ESA Marathon Schedule
