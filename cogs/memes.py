@@ -90,6 +90,8 @@ class Memes(commands.Cog):
                                                     write_file.write(
                                                         meme_bimage)
                                                 await ctx.followup.send("Meme hinzugefügt.")
+                                                logging.info(
+                                                    f"Added Meme {LastMessages[1].author}/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending} to the Gallery.")
                                         else:
                                             await ctx.followup.send("Es wurde eine URL gefunden, diese liefert aber kein Bild zurück. Bitte das Meme als Anhang einreichen.")
                         else:
@@ -141,6 +143,8 @@ class Memes(commands.Cog):
                                                         meme_bimage)
                                                     meme_filename = write_file.name
                                                     await ctx.followup.send("Meme hinzugefügt.", file=discord.File(meme_filename))
+                                                    logging.info(
+                                                        f"Added Meme {Message.author}/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending} to the Gallery.")
                                         else:
                                             await ctx.followup.send("Es wurde eine URL gefunden, diese liefert aber kein Bild zurück. Bitte das Meme als Anhang einreichen.")
                         else:
@@ -209,6 +213,9 @@ class Memes(commands.Cog):
                                                     write_file.write(
                                                         wed_meme_bimage)
                                                     await ctx.followup.send("Meme hinzugefügt.")
+                                                    logging.info(
+                                                        f"Added Wednesday Meme /Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending} to the Gallery.")
+
                                         else:
                                             await ctx.followup.send("Es wurde eine URL gefunden, diese liefert aber kein Bild zurück. Bitte das Meme als Anhang einreichen.")
                         else:
@@ -259,6 +266,8 @@ class Memes(commands.Cog):
                                                         wed_meme_bimage)
                                                     wed_meme_filename = write_file.name
                                                     await ctx.followup.send("Meme hinzugefügt.", file=discord.File(wed_meme_filename))
+                                                    logging.info(
+                                                        f"Added Mittwoch Meme /Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending} to the Gallery.")
                                         else:
                                             await ctx.followup.send("Es wurde eine URL gefunden, diese liefert aber kein Bild zurück. Bitte das Meme als Anhang einreichen.")
                         else:
