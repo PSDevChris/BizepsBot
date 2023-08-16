@@ -23,7 +23,7 @@ def _find_url_in_string(Message: str):
     split_message = Message.split()
     found_url = []
     for split in split_message:
-        if (split.startswith("http://") or split.startswith("https://")) and split.endswith(('gif', 'jpg', 'png', 'jpeg', 'webp')):
+        if (split.startswith("http://") or split.startswith("https://")):
             found_url.append(split)
     return found_url
 
@@ -64,7 +64,7 @@ class Memes(commands.Cog):
                                 await meme.save(f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
                                 AllFiles.append(
                                     f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{meme.filename}")
-                                await ctx.followup.send("Meme/s hinzugefügt.")
+                                await ctx.followup.send("Meme hinzugefügt.")
                                 logging.info(
                                     f"{ctx.author} has added a meme, filename was [{meme.filename}].")
                             else:
@@ -77,16 +77,21 @@ class Memes(commands.Cog):
                             async with aiohttp.ClientSession() as MemeSession:
                                 for index, url in enumerate(found_urls):
                                     async with MemeSession.get(url=url) as meme_img_req:
-                                        meme_bimage = await meme_img_req.read()
-                                    dl_filename = url.split("/")[-1]
-                                    with open(f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{dl_filename}", 'wb') as write_file:
-                                        write_file.write(meme_bimage)
-                                        meme_filename = write_file.name
-                                    if os.path.getsize(meme_filename) > 8000000:
-                                        os.remove(meme_filename)
-                                        await ctx.followup.send(f"Das Meme {dl_filename} war über 8MB groß und wurde daher nicht gespeichert.")
-                                    else:
-                                        await ctx.followup.send("Meme/s hinzugefügt.")
+                                        if meme_img_req.headers["content-type"] in ['image/gif', 'image/png', 'image/jpeg', 'image/webp']:
+                                            if int(meme_img_req.headers["content-length"]) > 8000000:
+                                                await ctx.followup.send(f"Das Meme ist über 8MB groß und wurde daher nicht gespeichert.")
+                                            else:
+                                                meme_bimage = await meme_img_req.read()
+                                                dl_filename = url.split(
+                                                    "/")[-1]
+                                                file_ending = meme_img_req.headers["content-type"].split(
+                                                    "/")[-1]
+                                                with open(f"{os.getcwd() + '/memes/'}{LastMessages[1].author}/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending}", 'wb') as write_file:
+                                                    write_file.write(
+                                                        meme_bimage)
+                                                await ctx.followup.send("Meme hinzugefügt.")
+                                        else:
+                                            await ctx.followup.send("Es wurde eine URL gefunden, diese liefert aber kein Bild zurück. Bitte das Meme als Anhang einreichen.")
                         else:
                             await ctx.followup.send("Es wurde weder ein Anhang, noch eine Bild-URL gefunden. Bitte das Meme erneut einreichen in passendem Bildformat (jpg, gif, png, webp) oder als Anhang.")
                 else:
@@ -122,16 +127,22 @@ class Memes(commands.Cog):
                             async with aiohttp.ClientSession() as MemeSession:
                                 for index, url in enumerate(found_urls):
                                     async with MemeSession.get(url=url) as meme_img_req:
-                                        meme_bimage = await meme_img_req.read()
-                                    dl_filename = url.split("/")[-1]
-                                    with open(f"{os.getcwd() + '/memes/'}{Message.author}/{NumberOfFiles + 1 + index}_{dl_filename}", 'wb') as write_file:
-                                        write_file.write(meme_bimage)
-                                        meme_filename = write_file.name
-                                    if os.path.getsize(meme_filename) > 8000000:
-                                        os.remove(meme_filename)
-                                        await ctx.followup.send(f"Das Meme {dl_filename} war über 8MB groß und wurde daher nicht gespeichert.")
-                                    else:
-                                        await ctx.followup.send("Meme/s hinzugefügt.", file=discord.File(meme_filename))
+                                        if meme_img_req.headers["content-type"] in ['image/gif', 'image/png', 'image/jpeg', 'image/webp']:
+                                            if int(meme_img_req.headers["content-length"]) > 8000000:
+                                                await ctx.followup.send(f"Das Meme ist über 8MB groß und wurde daher nicht gespeichert.")
+                                            else:
+                                                meme_bimage = await meme_img_req.read()
+                                                dl_filename = url.split(
+                                                    "/")[-1]
+                                                file_ending = meme_img_req.headers["content-type"].split(
+                                                    "/")[-1]
+                                                with open(f"{os.getcwd() + '/memes/'}{Message.author}/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending}", 'wb') as write_file:
+                                                    write_file.write(
+                                                        meme_bimage)
+                                                    meme_filename = write_file.name
+                                                    await ctx.followup.send("Meme hinzugefügt.", file=discord.File(meme_filename))
+                                        else:
+                                            await ctx.followup.send("Es wurde eine URL gefunden, diese liefert aber kein Bild zurück. Bitte das Meme als Anhang einreichen.")
                         else:
                             await ctx.followup.send("Es wurde weder ein Anhang, noch eine Bild-URL gefunden. Bitte das Meme erneut einreichen in passendem Bildformat (jpg, gif, png, webp) oder als Anhang.")
                 else:
@@ -185,16 +196,21 @@ class Memes(commands.Cog):
                             async with aiohttp.ClientSession() as WedMemeSession:
                                 for index, url in enumerate(found_urls):
                                     async with WedMemeSession.get(url=url) as wed_meme_img_req:
-                                        wed_meme_bimage = await wed_meme_img_req.read()
-                                    dl_filename = url.split("/")[-1]
-                                    with open(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{dl_filename}", 'wb') as write_file:
-                                        write_file.write(wed_meme_bimage)
-                                        wed_meme_filename = write_file.name
-                                    if os.path.getsize(wed_meme_filename) > 8000000:
-                                        os.remove(wed_meme_filename)
-                                        await ctx.followup.send(f"Das Meme {dl_filename} war über 8MB groß und wurde daher nicht gespeichert.")
-                                    else:
-                                        await ctx.followup.send("Meme/s hinzugefügt.")
+                                        if wed_meme_img_req.headers["content-type"] in ['image/gif', 'image/png', 'image/jpeg', 'image/webp']:
+                                            if int(wed_meme_img_req.headers["content-length"]) > 8000000:
+                                                await ctx.followup.send(f"Das Mittwoch Meme ist über 8MB groß und wurde daher nicht gespeichert.")
+                                            else:
+                                                wed_meme_bimage = await wed_meme_img_req.read()
+                                                dl_filename = url.split(
+                                                    "/")[-1]
+                                                file_ending = wed_meme_img_req.headers["content-type"].split(
+                                                    "/")[-1]
+                                                with open(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending}", 'wb') as write_file:
+                                                    write_file.write(
+                                                        wed_meme_bimage)
+                                                    await ctx.followup.send("Meme hinzugefügt.")
+                                        else:
+                                            await ctx.followup.send("Es wurde eine URL gefunden, diese liefert aber kein Bild zurück. Bitte das Meme als Anhang einreichen.")
                         else:
                             await ctx.followup.send("Es wurde weder ein Anhang, noch eine Bild-URL gefunden. Bitte das Meme erneut einreichen in passendem Bildformat (jpg, gif, png, webp) oder als Anhang.")
                 else:
@@ -229,16 +245,22 @@ class Memes(commands.Cog):
                             async with aiohttp.ClientSession() as WedMemeSession:
                                 for index, url in enumerate(found_urls):
                                     async with WedMemeSession.get(url=url) as wed_meme_img_req:
-                                        wed_meme_bimage = await wed_meme_img_req.read()
-                                    dl_filename = url.split("/")[-1]
-                                    with open(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{dl_filename}", 'wb') as write_file:
-                                        write_file.write(wed_meme_bimage)
-                                        wed_meme_filename = write_file.name
-                                    if os.path.getsize(wed_meme_filename) > 8000000:
-                                        os.remove(wed_meme_filename)
-                                        await ctx.followup.send(f"Das Meme {dl_filename} war über 8MB groß und wurde daher nicht gespeichert.")
-                                    else:
-                                        await ctx.followup.send("Meme/s hinzugefügt.", file=discord.File(wed_meme_filename))
+                                        if wed_meme_img_req.headers["content-type"] in ['image/gif', 'image/png', 'image/jpeg', 'image/webp']:
+                                            if int(wed_meme_img_req.headers["content-length"]) > 8000000:
+                                                await ctx.followup.send(f"Das Mittwoch Meme ist über 8MB groß und wurde daher nicht gespeichert.")
+                                            else:
+                                                wed_meme_bimage = await wed_meme_img_req.read()
+                                                dl_filename = url.split(
+                                                    "/")[-1]
+                                                file_ending = wed_meme_img_req.headers["content-type"].split(
+                                                    "/")[-1]
+                                                with open(f"{os.getcwd() + '/memes/'}Mittwoch meine Kerle#/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending}", 'wb') as write_file:
+                                                    write_file.write(
+                                                        wed_meme_bimage)
+                                                    wed_meme_filename = write_file.name
+                                                    await ctx.followup.send("Meme hinzugefügt.", file=discord.File(wed_meme_filename))
+                                        else:
+                                            await ctx.followup.send("Es wurde eine URL gefunden, diese liefert aber kein Bild zurück. Bitte das Meme als Anhang einreichen.")
                         else:
                             await ctx.followup.send("Es wurde weder ein Anhang, noch eine Bild-URL gefunden. Bitte das Meme erneut einreichen in passendem Bildformat (jpg, gif, png, webp) oder als Anhang.")
                 else:
