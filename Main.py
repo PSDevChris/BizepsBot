@@ -129,6 +129,8 @@ async def TwitchLiveCheck():
                 if rUserData.status == 200:
                     AllTwitchdata = await rUserData.json()
                     AllTwitchdata = AllTwitchdata["data"]
+                else:
+                    AllTwitchdata = None
 
         # No one is live
         if AllTwitchdata == [] and rUserData.status == 200:
