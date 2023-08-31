@@ -61,7 +61,7 @@ class Twitch(commands.Cog):
             else:
                 RequestTwitchToken()
         logging.info("Token successfully loaded for Twitch Class.")
-        self.TwitchClips = asyncio.run(_get_twitch_clips())
+        self.TwitchClips = asyncio.ensure_future(_get_twitch_clips())
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
@@ -76,7 +76,7 @@ class Twitch(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show_twitch_clip(self, ctx):
         if self.TwitchClips['data'] == []:
-            self.TwitchClips = _get_twitch_clips()
+            self.TwitchClips = await _get_twitch_clips()
             logging.info("Twitch Clips were empty, refreshed the clips.")
         else:
             Clip = random.SystemRandom().choice(self.TwitchClips['data'])
