@@ -61,7 +61,7 @@ class Twitch(commands.Cog):
             else:
                 RequestTwitchToken()
         logging.info("Token successfully loaded for Twitch Class.")
-        self.TwitchClips = asyncio.ensure_future(_get_twitch_clips())
+        self.TwitchClips = asyncio.run(_get_twitch_clips())
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
