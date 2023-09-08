@@ -79,12 +79,12 @@ class Subscriber(commands.Cog):
             "Gratis Epic-Games abonnieren", f"Epic Game Button")
         FreeGOGButton = FreeStuffButton(
             "Gratis GOG-Games abonnieren", f"GOG Game Button")
-        FreeOWLButton = FreeStuffButton(
-            "Gratis OWL-Tokens abonnieren", f"OWL Tokens Button")
+        #FreeOWLButton = FreeStuffButton(
+            #"Gratis OWL-Tokens abonnieren", f"OWL Tokens Button")
         SubscribeUserView.add_item(FreeSteamButton)
         SubscribeUserView.add_item(FreeEpicButton)
         SubscribeUserView.add_item(FreeGOGButton)
-        SubscribeUserView.add_item(FreeOWLButton)
+        #SubscribeUserView.add_item(FreeOWLButton)
 
         await ctx.respond(view=SubscribeUserView, ephemeral=True)
 
