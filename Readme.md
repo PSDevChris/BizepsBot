@@ -23,3 +23,4 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 
 + Split Messages over 2k chars | Needs to be implemented as func
 + Add ESA Marathon Schedule
++ Port the Bot back to discord.py since py-cord is just not up-to-date enough
