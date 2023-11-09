@@ -325,7 +325,7 @@ async def TrashReminder():
 
 
 # this needs a fix discussed in https://github.com/Pycord-Development/pycord/issues/1990
-@tasks.loop(time=datetime.time(hour=15, minute=5, second=0, tzinfo=zoneinfo.ZoneInfo("UTC")))
+@tasks.loop(time=datetime.time(hour=16, minute=5, second=0, tzinfo=zoneinfo.ZoneInfo("UTC")))
 async def GetFreeEpicGames():
 
     AllEpicFiles = next(os.walk("epic/"))[2]
