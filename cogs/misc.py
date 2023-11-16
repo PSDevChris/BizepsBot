@@ -2,12 +2,10 @@ import random
 
 from discord.ext import commands
 
-from Main import (BeautifulSoup, _get_banned_users, _is_banned, json, logging,
-                  requests)
+from Main import BeautifulSoup, _get_banned_users, _is_banned, json, logging, requests
 
 
 class Misc(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
@@ -26,16 +24,14 @@ class Misc(commands.Cog):
     @commands.cooldown(2, 30, commands.BucketType.user)
     async def _zuggishow(self, ctx):
         await ctx.defer()
-        RandomIndex = random.randrange(0, 990, 30)
-        RecipURL = requests.get(
-            f"https://www.chefkoch.de/rs/s{RandomIndex}/kartoffel/Rezepte.html")
+        RandomIndex = random.randrange(0, 990, 30)  # noqa: S311
+        RecipURL = requests.get(f"https://www.chefkoch.de/rs/s{RandomIndex}/kartoffel/Rezepte.html")
         if RecipURL.status_code == 200:
             RecipHTML = BeautifulSoup(RecipURL.text, "html.parser")
-            RecipJSON = json.loads("".join(RecipHTML.find_all(
-                "script", {"type": "application/ld+json"})[1]))
-            RandomRecipIndex = random.randint(0, 30)
-            RecipElementName = RecipJSON['itemListElement'][RandomRecipIndex]['name']
-            RecipElementURL = RecipJSON['itemListElement'][RandomRecipIndex]['url']
+            RecipJSON = json.loads("".join(RecipHTML.find_all("script", {"type": "application/ld+json"})[1]))
+            RandomRecipIndex = random.randint(0, 30)  # noqa: S311
+            RecipElementName = RecipJSON["itemListElement"][RandomRecipIndex]["name"]
+            RecipElementURL = RecipJSON["itemListElement"][RandomRecipIndex]["url"]
             await ctx.followup.send(f"{RecipElementName}\n{RecipElementURL}")
         else:
             await ctx.respond("Kartoffel API ist leider down T_T")

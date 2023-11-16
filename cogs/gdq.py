@@ -10,7 +10,6 @@ from Main import _get_banned_users, _is_banned, logging
 
 
 class GDQ(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
@@ -28,58 +27,51 @@ class GDQ(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _gdqgame(self, ctx, option: Option(str, "Zeigt das nächste Spiel", choices=["spaeter"], required=False)):
         GDQ_URL = "https://gamesdonequick.com/schedule"
-        GDQ_REQ = requests.get(GDQ_URL)
+        GDQ_REQ = requests.get(GDQ_URL, timeout=60)
         if GDQ_REQ.status_code == 200:
             try:
                 GDQ_DATAFRAME = pd.read_html(GDQ_REQ.text)
                 for Entry in GDQ_DATAFRAME:
                     for index in range(0, len(Entry["Run"]), 2):
                         runEntry = Entry["Run"]
-                        timeEntry = Entry["Time & Length"].fillna(
-                            "0:00:00")  # For NaN Times
+                        timeEntry = Entry["Time & Length"].fillna("0:00:00")  # For NaN Times
                         GameTime = parse(timeEntry[index])
-                        GameDuration = datetime.strptime(
-                            timeEntry[index+1], "%H:%M:%S")
-                        GameDelta = timedelta(
-                            hours=GameDuration.hour, minutes=GameDuration.minute, seconds=GameDuration.second)
-                        GameTimeStamp = datetime.timestamp(
-                            GameTime + GameDelta)
+                        GameDuration = datetime.strptime(timeEntry[index + 1], "%H:%M:%S")
+                        GameDelta = timedelta(hours=GameDuration.hour, minutes=GameDuration.minute, seconds=GameDuration.second)
+                        GameTimeStamp = datetime.timestamp(GameTime + GameDelta)
                         if datetime.timestamp(datetime.now()) < GameTimeStamp and datetime.now().date() <= GameTime.date():
                             if index == 0 and not option:
-                                await ctx.respond(f"Zu Beginn von GDQ am {('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag')[GameTime.weekday()]} den {GameTime.date().strftime('%d.%m.%Y')} läuft {runEntry[index]} {runEntry[index+1]} mit {Entry['Runners & Host'][index]}!")
-                                logging.info(
-                                    f"{ctx.author} wanted to the start of GDQ.")
-                            elif index != (len(Entry["Run"]) -1) and option == "spaeter": # len -1 because we always need two rows
+                                await ctx.respond(
+                                    f"Zu Beginn von GDQ am {('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag')[GameTime.weekday()]} den {GameTime.date().strftime('%d.%m.%Y')} läuft {runEntry[index]} {runEntry[index+1]} mit {Entry['Runners & Host'][index]}!"
+                                )
+                                logging.info(f"{ctx.author} wanted to the start of GDQ.")
+                            elif index != (len(Entry["Run"]) - 1) and option == "spaeter":  # len -1 because we always need two rows
                                 await ctx.defer()
                                 await ctx.followup.send(f"Bei GDQ läuft danach {runEntry[index+2]} {runEntry[index+3]} von {Entry['Runners & Host'][index+2]}!")
-                                logging.info(
-                                    f"{ctx.author} wanted to know the next game that is run at GDQ.")
+                                logging.info(f"{ctx.author} wanted to know the next game that is run at GDQ.")
                             else:
                                 await ctx.defer()
                                 await ctx.followup.send(f"Bei GDQ läuft gerade {runEntry[index]} {runEntry[index+1]} von {Entry['Runners & Host'][index]}!")
-                                logging.info(
-                                    f"{ctx.author} wanted to know the current game that is run at GDQ.")
+                                logging.info(f"{ctx.author} wanted to know the current game that is run at GDQ.")
                             break
                     else:
                         await ctx.respond("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
-                        logging.info(
-                            f"{ctx.author} wanted to know the current game that is run at GDQ, but GDQ has not started or is done.")
+                        logging.info(f"{ctx.author} wanted to know the current game that is run at GDQ, but GDQ has not started or is done.")
             except ValueError:
                 await ctx.respond("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
-                logging.warning(
-                    f"{ctx.author} wanted to know the current game that is run at GDQ, but there is no schedule live.")
+                logging.warning(f"{ctx.author} wanted to know the current game that is run at GDQ, but there is no schedule live.")
             except:
                 logging.error("ERROR: ", exc_info=True)
         else:
             await ctx.respond("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
-            logging.error(
-                f"{ctx.author} wanted to know the current game that is run at GDQ, the website is not responding.")
+            logging.error(f"{ctx.author} wanted to know the current game that is run at GDQ, the website is not responding.")
 
     @_gdqgame.error
     async def _gdqgame_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
             logging.warning(f"{ctx.author} wanted to spam the GDQ command!")
+
 
 def setup(bot):
     bot.add_cog(GDQ(bot))

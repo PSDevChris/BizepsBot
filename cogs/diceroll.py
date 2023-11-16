@@ -7,7 +7,6 @@ from Main import _get_banned_users, _is_banned, logging
 
 
 class Diceroll(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
@@ -30,8 +29,7 @@ class Diceroll(commands.Cog):
             await ctx.respond("1")
         else:
             await ctx.respond(f"{random.SystemRandom().randrange(1, abs(maxroll))}")
-            logging.info(
-                f"{ctx.author} rolled with value {maxroll} as max value, negative numbers were turned to absolutes.")
+            logging.info(f"{ctx.author} rolled with value {maxroll} as max value, negative numbers were turned to absolutes.")
 
 
 def setup(bot):

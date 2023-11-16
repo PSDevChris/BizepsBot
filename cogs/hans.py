@@ -9,13 +9,11 @@ from Main import _is_banned, _read_json, _write_json, logging
 
 
 def _refresh_hanstasks():
-    HansTasksJSON = _read_json('Settings.json')
-    HansTasks = list(HansTasksJSON['Settings']['HansTasks']['Tasks'])
-    return HansTasks
+    HansTasksJSON = _read_json("Settings.json")
+    return list(HansTasksJSON["Settings"]["HansTasks"]["Tasks"])
 
 
 class HansTaskList(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.HansTasks = _refresh_hanstasks()
@@ -33,12 +31,17 @@ class HansTaskList(commands.Cog):
     # Commands
     @commands.slash_command(name="hans", description="Er hat zu tun!", brief="Er hat zu tun!")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _hanstasks(self, ctx: discord.context.ApplicationContext, option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count"], required=False), task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False)):
+    async def _hanstasks(
+        self,
+        ctx: discord.context.ApplicationContext,
+        option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count"], required=False),
+        task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False),
+    ):
         if option == "show":
             HansOutputBuffer = io.StringIO()
             HansOutputLength = 0
-            await ctx.respond(f"Hans hat folgende Tasks:\n")
-            for HansTaskEntry in self.bot.Settings['Settings']['HansTasks']['Tasks']:
+            await ctx.respond("Hans hat folgende Tasks:\n")
+            for HansTaskEntry in self.bot.Settings["Settings"]["HansTasks"]["Tasks"]:
                 HansOutputLength += len(HansTaskEntry)
                 if HansOutputLength >= 1994:
                     await ctx.respond(f"```{HansOutputBuffer.getvalue()}```")
@@ -50,23 +53,18 @@ class HansTaskList(commands.Cog):
             if HansOutputLength > 0:
                 await ctx.respond(f"```{HansOutputBuffer.getvalue()}```")
             HansOutputBuffer.close()
-            logging.info(
-                f"{ctx.author} requested the list of Hans tasks.")
+            logging.info(f"{ctx.author} requested the list of Hans tasks.")
         elif option == "count":
-            HansTaskCount = len(
-                self.bot.Settings['Settings']['HansTasks']['Tasks'])
-            logging.info(
-                f"{ctx.author} wanted to know how much tasks Hans has.")
+            HansTaskCount = len(self.bot.Settings["Settings"]["HansTasks"]["Tasks"])
+            logging.info(f"{ctx.author} wanted to know how much tasks Hans has.")
             await ctx.respond(f"Hans hat {HansTaskCount} Aufgaben vor sich! So ein vielbeschäftiger Mann!")
         elif task:
             if "```" not in task:
-                if task not in self.bot.Settings['Settings']['HansTasks']['Tasks']:
-                    self.bot.Settings['Settings']['HansTasks']['Tasks'].append(
-                        task)
-                    _write_json('Settings.json', self.bot.Settings)
+                if task not in self.bot.Settings["Settings"]["HansTasks"]["Tasks"]:
+                    self.bot.Settings["Settings"]["HansTasks"]["Tasks"].append(task)
+                    _write_json("Settings.json", self.bot.Settings)
                     self.HansTasks.append(task)
-                    logging.info(
-                        f"{ctx.author} has added {task} to Hans tasks.")
+                    logging.info(f"{ctx.author} has added {task} to Hans tasks.")
                     await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
                 else:
                     await ctx.respond("Diese Aufgabe hat Hans bereits. Er macht Dinge ungern doppelt.")
@@ -78,8 +76,7 @@ class HansTaskList(commands.Cog):
                 _refresh_hanstasks()
             HansTask = random.SystemRandom().choice(self.HansTasks)
             self.HansTasks.remove(HansTask)
-            logging.info(
-                f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
+            logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
             await ctx.followup.send(f"Hans muss {HansTask}...")
 
     @_hanstasks.error
@@ -88,7 +85,7 @@ class HansTaskList(commands.Cog):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam the hanscommand!")
         elif isinstance(error, discord.CheckFailure):
-            await ctx.respond(f"Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
+            await ctx.respond("Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
         else:
             logging.error(f"ERROR: {error}")
 

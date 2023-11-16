@@ -2,12 +2,10 @@ import random
 
 from discord.ext import commands
 
-from Main import (_get_banned_users, _is_banned, _read_json, _write_json,
-                  discord, logging)
+from Main import _get_banned_users, _is_banned, _write_json, discord, logging
 
 
 class Counter(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
@@ -22,71 +20,67 @@ class Counter(commands.Cog):
 
     # Functions
     async def _inc_counter(self, invoker: discord.ApplicationContext, name: str, incnum: int):
-        self.bot.Settings['Settings']['Counter'][f'{name.title()}'] = self.bot.Settings[
-            'Settings']['Counter'][f'{name.title()}'] + incnum
-        LastAboNumber = self.bot.Settings['Settings']['Counter']['LastAboAt']
-        NewResult = self.bot.Settings['Settings']['Counter'][f'{name}']
-        if name == "Luck" and ((NewResult - LastAboNumber) + random.SystemRandom().randint(0, 50) >= (LastAboNumber+100)):
-            logging.info(
-                f"{invoker.author.name} increased the counter of {name} with invokeparameter {name} and had dotoluck. Subs are given out next stream.")
-            await invoker.respond(f"Doto hatte schon wieder Glück! Damit hat er {NewResult} Mal unverschämtes Glück gehabt! Als Strafe verschenkt er im nächsten Stream {random.SystemRandom().randint(1,3)} Abos!")
-            self.bot.Settings['Settings']['Counter']['LastAboAt'] = NewResult
+        self.bot.Settings["Settings"]["Counter"][f"{name.title()}"] = self.bot.Settings["Settings"]["Counter"][f"{name.title()}"] + incnum
+        LastAboNumber = self.bot.Settings["Settings"]["Counter"]["LastAboAt"]
+        NewResult = self.bot.Settings["Settings"]["Counter"][f"{name}"]
+        if name == "Luck" and ((NewResult - LastAboNumber) + random.SystemRandom().randint(0, 50) >= (LastAboNumber + 100)):
+            logging.info(f"{invoker.author.name} increased the counter of {name} with invokeparameter {name} and had dotoluck. Subs are given out next stream.")
+            await invoker.respond(
+                f"Doto hatte schon wieder Glück! Damit hat er {NewResult} Mal unverschämtes Glück gehabt! Als Strafe verschenkt er im nächsten Stream {random.SystemRandom().randint(1,3)} Abos!"
+            )
+            self.bot.Settings["Settings"]["Counter"]["LastAboAt"] = NewResult
         else:
-            match (name):
-                case ("Puns" | "puns"):
+            match name:
+                case "Puns" | "puns":
                     ReplyTxt = "Es wurde bereits ###REPLACE### Mal ein Gagfeuerwerk gezündet!"
-                case ("Salz" | "salz"):
+                case "Salz" | "salz":
                     ReplyTxt = "Man konnte sich schon ###REPLACE### Mal nicht beherrschen! Böse Salzstreuer hier!<:salt:826091230156161045>"
-                case ("Leak" | "leak"):
+                case "Leak" | "leak":
                     ReplyTxt = "Da hat wohl jemand nicht aufgepasst... Es wurde bereits ###REPLACE### Mal geleakt! Obacht!"
-                case ("Mobbing" | "mobbing" | "Hasssprech" | "hasssprech"):
+                case "Mobbing" | "mobbing" | "Hasssprech" | "hasssprech":
                     ReplyTxt = "Das ist Hasssprech! ###REPLACE### Mal wurde schon Hasssprech betrieben! Pfui!"
-                case ("Pipi" | "pipi"):
+                case "Pipi" | "pipi":
                     ReplyTxt = "Dotas Babyblase hat ihn schon ###REPLACE### Mal auf das stille Örtchen getrieben!"
-                case ("Luck" | "luck" | "Dotoluck" | "dotoluck"):
+                case "Luck" | "luck" | "Dotoluck" | "dotoluck":
                     ReplyTxt = "Doto hatte schon wieder Glück! Damit hat er ###REPLACE### Mal unverschämtes Glück gehabt!"
-                case ("Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando"):
+                case "Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando":
                     ReplyTxt = "Schnenko hat dieses Jahr bereits für ###REPLACE###€ bei Lieferando bestellt. Ein starkes Zeichen für die Wirtschaft!"
                 case _:
-                    logging.error(
-                        f"ERROR: {invoker.author.name} wanted to increase the counter for {name} but there is none!")
+                    logging.error(f"ERROR: {invoker.author.name} wanted to increase the counter for {name} but there is none!")
                     await invoker.respond("Dieser Counter konnte nicht gefunden werden.")
                     return
-            logging.info(
-                f"{invoker.author.name} increased the counter of {name} with invokeparameter {name}.")
-            await invoker.respond(ReplyTxt.replace('###REPLACE###', f'{NewResult}'))
-        _write_json('Settings.json', self.bot.Settings)
+            logging.info(f"{invoker.author.name} increased the counter of {name} with invokeparameter {name}.")
+            await invoker.respond(ReplyTxt.replace("###REPLACE###", f"{NewResult}"))
+        _write_json("Settings.json", self.bot.Settings)
 
     async def _show_counter(self, invoker: discord.ApplicationContext, name: str):
-        match (name):
-            case ("Pun" | "pun"):
+        match name:
+            case "Pun" | "pun":
                 InvokedVar = "Puns"
                 ReplyTxt = "Es gab bereits ###REPLACE### Gagfeuerwerke im Discord!"
-            case ("Salz" | "salz"):
+            case "Salz" | "salz":
                 InvokedVar = "Salz"
                 ReplyTxt = "Bisher wurden ###REPLACE### Salzstreuer geleert!<:salt:826091230156161045>"
-            case ("Leak" | "leak"):
+            case "Leak" | "leak":
                 InvokedVar = "Leak"
                 ReplyTxt = "Bis dato wurden ###REPLACE### Mal sensible Informationen geleakt! Obacht!"
-            case ("Mobbing" | "mobbing" | "Hasssprech" | "hasssprech"):
+            case "Mobbing" | "mobbing" | "Hasssprech" | "hasssprech":
                 InvokedVar = "Mobbing"
                 ReplyTxt = "Bereits ###REPLACE### Mal wurde Hasssprech betrieben! Warum so toxisch?"
-            case ("Pipi" | "pipi"):
+            case "Pipi" | "pipi":
                 InvokedVar = "Pipi"
                 ReplyTxt = "Doto hat bereits ###REPLACE### Mal den Stream pausiert um das WC aufzusuchen!"
-            case ("Luck" | "luck" | "Dotoluck" | "dotoluck"):
+            case "Luck" | "luck" | "Dotoluck" | "dotoluck":
                 InvokedVar = "Luck"
                 ReplyTxt = "Doto hatte bereits ###REPLACE### Mal unverschämtes Glück!"
-            case ("Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando"):
+            case "Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando":
                 InvokedVar = "Lieferando"
                 ReplyTxt = "Aktuell hat Schnenko ###REPLACE###€ Umsatz bei Lieferando generiert, Investoren können sich freuen!"
             case _:
-                logging.error(
-                    f"ERROR: {invoker.author.name} wanted to list the counter for {name} but there is none!")
+                logging.error(f"ERROR: {invoker.author.name} wanted to list the counter for {name} but there is none!")
                 await invoker.respond("Dieser Counter konnte nicht gefunden werden.")
                 return
-        logging.info(
-            f"{invoker.author.name} requested the current counter for {InvokedVar}.")
+        logging.info(f"{invoker.author.name} requested the current counter for {InvokedVar}.")
         await invoker.respond(ReplyTxt.replace("###REPLACE###", f"{self.bot.Settings['Settings']['Counter'][f'{InvokedVar}']}"))
 
     # Commands

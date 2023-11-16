@@ -4,7 +4,6 @@ from Main import _get_banned_users, _is_banned, aiohttp, datetime, discord
 
 
 class xkcd(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
@@ -23,16 +22,15 @@ class xkcd(commands.Cog):
     async def _show_xkcd(self, ctx):
         await ctx.defer()
         XkcdURL = "https://xkcd.com/info.0.json"
-        async with aiohttp.ClientSession() as XkcdSession:
-            async with XkcdSession.get(XkcdURL) as RequestToXkcd:
-                if RequestToXkcd.status == 200:
-                    JSONFromXkcd = await RequestToXkcd.json()
-                    XkcdEmbed = discord.Embed(title=f'Aktuelles xkcd Comic: {JSONFromXkcd["safe_title"]}!\r\n', colour=discord.Colour(
-                        0xFFFFFF), description=f'{JSONFromXkcd["alt"]}', timestamp=datetime.datetime.utcnow())
-                    XkcdEmbed.set_image(
-                        url=f'{JSONFromXkcd["img"]}')
-                    XkcdEmbed.set_footer(text="Bizeps_Bot")
-                    await ctx.followup.send("", embed=XkcdEmbed)
+        async with aiohttp.ClientSession() as XkcdSession, XkcdSession.get(XkcdURL) as RequestToXkcd:
+            if RequestToXkcd.status == 200:
+                JSONFromXkcd = await RequestToXkcd.json()
+                XkcdEmbed = discord.Embed(
+                    title=f'Aktuelles xkcd Comic: {JSONFromXkcd["safe_title"]}!\r\n', colour=discord.Colour(0xFFFFFF), description=f'{JSONFromXkcd["alt"]}', timestamp=datetime.datetime.utcnow()
+                )
+                XkcdEmbed.set_image(url=f'{JSONFromXkcd["img"]}')
+                XkcdEmbed.set_footer(text="Bizeps_Bot")
+                await ctx.followup.send("", embed=XkcdEmbed)
 
 
 def setup(bot):

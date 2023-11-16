@@ -1,56 +1,47 @@
 from discord.ext import commands
 
-from Main import _get_banned_users, _is_banned, _read_json, discord, logging
+from Main import _get_banned_users, _is_banned, discord, logging
 
 
 class TwitchButton(discord.ui.Button):
-
     def __init__(self, label, customid):
         super().__init__(label=label, custom_id=customid, style=discord.ButtonStyle.blurple)
 
     async def callback(self, interaction: discord.interactions.Interaction):
         await interaction.response.defer(ephemeral=True)
-        creator = self.custom_id.replace('Button', '')
+        creator = self.custom_id.replace("Button", "")
         user = interaction.user
-        role = discord.utils.get(
-            interaction.guild.roles, name=f"{creator} Alert")
+        role = discord.utils.get(interaction.guild.roles, name=f"{creator} Alert")
         if role not in user.roles:
             await interaction.user.add_roles(role)
             await interaction.followup.send(f"Du wurdest der Rolle {role.name} hinzugefügt.", ephemeral=True)
-            logging.info(
-                f"{user} added himself to the alertgroup for {role.name}.")
+            logging.info(f"{user} added himself to the alertgroup for {role.name}.")
         else:
             await interaction.user.remove_roles(role)
             await interaction.followup.send(f"Du wurdest aus der Rolle {role.name} entfernt.", ephemeral=True)
-            logging.info(
-                f"{user} removed himself from the alertgroup of {role.name}.")
+            logging.info(f"{user} removed himself from the alertgroup of {role.name}.")
 
 
 class FreeStuffButton(discord.ui.Button):
-
     def __init__(self, label, customid):
         super().__init__(label=label, custom_id=customid, style=discord.ButtonStyle.green)
 
     async def callback(self, interaction: discord.interactions.Interaction):
         await interaction.response.defer(ephemeral=True)
-        stuff = self.custom_id.replace('Button', '')
+        stuff = self.custom_id.replace("Button", "")
         user = interaction.user
-        role = discord.utils.get(
-            interaction.guild.roles, name=f"Free {stuff}Alert")
+        role = discord.utils.get(interaction.guild.roles, name=f"Free {stuff}Alert")
         if role not in user.roles:
             await interaction.user.add_roles(role)
             await interaction.followup.send(f"Du wurdest der Rolle {role.name} hinzugefügt.", ephemeral=True)
-            logging.info(
-                f"{user} added himself to the alertgroup for {role.name}.")
+            logging.info(f"{user} added himself to the alertgroup for {role.name}.")
         else:
             await interaction.user.remove_roles(role)
             await interaction.followup.send(f"Du wurdest aus der Rolle {role.name} entfernt.", ephemeral=True)
-            logging.info(
-                f"{user} removed himself from the alertgroup of {role.name}.")
+            logging.info(f"{user} removed himself from the alertgroup of {role.name}.")
 
 
 class Subscriber(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
@@ -67,24 +58,19 @@ class Subscriber(commands.Cog):
     @commands.slash_command(name="subscribe", description="Füge dich Benachrichtigungsgruppen hinzu!", brief="Füge dich Benachrichtigungsgruppen hinzu")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _subscribe(self, ctx):
-
         SubscribeUserView = discord.ui.View()
-        for twitchuser in sorted(self.bot.Settings['Settings']['TwitchUser'].keys()):
-            twitchuserbutton = TwitchButton(
-                f"{twitchuser} abonnieren", f"{twitchuser}Button")
+        for twitchuser in sorted(self.bot.Settings["Settings"]["TwitchUser"].keys()):
+            twitchuserbutton = TwitchButton(f"{twitchuser} abonnieren", f"{twitchuser}Button")
             SubscribeUserView.add_item(twitchuserbutton)
-        FreeSteamButton = FreeStuffButton(
-            "Gratis Steam-Games abonnieren", f"Steam Game Button")
-        FreeEpicButton = FreeStuffButton(
-            "Gratis Epic-Games abonnieren", f"Epic Game Button")
-        FreeGOGButton = FreeStuffButton(
-            "Gratis GOG-Games abonnieren", f"GOG Game Button")
-        #FreeOWLButton = FreeStuffButton(
-            #"Gratis OWL-Tokens abonnieren", f"OWL Tokens Button")
+        FreeSteamButton = FreeStuffButton("Gratis Steam-Games abonnieren", "Steam Game Button")
+        FreeEpicButton = FreeStuffButton("Gratis Epic-Games abonnieren", "Epic Game Button")
+        FreeGOGButton = FreeStuffButton("Gratis GOG-Games abonnieren", "GOG Game Button")
+        # FreeOWLButton = FreeStuffButton(
+        # "Gratis OWL-Tokens abonnieren", f"OWL Tokens Button")
         SubscribeUserView.add_item(FreeSteamButton)
         SubscribeUserView.add_item(FreeEpicButton)
         SubscribeUserView.add_item(FreeGOGButton)
-        #SubscribeUserView.add_item(FreeOWLButton)
+        # SubscribeUserView.add_item(FreeOWLButton)
 
         await ctx.respond(view=SubscribeUserView, ephemeral=True)
 
@@ -94,7 +80,7 @@ class Subscriber(commands.Cog):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam the hanscommand!")
         elif isinstance(error, discord.CheckFailure):
-            await ctx.respond(f"Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
+            await ctx.respond("Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
         else:
             logging.error(f"ERROR: {error}")
 

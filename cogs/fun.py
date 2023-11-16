@@ -8,7 +8,6 @@ from Main import _get_banned_users, _is_banned, logging
 
 
 class Fun(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
@@ -17,10 +16,10 @@ class Fun(commands.Cog):
         return await _is_banned(ctx)
 
     # Checks
-    def _is_zuggi(ctx):
+    def _is_zuggi(self, ctx):
         return ctx.author.id == 232561052573892608
 
-    def _is_nouwuchannel(ctx):
+    def _is_nouwuchannel(self, ctx):
         return ctx.channel.category_id != 539547423782207488 and ctx.channel.id != 539549544585756693
 
     # Events
@@ -33,23 +32,22 @@ class Fun(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _blamedevs(self, ctx):
         await ctx.defer()
-        await ctx.followup.send(file=discord.File('memes/josch700#0/josch.png'))
+        await ctx.followup.send(file=discord.File("memes/josch700#0/josch.png"))
         logging.info(f"{ctx.author} blamed the devs.")
 
     @commands.slash_command(name="turnup", description="Was für Saft?", brief="Was für Saft?")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _orangejuice(self, ctx):
         if str(ctx.author) != "Schnenko#9944":
-            await ctx.respond(f"Frag nicht was für Saft, einfach Orangensaft! Tuuuuuuuurn up! Fassen Sie mich nicht an!")
+            await ctx.respond("Frag nicht was für Saft, einfach Orangensaft! Tuuuuuuuurn up! Fassen Sie mich nicht an!")
         else:
-            await ctx.respond(f"https://tenor.com/view/nerd-moneyboy-money-boy-hau-gif-16097814")
+            await ctx.respond("https://tenor.com/view/nerd-moneyboy-money-boy-hau-gif-16097814")
         logging.info(f"{ctx.author} turned up the orangensaft.")
 
     @commands.slash_command(name="ehrenmann", description="Der erwähnte User ist ein Ehrenmann!", brief="Der erwähnte User ist ein Ehrenmann!")
     async def _ehrenmann(self, ctx, user: discord.Option(discord.User, description="Wähle den ehrenhaften User", required=True)):
         await ctx.respond(f"{user.mention}, du bist ein gottverdammter Ehrenmann!<:Ehrenmann:955905863154036748>")
-        logging.info(
-            f"{ctx.author} wanted to let {user.name} know he is an ehrenmann.")
+        logging.info(f"{ctx.author} wanted to let {user.name} know he is an ehrenmann.")
 
     @commands.slash_command(name="lebonk", description="Don't mess with him...", brief="Don't mess with him...")
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -58,7 +56,7 @@ class Fun(commands.Cog):
         LastMessage = LastMessages[0]
         await ctx.defer(ephemeral=True)
         await ctx.followup.send("Die Nachricht wurde gebonkt!")
-        await LastMessage.reply(f"Mess with Lechonk, you get the bonk! Du wurdest gebonkt von {ctx.author.name}!", file=discord.File('fun/LeBonk.png'))
+        await LastMessage.reply(f"Mess with Lechonk, you get the bonk! Du wurdest gebonkt von {ctx.author.name}!", file=discord.File("fun/LeBonk.png"))
 
     @commands.slash_command(name="pub", description="Typos...")
     async def _pubtypo(self, ctx):
@@ -82,7 +80,7 @@ class Fun(commands.Cog):
             "denn die Bildschirmzeit ist aufgebraucht",
             "Fehler LC-208",
             "denn Elisabot hat Besuch",
-            "denn das 800€ Ticket muss genutzt werden"
+            "denn das 800€ Ticket muss genutzt werden",
         ]
         await ctx.respond(f"Elisabot sagt nein, {random.SystemRandom().choice(ElisabotList)}.")
 
@@ -92,7 +90,7 @@ class Fun(commands.Cog):
         LastMessages = await ctx.channel.history(limit=1).flatten()
         LastMessage = LastMessages[0]
         logging.info(f"{ctx.author.name} has invoked the nein command.")
-        await LastMessage.reply(f"Zuggi sagt nein.")
+        await LastMessage.reply("Zuggi sagt nein.")
         await ctx.respond("Nachricht wurde verneint!", ephemeral=True)
 
     @commands.slash_command(name="uwu", description="Weebt die Message UwU")
@@ -105,24 +103,20 @@ class Fun(commands.Cog):
             return
         flags = uwuify.SMILEY | uwuify.YU
         await ctx.respond(uwuify.uwu(LastMessages[0].content, flags=flags))
-        logging.info(
-            f"{ctx.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
+        logging.info(f"{ctx.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
 
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
-        if isinstance(message.channel, discord.channel.DMChannel):
-            pass
-        elif message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693:
+        if isinstance(message.channel, discord.channel.DMChannel) or message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693:
             pass
         else:
             if message.author == self.bot.user:
                 return
-            if random.randint(0, 75) == 1 and len(message.content) > 50:
+            if random.randint(0, 75) == 1 and len(message.content) > 50:  # noqa: S311
                 LastMessageContent = message.content
                 flags = uwuify.SMILEY | uwuify.YU
                 await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
-                logging.info(
-                    f"The message [{LastMessageContent}] was UwUed.")
+                logging.info(f"The message [{LastMessageContent}] was UwUed.")
 
     @_lebonk.error
     async def _bonk_error(self, ctx, error):
@@ -134,8 +128,7 @@ class Fun(commands.Cog):
     async def _zuggisaysno_error(self, ctx, error):
         if isinstance(error, discord.errors.CheckFailure):
             await ctx.respond("Du bist nicht Zuggi.", ephemeral=True)
-            logging.warning(
-                f"{ctx.author} wanted to nein something, but is not Zuggi.")
+            logging.warning(f"{ctx.author} wanted to nein something, but is not Zuggi.")
 
     @_uwuthis.error
     async def _uwuthis_error(self, ctx, error):

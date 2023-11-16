@@ -4,7 +4,6 @@ from Main import _get_banned_users, _is_banned, logging
 
 
 class DDC(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()

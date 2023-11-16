@@ -8,14 +8,13 @@ from Main import _get_banned_users, _is_banned, _read_json, logging
 
 
 def _refresh_dotojokes():
-    DotoJokesJSON = _read_json('Settings.json')
-    DotoJokes = list(DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+    DotoJokesJSON = _read_json("Settings.json")
+    DotoJokes = list(DotoJokesJSON["Settings"]["DotoJokes"]["Jokes"])
     logging.info("Refreshed the list of Doto Jokes.")
     return DotoJokes
 
 
 class DotoJokes(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.BannedUsers = _get_banned_users()
@@ -39,8 +38,8 @@ class DotoJokes(commands.Cog):
             DotoJokesJSON = self.bot.Settings
             DotoOutputBuffer = io.StringIO()
             DotoOutputLength = 0
-            await ctx.respond(f"Doto hat folgende Gagfeuerwerke gezündet:\n")
-            for DotoTaskEntry in DotoJokesJSON['Settings']['DotoJokes']['Jokes']:
+            await ctx.respond("Doto hat folgende Gagfeuerwerke gezündet:\n")
+            for DotoTaskEntry in DotoJokesJSON["Settings"]["DotoJokes"]["Jokes"]:
                 DotoOutputLength += len(DotoTaskEntry)
                 if DotoOutputLength >= 1994:
                     await ctx.respond(f"```{DotoOutputBuffer.getvalue()}```")
@@ -52,20 +51,17 @@ class DotoJokes(commands.Cog):
             if DotoOutputLength > 0:
                 await ctx.followup.send(f"```{DotoOutputBuffer.getvalue()}```")
             DotoOutputBuffer.close()
-            logging.info(
-                f"{ctx.author} requested the list of Doto Jokes.")
+            logging.info(f"{ctx.author} requested the list of Doto Jokes.")
         elif options == "count":
             DotoJokesJSON = self.bot.Settings
-            DotoJokesCount = len(
-                DotoJokesJSON['Settings']['DotoJokes']['Jokes'])
+            DotoJokesCount = len(DotoJokesJSON["Settings"]["DotoJokes"]["Jokes"])
             await ctx.respond(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
         else:
             await ctx.defer()
             if len(self.bot.DotoJokes) == 0:
                 _refresh_dotojokes()
             DotoJoke = random.SystemRandom().choice(self.bot.DotoJokes)
-            logging.info(
-                f"{ctx.author} requested a Doto Joke, the joke was [{DotoJoke}].")
+            logging.info(f"{ctx.author} requested a Doto Joke, the joke was [{DotoJoke}].")
             await ctx.followup.send(f"{DotoJoke}")
             self.bot.DotoJokes.remove(DotoJoke)
 
