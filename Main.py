@@ -300,7 +300,7 @@ async def GetFreeEpicGames():
         GameEndDate = (
             parser.parse(bot.Settings["Settings"]["FreeEpicGames"][f"{FreeGameEntry}"]["endDate"])
             if bot.Settings["Settings"]["FreeEpicGames"][f"{FreeGameEntry}"]["endDate"]
-            else datetime.datetime.now().replace(hour=12)  # to make the game expire
+            else (datetime.datetime.now() + timedelta(days=7)).replace(hour=12)  # to make the game expire in a week
         )
         if CurrentTime > GameEndDate:
             EndedOffers.append(FreeGameEntry)
@@ -321,7 +321,11 @@ async def GetFreeEpicGames():
         if JSONFromEpicStore["data"]["Catalog"]["searchStore"]["elements"]:
             for FreeGame in JSONFromEpicStore["data"]["Catalog"]["searchStore"]["elements"]:
                 if FreeGame["promotions"] is not None and FreeGame["promotions"]["promotionalOffers"] != []:
-                    PromotionalStartDate = parser.parse(FreeGame["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["startDate"])
+                    PromotionalStartDate = (
+                        parser.parse(FreeGame["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["startDate"])
+                        if FreeGame["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["startDate"]
+                        else parser.parse(FreeGame["promotions"]["promotionalOffers"][0]["promotionalOffers"][1]["startDate"])  # Look at the second property
+                    )
                     LaunchingToday = parser.parse(FreeGame["effectiveDate"])
 
                     if FreeGame["price"]["totalPrice"]["discountPrice"] == 0 and (
@@ -345,7 +349,7 @@ async def GetFreeEpicGames():
                                     EndOfOffer = (
                                         offer["promotionalOffers"][0]["endDate"]
                                         if offer["promotionalOffers"][0]["endDate"]
-                                        else datetime.datetime.now().replace(hour=17, minute=0, second=0, microsecond=0)  # Replace if the first promotions EndDate is null
+                                        else offer["promotionalOffers"][1]["endDate"]  # Look into the second property for the EndDate
                                     )
                                     EndDateOfOffer = parser.parse(EndOfOffer).date()
 
