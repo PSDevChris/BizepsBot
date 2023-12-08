@@ -73,7 +73,9 @@ def RefreshMemes():
 
 
 def _load_settings_file():
+    global bot
     bot.Settings = _read_json("Settings.json")
+    logging.info("Settings have been loaded.")
     return bot.Settings
 
 
@@ -521,7 +523,7 @@ async def on_ready():
     """
     Startet den Bot und die Loops werden gestartet, sollten sie nicht schon laufen.
     """
-
+    bot.reload_settings = _load_settings_file
     logging.info(f"Logged in as {bot.user}!")
     logging.info("Bot started up!")
     if not TwitchLiveCheck.is_running():

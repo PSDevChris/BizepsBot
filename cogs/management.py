@@ -4,7 +4,7 @@ import discord
 from discord import Option
 from discord.ext import commands
 
-from Main import _get_banned_users, _is_banned, _load_settings_file, _write_json, logging, requests
+from Main import _get_banned_users, _is_banned, _write_json, logging, requests
 
 
 class Management(commands.Cog):
@@ -24,7 +24,7 @@ class Management(commands.Cog):
     @commands.slash_command(name="reload_settings", description="Lädt alle Einstellungen des Bots neu", brief="Lädt alle Einstellungen des Bots neu")
     @discord.default_permissions(administrator=True)
     async def _reload_settings(self, ctx):
-        _load_settings_file()
+        self.bot.reload_settings()
         await ctx.respond("Die Boteinstellungen wurden neugeladen.")
 
     @commands.slash_command(name="add_dotojoke", description="Ein guter oder schlechter Witz wird hinzugefügt", brief="Ein guter oder schlechter Witz wird hinzugefügt")
