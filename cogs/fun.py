@@ -54,9 +54,12 @@ class Fun(commands.Cog):
     async def _lebonk(self, ctx):
         LastMessages = await ctx.channel.history(limit=1).flatten()
         LastMessage = LastMessages[0]
-        await ctx.defer(ephemeral=True)
-        await ctx.followup.send("Die Nachricht wurde gebonkt!")
-        await LastMessage.reply(f"Mess with Lechonk, you get the bonk! Du wurdest gebonkt von {ctx.author.name}!", file=discord.File("fun/LeBonk.png"))
+        if LastMessage.author == self.bot.user:
+            await ctx.respond("Das ist eine Nachricht von mir, die bonke ich nicht.", ephemeral=True)
+        else:
+            await ctx.defer(ephemeral=True)
+            await ctx.followup.send("Die Nachricht wurde gebonkt!")
+            await LastMessage.reply(f"Mess with Lechonk, you get the bonk! Du wurdest gebonkt von {ctx.author.name}!", file=discord.File("fun/LeBonk.png"))
 
     @commands.slash_command(name="pub", description="Typos...")
     async def _pubtypo(self, ctx):
@@ -80,6 +83,7 @@ class Fun(commands.Cog):
             "denn die Bildschirmzeit ist aufgebraucht",
             "Fehler LC-208",
             "denn Elisabot hat Besuch",
+            "denn er will es ja auch",
             "denn das 800€ Ticket muss genutzt werden",
         ]
         await ctx.respond(f"Elisabot sagt nein, {random.SystemRandom().choice(ElisabotList)}.")
@@ -90,8 +94,11 @@ class Fun(commands.Cog):
         LastMessages = await ctx.channel.history(limit=1).flatten()
         LastMessage = LastMessages[0]
         logging.info(f"{ctx.author.name} has invoked the nein command.")
-        await LastMessage.reply("Zuggi sagt nein.")
-        await ctx.respond("Nachricht wurde verneint!", ephemeral=True)
+        if LastMessage.author == self.bot.user:
+            await ctx.respond("Das ist eine Nachricht von mir, die verneine ich nicht.", ephemeral=True)
+        else:
+            await LastMessage.reply("Zuggi sagt nein.")
+            await ctx.respond("Nachricht wurde verneint!", ephemeral=True)
 
     @commands.slash_command(name="uwu", description="Weebt die Message UwU")
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -112,7 +119,7 @@ class Fun(commands.Cog):
         else:
             if message.author == self.bot.user:
                 return
-            if random.randint(0, 75) == 1 and len(message.content) > 50:  # noqa: S311
+            if random.randint(0, 75) == 1 and len(message.content) > 50 and "http://" not in message.content:  # noqa: S311
                 LastMessageContent = message.content
                 flags = uwuify.SMILEY | uwuify.YU
                 await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
