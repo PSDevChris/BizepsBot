@@ -85,6 +85,8 @@ class Fun(commands.Cog):
             "denn Elisabot hat Besuch",
             "denn er will es ja auch",
             "denn das 800€ Ticket muss genutzt werden",
+            "denn Quinoa ist das neue Gyros",
+            "es muss ein Innlandsflug gebucht werden",
         ]
         await ctx.respond(f"Elisabot sagt nein, {random.SystemRandom().choice(ElisabotList)}.")
 

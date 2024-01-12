@@ -259,7 +259,7 @@ class Memes(commands.Cog):
                     RefreshMemes()
                     WednesdayMemes = list(filter(lambda x: "Mittwoch" in x, AllFiles))
                 RandomWedMeme = random.SystemRandom().choice(WednesdayMemes)
-                MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen", "froschigen"]
+                MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen", "froschigen", "prähistorischen"]
                 RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
                 logging.info(f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
                 await ctx.followup.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
