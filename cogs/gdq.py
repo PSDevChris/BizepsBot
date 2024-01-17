@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-import pandas as pd
-import requests
-from dateutil.parser import parse
+import aiohttp
+import zoneinfo
 from discord import Option
 from discord.ext import commands
 
@@ -26,45 +25,38 @@ class GDQ(commands.Cog):
     @commands.slash_command(name="gdq", description="Zeigt das aktuelle GDQ Game, inkl. Kategorie und Runner!", brief="Zeigt das aktuelle GDQ Game, inkl. Kategorie und Runner!")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _gdqgame(self, ctx, option: Option(str, "Zeigt das nächste Spiel", choices=["spaeter"], required=False)):
-        GDQ_URL = "https://gamesdonequick.com/schedule"
-        GDQ_REQ = requests.get(GDQ_URL, timeout=60)
-        if GDQ_REQ.status_code == 200:
-            try:
-                GDQ_DATAFRAME = pd.read_html(GDQ_REQ.text)
-                for Entry in GDQ_DATAFRAME:
-                    for index in range(0, len(Entry["Run"]), 2):
-                        runEntry = Entry["Run"]
-                        timeEntry = Entry["Time & Length"].fillna("0:00:00")  # For NaN Times
-                        GameTime = parse(timeEntry[index])
-                        GameDuration = datetime.strptime(timeEntry[index + 1], "%H:%M:%S")
-                        GameDelta = timedelta(hours=GameDuration.hour, minutes=GameDuration.minute, seconds=GameDuration.second)
-                        GameTimeStamp = datetime.timestamp(GameTime + GameDelta)
-                        if datetime.timestamp(datetime.now()) < GameTimeStamp and datetime.now().date() <= GameTime.date():
-                            if index == 0 and not option:
-                                await ctx.respond(
-                                    f"Zu Beginn von GDQ am {('Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag')[GameTime.weekday()]} den {GameTime.date().strftime('%d.%m.%Y')} läuft {runEntry[index]} {runEntry[index+1]} mit {Entry['Runners & Host'][index]}!"
-                                )
-                                logging.info(f"{ctx.author} wanted to the start of GDQ.")
-                            elif index != (len(Entry["Run"]) - 1) and option == "spaeter":  # len -1 because we always need two rows
-                                await ctx.defer()
-                                await ctx.followup.send(f"Bei GDQ läuft danach {runEntry[index+2]} {runEntry[index+3]} von {Entry['Runners & Host'][index+2]}!")
+        GDQURL = "https://gamesdonequick.com/tracker/api/v2/events/46/runs/"
+        CURRENTTIME = datetime.now(tz=zoneinfo.ZoneInfo("Europe/Berlin")).replace(microsecond=0)
+        try:
+            async with aiohttp.ClientSession() as GDQSession, GDQSession.get(GDQURL) as RequestToGDQSchedule:
+                if RequestToGDQSchedule.status == 200:
+                    await ctx.defer()
+                    GDQScheduleJSON = await RequestToGDQSchedule.json()
+                    for index, Run in enumerate(GDQScheduleJSON["results"]):
+                        if (
+                            datetime.strptime(Run["starttime"], "%Y-%m-%dT%H:%M:%S%z").astimezone(zoneinfo.ZoneInfo("Europe/Berlin")) < CURRENTTIME
+                            and datetime.strptime(Run["endtime"], "%Y-%m-%dT%H:%M:%S%z").astimezone(zoneinfo.ZoneInfo("Europe/Berlin")) > CURRENTTIME
+                        ):
+                            FoundRun = GDQScheduleJSON["results"][index + 1] if option == "spaeter" and index != -1 else GDQScheduleJSON["results"][index]
+                            Speedrunners = [runner["name"] for runner in FoundRun["runners"]]
+                            if option == "spaeter":
+                                await ctx.followup.send(f"Bei GDQ läuft danach **{FoundRun['display_name']}** mit der Kategorie *{FoundRun['category']}* von {', '.join(Speedrunners)}.")
                                 logging.info(f"{ctx.author} wanted to know the next game that is run at GDQ.")
-                            else:
-                                await ctx.defer()
-                                await ctx.followup.send(f"Bei GDQ läuft gerade {runEntry[index]} {runEntry[index+1]} von {Entry['Runners & Host'][index]}!")
-                                logging.info(f"{ctx.author} wanted to know the current game that is run at GDQ.")
+                                break
+                            await ctx.followup.send(f"Aktuell läuft bei GDQ **{FoundRun['display_name']}** mit der Kategorie *{FoundRun['category']}* von {', '.join(Speedrunners)}.")
+                            logging.info(f"{ctx.author} wanted to know the current game that is run at GDQ.")
                             break
                     else:
-                        await ctx.respond("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
+                        await ctx.followup.send("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
                         logging.info(f"{ctx.author} wanted to know the current game that is run at GDQ, but GDQ has not started or is done.")
-            except ValueError:
-                await ctx.respond("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
-                logging.warning(f"{ctx.author} wanted to know the current game that is run at GDQ, but there is no schedule live.")
-            except:
-                logging.error("ERROR: ", exc_info=True)
-        else:
-            await ctx.respond("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
-            logging.error(f"{ctx.author} wanted to know the current game that is run at GDQ, the website is not responding.")
+                else:
+                    await ctx.followup.send("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
+                    logging.error(f"{ctx.author} wanted to know the current game that is run at GDQ, the website is not responding.")
+        except ValueError:
+            await ctx.followup.send("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
+            logging.warning(f"{ctx.author} wanted to know the current game that is run at GDQ, but there is no schedule live.")
+        except:
+            logging.error("ERROR: ", exc_info=True)
 
     @_gdqgame.error
     async def _gdqgame_error(self, ctx, error):
