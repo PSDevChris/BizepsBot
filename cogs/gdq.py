@@ -36,6 +36,7 @@ class GDQ(commands.Cog):
                         if (
                             datetime.strptime(Run["starttime"], "%Y-%m-%dT%H:%M:%S%z").astimezone(zoneinfo.ZoneInfo("Europe/Berlin")) < CURRENTTIME
                             and datetime.strptime(Run["endtime"], "%Y-%m-%dT%H:%M:%S%z").astimezone(zoneinfo.ZoneInfo("Europe/Berlin")) > CURRENTTIME
+                            and Run["type"] == "speedrun"
                         ):
                             FoundRun = GDQScheduleJSON["results"][index + 1] if option == "spaeter" and index != -1 else GDQScheduleJSON["results"][index]
                             Speedrunners = [runner["name"] for runner in FoundRun["runners"]]
