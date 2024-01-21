@@ -52,8 +52,8 @@ class Memes(commands.Cog):
         add: discord.Option(str, "Hinzufügen des zuletzt geposteten Memes ", choices=["meme"], required=False),
         collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per collect und Message ID", required=False),
     ):
-        await ctx.defer()
         if add:
+            await ctx.defer()
             LastMessages = await ctx.channel.history(limit=2).flatten()
             if LastMessages[1].author != self.bot.user:
                 if LastMessages[1].author != ctx.author:
@@ -98,6 +98,7 @@ class Memes(commands.Cog):
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         elif collect:
+            await ctx.defer()
             Message = collect
             if Message.author != self.bot.user:
                 if Message.author != ctx.author:
@@ -143,10 +144,8 @@ class Memes(commands.Cog):
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         else:
-            if len(AllFiles) == 0:
-                RefreshMemes()
-            NoWednesdayMemes = list(filter(lambda x: "Mittwoch" not in x, AllFiles))
-            if NoWednesdayMemes == []:
+            await ctx.defer()
+            if len(AllFiles) == 0 or list(filter(lambda x: "Mittwoch" not in x, AllFiles)) == []:
                 RefreshMemes()
             NoWednesdayMemes = list(filter(lambda x: "Mittwoch" not in x, AllFiles))
             RandomMeme = random.SystemRandom().choice(NoWednesdayMemes)
