@@ -121,7 +121,7 @@ class Fun(commands.Cog):
         else:
             if message.author == self.bot.user:
                 return
-            if random.randint(0, 75) == 1 and len(message.content) > 50 and "http://" not in message.content:  # noqa: S311
+            if random.randint(0, 75) == 1 and len(message.content) > 50 and "http://" not in message.content and "https://" not in message.content:  # noqa: S311
                 LastMessageContent = message.content
                 flags = uwuify.SMILEY | uwuify.YU
                 await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
