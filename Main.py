@@ -509,14 +509,15 @@ async def _get_free_goggames(NotFoundCounter=0):
                         _write_json("Settings.json", bot.Settings)
                         logging.info(f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
                 else:
-                    NotFoundCounter = NotFoundCounter + 1
-                    if NotFoundCounter == 3:
-                        for FreeGameEntry in bot.Settings["Settings"]["FreeGOGGames"]:
-                            bot.Settings["Settings"]["FreeGOGGames"].remove(FreeGameEntry)
-                            logging.info(f"{FreeGameEntry} removed from free GOG Games, since it expired!")
-                            _write_json("Settings.json", bot.Settings)
-                            NotFoundCounter = 0
-                    logging.info(f"Did not find any free GOG Game, the Counter is at {NotFoundCounter}/3.")
+                    if bot.Settings["Settings"]["FreeGOGGames"]:
+                        NotFoundCounter = NotFoundCounter + 1
+                        if NotFoundCounter == 3:
+                            for FreeGameEntry in bot.Settings["Settings"]["FreeGOGGames"]:
+                                bot.Settings["Settings"]["FreeGOGGames"].remove(FreeGameEntry)
+                                logging.info(f"{FreeGameEntry} removed from free GOG Games, since it expired!")
+                                _write_json("Settings.json", bot.Settings)
+                                NotFoundCounter = 0
+                        logging.info(f"Did not find any free GOG Game, the Counter is at {NotFoundCounter}/3.")
 
 
 ### Bot Events ###
