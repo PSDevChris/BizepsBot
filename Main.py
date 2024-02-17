@@ -480,7 +480,7 @@ async def _get_free_steamgames():
 
 
 @tasks.loop(minutes=20)
-async def _get_free_goggames():
+async def _get_free_goggames(NotFoundCounter=0):
     GOGURL = "https://www.gog.com/"
     async with aiohttp.ClientSession() as GOGSession, GOGSession.get(GOGURL) as GOGReq:
         if GOGReq.status == 200:
@@ -509,10 +509,14 @@ async def _get_free_goggames():
                         _write_json("Settings.json", bot.Settings)
                         logging.info(f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
                 else:
-                    for FreeGameEntry in bot.Settings["Settings"]["FreeGOGGames"]:
-                        bot.Settings["Settings"]["FreeGOGGames"].remove(FreeGameEntry)
-                        logging.info(f"{FreeGameEntry} removed from free GOG Games, since it expired!")
-                        _write_json("Settings.json", bot.Settings)
+                    NotFoundCounter = NotFoundCounter + 1
+                    if NotFoundCounter == 3:
+                        for FreeGameEntry in bot.Settings["Settings"]["FreeGOGGames"]:
+                            bot.Settings["Settings"]["FreeGOGGames"].remove(FreeGameEntry)
+                            logging.info(f"{FreeGameEntry} removed from free GOG Games, since it expired!")
+                            _write_json("Settings.json", bot.Settings)
+                            NotFoundCounter = 0
+                    logging.info(f"Did not find any free GOG Game, the Counter is at {NotFoundCounter}/3.")
 
 
 ### Bot Events ###
