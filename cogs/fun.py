@@ -114,6 +114,11 @@ class Fun(commands.Cog):
         await ctx.respond(uwuify.uwu(LastMessages[0].content, flags=flags))
         logging.info(f"{ctx.author} hat die Nachricht [{LastMessages[0].content}] geUwUt.")
 
+    @commands.slash_command(name="pr", description="Pullrequests einreichen zur Übername... oder so")
+    @commands.cooldown(rate=1, per=5, type=commands.BucketType.user)
+    async def _dont_ask(self, ctx):
+        await ctx.respond("https://i.redd.it/before-t8-was-announced-harada-said-dont-ask-me-for-shit-v0-e4arzhnywrda1.jpg?width=451&format=pjpg&auto=webp&s=0ec112c803a3a927add3aad4eabafcb83a0bedec")
+
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
         if isinstance(message.channel, discord.channel.DMChannel) or message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693:
@@ -131,7 +136,7 @@ class Fun(commands.Cog):
     async def _bonk_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuche in {int(error.retry_after)} Sekunden nochmal jemand zu bonken.", ephemeral=True)
-            logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
+            logging.warning(f"{ctx.author} wanted to spam the Bonkcommand!")
 
     @_zuggisaysno.error
     async def _zuggisaysno_error(self, ctx, error):
@@ -144,6 +149,12 @@ class Fun(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
             logging.warning(f"{ctx.author} wanted to spam the UwUcommand!")
+
+    @_dont_ask.error
+    async def _dont_ask_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
+            logging.warning(f"{ctx.author} wanted to spam the Haradacommand!")
 
 
 def setup(bot):

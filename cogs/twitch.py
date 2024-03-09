@@ -1,9 +1,12 @@
 import asyncio
 import random
+import re
 
+import zoneinfo
+from discord import Option
 from discord.ext import commands
 
-from Main import RequestTwitchToken, _get_banned_users, _is_banned, aiohttp, datetime, discord, json, logging, requests
+from Main import RequestTwitchToken, _get_banned_users, _is_banned, aiohttp, datetime, discord, json, logging
 
 
 async def _get_twitch_clips():
@@ -35,6 +38,36 @@ async def _get_twitch_clips():
                 logging.error("ERROR: Twitch Clips could not be loaded!", exc_info=True)
 
     return Clips
+
+
+async def _get_esa_schedule(esa_url, option):
+    current_time = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Europe/Berlin")).replace(microsecond=0)
+    async with aiohttp.ClientSession() as ESASchedule, ESASchedule.get(esa_url) as RequestToESASchedule:
+        if RequestToESASchedule.status == 200:
+            ESAScheduleJSON = await RequestToESASchedule.json()
+            for index, Run in enumerate(ESAScheduleJSON["data"]):
+                try:
+                    if (
+                        datetime.datetime.strptime(Run["scheduled"], "%Y-%m-%dT%H:%M:%S%z").astimezone(zoneinfo.ZoneInfo("Europe/Berlin")) < current_time
+                        and datetime.datetime.strptime(ESAScheduleJSON["data"][index + 1]["scheduled"], "%Y-%m-%dT%H:%M:%S%z").astimezone(zoneinfo.ZoneInfo("Europe/Berlin")) > current_time
+                    ):
+                        FoundESARun = ESAScheduleJSON["data"][index + 1] if option == "spaeter" and index != -1 else ESAScheduleJSON["data"][index]
+                        esa_runners = list(FoundESARun["players"])
+                        esa_runners = ", ".join(esa_runners)
+                        esa_runners = re.sub("\(http.+\)", "", esa_runners).replace("[", "").replace("]", "")
+                        if option == "spaeter":
+                            next_run = f"Danach läuft bei ESA {FoundESARun['game']} {FoundESARun['category']} mit {esa_runners}!"
+                            ReturnString = next_run
+                            break
+                        current_run = f"Aktuell läuft bei ESA {FoundESARun['game']} {FoundESARun['category']} mit {esa_runners}!"
+                        ReturnString = current_run
+                        break
+                    ReturnString = "ESA ist vorbei oder hat noch nicht begonnen. Besuche uns bald wieder!"
+                except IndexError:  # ESA ended, dirty fix for now, need to have a look at length property
+                    ReturnString = "ESA ist vorbei oder hat noch nicht begonnen. Besuche uns bald wieder!"
+        else:
+            ReturnString = "ESA ist vorbei oder hat noch nicht begonnen. Besuche uns bald wieder!"
+    return ReturnString
 
 
 class Twitch(commands.Cog):
@@ -75,32 +108,17 @@ class Twitch(commands.Cog):
             logging.info(f"{ctx.author} requested a Twitch Clip, chosen was [{Clip['url']}]")
             self.TwitchClips["data"].remove(Clip)
 
-    @commands.slash_command(name="esagame", description="Gibt das aktuelle ESA Game aus", brief="Gibt das aktuelle ESA Game aus")
+    @commands.slash_command(name="esa", description="Gibt das aktuelle ESA Game aus", brief="Gibt das aktuelle ESA Game aus")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _esagame(self, ctx):
-        try:
-            USER = "esamarathon"
-            r = requests.get(f"https://api.twitch.tv/helix/search/channels?query={USER}", headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"})
-            data = json.loads(r.content)["data"]
-            data = list(filter(lambda x: x["broadcaster_login"] == f"{USER}", data))[0]
+    async def _esagame(self, ctx, option: Option(str, "Zeigt das nächste Spiel", choices=["spaeter"], required=False)):
+        ESARun = await _get_esa_schedule("https://app.esamarathon.com/horaro-proxy/v2/esa/schedule/2024-winter1", option=option)
+        await ctx.respond(ESARun)
 
-            if data["game_id"] is not None:
-                gamerequest = requests.get(f'https://api.twitch.tv/helix/games?id={data["game_id"]}', headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"})
-                game = json.loads(gamerequest.content)["data"][0]
-            else:
-                game = {"name": "Irgendwas"}
-            await ctx.defer()
-            await ctx.followup.send(f"Bei ESA wird gerade {game['name']} gespielt!")
-            logging.info(f"{ctx.author} invoked the ESA command.")
-        except IndexError:
-            # Username does not exist or Username is wrong, greetings to Schnabeltier
-            logging.error("ESA Channel not found. Was it deleted or banned?!")
-        except json.decoder.JSONDecodeError:
-            logging.error("Twitch API not available.")
-            await ctx.respond("Die Twitch API antwortet nicht.", ephemeral=True)
-        except KeyError:
-            logging.error("Twitch API not available.")
-            await ctx.respond("Die Twitch API antwortet nicht.", ephemeral=True)
+    @commands.slash_command(name="esa2", description="Gibt das aktuelle ESA Game aus dem zweiten Stream aus", brief="Gibt das aktuelle ESA Game aus Stream 2 aus")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def _esagame2(self, ctx, option: Option(str, "Zeigt das nächste Spiel", choices=["spaeter"], required=False)):
+        ESARun2 = await _get_esa_schedule("https://app.esamarathon.com/horaro-proxy/v2/esa/schedule/2024-winter2", option=option)
+        await ctx.respond(ESARun2)
 
     @_show_twitch_clip.error
     async def _twitchclip_error(self, ctx, error):
@@ -114,6 +132,16 @@ class Twitch(commands.Cog):
 
     @_esagame.error
     async def _esagame_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
+            logging.warning(f"{ctx.author} wanted to spam the esagamecommand!")
+        elif isinstance(error, discord.CheckFailure):
+            await ctx.respond("Du bist gebannt und damit von der Verwendung des Bots ausgeschlossen.", ephemeral=True)
+        else:
+            logging.error(f"ERROR: {error}")
+
+    @_esagame2.error
+    async def _esagame2_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam the esagamecommand!")

@@ -469,7 +469,7 @@ async def _get_free_steamgames():
                                 bot.Settings["Settings"]["FreeSteamGames"].append(SteamGameTitle)
                                 _write_json("Settings.json", bot.Settings)
                                 # Hack for missing char mapping in logging module
-                                SteamGameTitle = SteamGameTitle.replace("\uFF1A", ": ")
+                                SteamGameTitle = SteamGameTitle.replace("\uff1a", ": ")
                                 logging.info(f"{SteamGameTitle} was added to the free steam game list.")
 
                     ExpiredGames = set(bot.Settings["Settings"]["FreeSteamGames"]).difference(FreeGameTitleList)
@@ -480,7 +480,7 @@ async def _get_free_steamgames():
 
 
 @tasks.loop(minutes=20)
-async def _get_free_goggames(NotFoundCounter=0):
+async def _get_free_goggames():
     GOGURL = "https://www.gog.com/"
     async with aiohttp.ClientSession() as GOGSession, GOGSession.get(GOGURL) as GOGReq:
         if GOGReq.status == 200:
@@ -510,14 +510,10 @@ async def _get_free_goggames(NotFoundCounter=0):
                         logging.info(f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
                 else:
                     if bot.Settings["Settings"]["FreeGOGGames"]:
-                        NotFoundCounter = NotFoundCounter + 1
-                        if NotFoundCounter == 3:
-                            for FreeGameEntry in bot.Settings["Settings"]["FreeGOGGames"]:
-                                bot.Settings["Settings"]["FreeGOGGames"].remove(FreeGameEntry)
-                                logging.info(f"{FreeGameEntry} removed from free GOG Games, since it expired!")
-                                _write_json("Settings.json", bot.Settings)
-                                NotFoundCounter = 0
-                        logging.info(f"Did not find any free GOG Game, the Counter is at {NotFoundCounter}/3.")
+                        for FreeGameEntry in bot.Settings["Settings"]["FreeGOGGames"]:
+                            bot.Settings["Settings"]["FreeGOGGames"].remove(FreeGameEntry)
+                            logging.info(f"{FreeGameEntry} removed from free GOG Games, since it expired!")
+                            _write_json("Settings.json", bot.Settings)
 
 
 ### Bot Events ###
