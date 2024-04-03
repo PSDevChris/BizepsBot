@@ -116,7 +116,7 @@ class Management(commands.Cog):
     @discord.default_permissions(administrator=True)
     @commands.cooldown(3, 900, commands.BucketType.user)
     @commands.has_role("Admin")
-    async def _deltwitchmember(self, ctx: commands.context.Context, member: str):
+    async def _deltwitchmember(self, ctx, member: str):
         try:
             self.bot.Settings["Settings"]["TwitchUser"].pop(f"{member.lower()}")
             _write_json("Settings.json", self.bot.Settings)

@@ -7,6 +7,15 @@ from discord.ext import commands
 from Main import _get_banned_users, _is_banned, logging
 
 
+# Checks
+def _is_zuggi(ctx):
+    return ctx.author.id == 232561052573892608
+
+
+def _is_nouwuchannel(ctx):
+    return ctx.channel.category_id != 539547423782207488 and ctx.channel.id != 539549544585756693
+
+
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -14,13 +23,6 @@ class Fun(commands.Cog):
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
-
-    # Checks
-    def _is_zuggi(self, ctx):
-        return ctx.author.id == 232561052573892608
-
-    def _is_nouwuchannel(self, ctx):
-        return ctx.channel.category_id != 539547423782207488 and ctx.channel.id != 539549544585756693
 
     # Events
     @commands.Cog.listener()
@@ -109,6 +111,9 @@ class Fun(commands.Cog):
         LastMessages = await ctx.channel.history(limit=1).flatten()
         if LastMessages[0].author == self.bot.user:
             await ctx.respond("Ich uwue meine Nachricht nicht!", ephemeral=True)
+            return
+        if LastMessages[0].content == "":
+            await ctx.respond("Die Nachricht enthält keinen Text!", ephemeral=True)
             return
         flags = uwuify.SMILEY | uwuify.YU
         await ctx.respond(uwuify.uwu(LastMessages[0].content, flags=flags))

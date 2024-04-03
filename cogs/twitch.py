@@ -54,7 +54,7 @@ async def _get_esa_schedule(esa_url, option):
                         FoundESARun = ESAScheduleJSON["data"][index + 1] if option == "spaeter" and index != -1 else ESAScheduleJSON["data"][index]
                         esa_runners = list(FoundESARun["players"])
                         esa_runners = ", ".join(esa_runners)
-                        esa_runners = re.sub("\(http.+\)", "", esa_runners).replace("[", "").replace("]", "")
+                        esa_runners = re.sub(r"\(http.+\)", "", esa_runners).replace("[", "").replace("]", "")
                         if option == "spaeter":
                             next_run = f"Danach läuft bei ESA {FoundESARun['game']} {FoundESARun['category']} mit {esa_runners}!"
                             ReturnString = next_run
