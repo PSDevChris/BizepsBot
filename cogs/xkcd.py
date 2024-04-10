@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from Main import _get_banned_users, _is_banned, aiohttp, datetime, discord
+from Main import _get_banned_users, _is_banned, aiohttp, datetime, discord, logging
 
 
 class xkcd(commands.Cog):
@@ -31,6 +31,14 @@ class xkcd(commands.Cog):
                 XkcdEmbed.set_image(url=f'{JSONFromXkcd["img"]}')
                 XkcdEmbed.set_footer(text="Bizeps_Bot")
                 await ctx.followup.send("", embed=XkcdEmbed)
+
+    @_show_xkcd.error
+    async def _show_xkcd_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
+            logging.warning(f"{ctx.author} wanted to spam the Xkcd-Command!")
+        else:
+            logging.error(error)
 
 
 def setup(bot):
