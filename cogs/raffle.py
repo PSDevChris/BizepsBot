@@ -1,7 +1,6 @@
 import random
 
 import discord
-from discord import Option
 from discord.ext import commands
 
 from Main import _get_banned_users, _is_banned, _write_json, logging
@@ -48,7 +47,7 @@ class Raffle(commands.Cog, name="Raffle"):
     @commands.slash_command(name="set_giveaway", description="Setzt ein Giveaway Preis")
     @discord.default_permissions(administrator=True)
     @commands.has_role("Admin")
-    async def _set_giveaway(self, ctx, prize: Option(str, description="Der Preis", required=True)):
+    async def _set_giveaway(self, ctx, prize: discord.Option(str, description="Der Preis", required=True)):
         """
         Setzt den Preis für ein Giveaway.
         """

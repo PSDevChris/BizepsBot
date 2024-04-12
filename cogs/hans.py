@@ -2,7 +2,6 @@ import io
 import random
 
 import discord
-from discord import Option
 from discord.ext import commands
 
 from Main import _is_banned, _read_json, _write_json, logging
@@ -34,8 +33,8 @@ class HansTaskList(commands.Cog):
     async def _hanstasks(
         self,
         ctx: discord.context.ApplicationContext,
-        option: Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count"], required=False),
-        task: Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False),
+        option: discord.Option(str, "Zeigt, zählt oder ergänzt Hans Aufgaben", choices=["show", "count"], required=False),
+        task: discord.Option(str, "Hans wird diese Aufgabe hinzugefügt", required=False),
     ):
         if option == "show":
             HansOutputBuffer = io.StringIO()
