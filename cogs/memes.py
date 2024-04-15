@@ -52,8 +52,8 @@ class Memes(commands.Cog):
         add: discord.Option(str, "Hinzufügen des zuletzt geposteten Memes ", choices=["meme"], required=False),
         collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per collect und Message ID", required=False),
     ):
+        await ctx.defer()
         if add:
-            await ctx.defer()
             LastMessages = await ctx.channel.history(limit=2).flatten()
             if LastMessages[1].author != self.bot.user:
                 if LastMessages[1].author != ctx.author:
@@ -98,7 +98,6 @@ class Memes(commands.Cog):
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         elif collect:
-            await ctx.defer()
             Message = collect
             if Message.author != self.bot.user:
                 if Message.author != ctx.author:
@@ -144,12 +143,11 @@ class Memes(commands.Cog):
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         else:
-            await ctx.defer()
             if len(AllFiles) == 0 or list(filter(lambda x: "Mittwoch" not in x, AllFiles)) == []:
                 RefreshMemes()
             NoWednesdayMemes = list(filter(lambda x: "Mittwoch" not in x, AllFiles))
             RandomMeme = random.SystemRandom().choice(NoWednesdayMemes)
-            AuthorOfMeme = RandomMeme.split("/")[-2].split("#")[0]
+            AuthorOfMeme = RandomMeme.split("/")[-2].split(" ")[0]
             logging.info(f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
             await ctx.followup.send(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
             AllFiles.remove(RandomMeme)
@@ -162,8 +160,8 @@ class Memes(commands.Cog):
         add: discord.Option(str, "Hinzufügen des zuletzt geposteten Mittwochmemes per add", choices=["mittwochmeme"], required=False),
         collect: discord.Option(commands.MessageConverter, "Hinzufügen eines Mittwochmemes per collect und Message ID", required=False),
     ):
+        await ctx.defer()
         if add:
-            await ctx.defer()
             LastMessages = await ctx.channel.history(limit=2).flatten()
             if LastMessages[1].author != self.bot.user:
                 if LastMessages[1].author != ctx.author:
@@ -207,7 +205,6 @@ class Memes(commands.Cog):
             else:
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         elif collect:
-            await ctx.defer()
             Message = collect
             if Message.author != self.bot.user:
                 if Message.author != ctx.author:
@@ -252,7 +249,6 @@ class Memes(commands.Cog):
                 await ctx.followup.send("Das Meme stammt von mir, das füge ich nicht nochmal hinzu.")
         else:
             if datetime.datetime.now().isoweekday() == 3:
-                await ctx.defer()
                 WednesdayMemes = list(filter(lambda x: "Mittwoch" in x, AllFiles))
                 if WednesdayMemes == []:
                     RefreshMemes()
@@ -264,7 +260,6 @@ class Memes(commands.Cog):
                 await ctx.followup.send(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
                 AllFiles.remove(RandomWedMeme)
             else:
-                await ctx.defer(ephemeral=True)
                 await ctx.followup.send("Es ist noch nicht Mittwoch, mein Kerl.")
 
     @_memearchiv.error
