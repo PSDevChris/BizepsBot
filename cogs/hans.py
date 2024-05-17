@@ -74,9 +74,9 @@ class HansTaskList(commands.Cog):
             if self.HansTasks == []:
                 _refresh_hanstasks()
             HansTask = random.SystemRandom().choice(self.HansTasks)
+            await ctx.followup.send(f"Hans muss {HansTask}...")
             self.HansTasks.remove(HansTask)
             logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
-            await ctx.followup.send(f"Hans muss {HansTask}...")
 
     @_hanstasks.error
     async def _hanstasks_error(self, ctx, error):

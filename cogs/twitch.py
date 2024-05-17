@@ -6,36 +6,37 @@ import zoneinfo
 from discord import Option
 from discord.ext import commands
 
-from Main import RequestTwitchToken, _get_banned_users, _is_banned, aiohttp, datetime, discord, json, logging
+from Main import RequestTwitchToken, _is_banned, aiohttp, datetime, discord, json, logging
 
 
 async def _get_twitch_clips():
-    async with aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as session:
+    async with aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as session, session.get(
+        "https://api.twitch.tv/helix/clips?broadcaster_id=41503263"
+    ) as r:
         # My ID is entered, change it to yours, 20 Clips are returned at max, so we have to go through pages
-        async with session.get("https://api.twitch.tv/helix/clips?broadcaster_id=41503263") as r:
-            if r.status == 200:
-                Clips = await r.json()
-                KeysToRemove = []
-                for key in Clips["data"][0]:  # Cleaning up the JSON to reduce memory
-                    if key not in ["creator_name", "url"]:
-                        KeysToRemove.append(key)
-                for index in range(len(Clips["data"])):
-                    for keyvalue in KeysToRemove:
-                        Clips["data"][index].pop(keyvalue, None)
-                Pagination = Clips["pagination"]["cursor"] if Clips["pagination"] else ""
-                while Pagination != "":
-                    async with session.get(f"https://api.twitch.tv/helix/clips?broadcaster_id=41503263&after={Pagination}") as r:
-                        if r.status == 200:
-                            NextPage = await r.json()
-                            for index in range(len(NextPage["data"])):
-                                for keyvalue in KeysToRemove:
-                                    NextPage["data"][index].pop(keyvalue, None)
-                            # Append new list to old one
-                            Clips["data"] = Clips["data"] + NextPage["data"]
-                            Pagination = NextPage["pagination"]["cursor"] if NextPage["pagination"] else ""
-                logging.info(f"Loaded the Twitch Clips, I found {len(Clips['data'])} Clips.")
-            else:
-                logging.error("ERROR: Twitch Clips could not be loaded!", exc_info=True)
+        if r.status == 200:
+            Clips = await r.json()
+            KeysToRemove = []
+            for key in Clips["data"][0]:  # Cleaning up the JSON to reduce memory
+                if key not in ["creator_name", "url"]:
+                    KeysToRemove.append(key)
+            for index in range(len(Clips["data"])):
+                for keyvalue in KeysToRemove:
+                    Clips["data"][index].pop(keyvalue, None)
+            Pagination = Clips["pagination"]["cursor"] if Clips["pagination"] else ""
+            while Pagination != "":
+                async with session.get(f"https://api.twitch.tv/helix/clips?broadcaster_id=41503263&after={Pagination}") as r:
+                    if r.status == 200:
+                        NextPage = await r.json()
+                        for index in range(len(NextPage["data"])):
+                            for keyvalue in KeysToRemove:
+                                NextPage["data"][index].pop(keyvalue, None)
+                        # Append new list to old one
+                        Clips["data"] = Clips["data"] + NextPage["data"]
+                        Pagination = NextPage["pagination"]["cursor"] if NextPage["pagination"] else ""
+            logging.info(f"Loaded the Twitch Clips, I found {len(Clips['data'])} Clips.")
+        else:
+            logging.error("ERROR: Twitch Clips could not be loaded!", exc_info=True)
 
     return Clips
 
@@ -73,7 +74,6 @@ async def _get_esa_schedule(esa_url, option):
 class Twitch(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.BannedUsers = _get_banned_users()
         global TWITCH_TOKEN, TWITCH_TOKEN_EXPIRES, TWITCH_CLIENT_ID
         with open("TOKEN.json", "r") as TOKENFILE:
             TOKENDATA = json.load(TOKENFILE)

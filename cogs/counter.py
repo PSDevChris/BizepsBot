@@ -2,13 +2,12 @@ import random
 
 from discord.ext import commands
 
-from Main import _get_banned_users, _is_banned, _write_json, discord, logging
+from Main import _is_banned, _write_json, discord, logging
 
 
 class Counter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.BannedUsers = _get_banned_users()
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
@@ -39,8 +38,6 @@ class Counter(commands.Cog):
                     ReplyTxt = "Da hat wohl jemand nicht aufgepasst... Es wurde bereits ###REPLACE### Mal geleakt! Obacht!"
                 case "Mobbing" | "mobbing" | "Hasssprech" | "hasssprech":
                     ReplyTxt = "Das ist Hasssprech! ###REPLACE### Mal wurde schon Hasssprech betrieben! Pfui!"
-                case "Pipi" | "pipi":
-                    ReplyTxt = "Dotas Babyblase hat ihn schon ###REPLACE### Mal auf das stille Örtchen getrieben!"
                 case "Luck" | "luck" | "Dotoluck" | "dotoluck":
                     ReplyTxt = "Doto hatte schon wieder Glück! Damit hat er ###REPLACE### Mal unverschämtes Glück gehabt!"
                 case "Schnenko" | "schnenko" | "Schnenk" | "schnenk" | "lieferando" | "Lieferando":
@@ -67,9 +64,6 @@ class Counter(commands.Cog):
             case "Mobbing" | "mobbing" | "Hasssprech" | "hasssprech":
                 InvokedVar = "Mobbing"
                 ReplyTxt = "Bereits ###REPLACE### Mal wurde Hasssprech betrieben! Warum so toxisch?"
-            case "Pipi" | "pipi":
-                InvokedVar = "Pipi"
-                ReplyTxt = "Doto hat bereits ###REPLACE### Mal den Stream pausiert um das WC aufzusuchen!"
             case "Luck" | "luck" | "Dotoluck" | "dotoluck":
                 InvokedVar = "Luck"
                 ReplyTxt = "Doto hatte bereits ###REPLACE### Mal unverschämtes Glück!"
@@ -124,14 +118,6 @@ class Counter(commands.Cog):
             await Counter._show_counter(self, ctx, "Lieferando")
         else:
             await Counter._inc_counter(self, ctx, "Lieferando", 25)
-
-    @commands.slash_command(name="babyblase", description="Erhöht den Pipicounter")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def _pipicounter(self, ctx, option: discord.Option(str, "Zeigt den aktuellen Zählerstand", choices=["show"], required=False)):
-        if option == "show":
-            await Counter._show_counter(self, ctx, "Pipi")
-        else:
-            await Counter._inc_counter(self, ctx, "Pipi", 1)
 
     @commands.slash_command(name="dotoluck", description="Erhöht den Dotoluckcounter")
     @commands.cooldown(1, 3, commands.BucketType.user)

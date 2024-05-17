@@ -455,7 +455,7 @@ async def _get_free_steamgames():
                                 SteamEmbed.set_thumbnail(url=r"https://store.cloudflare.steamstatic.com/public/images/v6/logo_steam_footer.png")
                                 SteamEmbed.set_author(name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/avatars/794273832508588062/9267c06d60098704f652d980caa5a43c.png")
                                 SteamEmbed.add_field(name="Besuch mich auf Steam", value=f"{SteamGameURL}", inline=True)
-                                SteamEmbed.add_field(name="Hol mich im Launcher", value=f"<Steam://Store/{ProdID}>", inline=True)
+                                SteamEmbed.add_field(name="Hol mich im Launcher", value=f"<Steam://openurl/{SteamGameURL}>", inline=True)
                                 SteamImageURL = quote(ImageSrc, safe=":/")
                                 SteamEmbed.set_image(url=f"{SteamImageURL}")
                                 SteamEmbed.set_footer(text="Bizeps_Bot")

@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from Main import _get_banned_users, _is_banned, discord, logging
+from Main import _is_banned, discord, logging
 
 
 class TwitchButton(discord.ui.Button):
@@ -44,7 +44,6 @@ class FreeStuffButton(discord.ui.Button):
 class Subscriber(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.BannedUsers = _get_banned_users()
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)

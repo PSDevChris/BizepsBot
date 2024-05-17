@@ -4,7 +4,7 @@ import random
 from discord import Option
 from discord.ext import commands
 
-from Main import _get_banned_users, _is_banned, _read_json, logging
+from Main import _is_banned, _read_json, logging
 
 
 def _refresh_dotojokes():
@@ -17,7 +17,6 @@ def _refresh_dotojokes():
 class DotoJokes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.BannedUsers = _get_banned_users()
         bot.DotoJokes = _refresh_dotojokes()
 
     async def cog_check(self, ctx):

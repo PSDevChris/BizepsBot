@@ -2,13 +2,12 @@ import random
 
 from discord.ext import commands
 
-from Main import BeautifulSoup, _get_banned_users, _is_banned, json, logging, requests
+from Main import BeautifulSoup, _is_banned, json, logging, requests
 
 
 class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.BannedUsers = _get_banned_users()
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)

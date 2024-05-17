@@ -5,7 +5,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from Main import _get_banned_users, _is_banned, datetime, logging
+from Main import _is_banned, datetime, logging
 
 
 def RefreshMemes():
@@ -32,7 +32,6 @@ def _find_url_in_string(Message: str):
 class Memes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.BannedUsers = _get_banned_users()
         RefreshMemes()
 
     async def cog_check(self, ctx):
