@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import io
 import json
@@ -25,6 +26,7 @@ logging.basicConfig(
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True  # Needed for DM function on alerts
 # Remember to remove the debug guild if you want to use it on your server
 bot = commands.Bot(debug_guilds=[539546796473712650], command_prefix=("!"), intents=intents)
 
@@ -419,10 +421,13 @@ async def GetFreeEpicGames():
                                     EpicRole = discord.utils.get(guild.roles, name="Free Epic Game Alert")
                                     await bot.get_channel(539553203570606090).send(content=f"{EpicRole.mention}", embed=EpicEmbed)
                                     logging.info(f"{FreeGame['title']} was added to free Epic Games!")
-                                    # Send Games to Schnenk
-                                    SchnenkDM = await bot.fetch_user(257249704872509441)
-                                    await SchnenkDM.send(embed=EpicEmbed)
-                                    logging.info("Free Epic Games were sent to Schnenk.")
+                                    # Send Epic Games to Subscribers via DM
+                                    DMRoleEpic = discord.utils.get(guild.roles, name="DM Alert Epic")
+                                    for user in DMRoleEpic.members:
+                                        UserDM = await bot.get_or_fetch_user(user.id)
+                                        await UserDM.send(embed=EpicEmbed)
+                                        await asyncio.sleep(2)  # for ratelimiting reasons
+                                        logging.info(f"Free Epic Games were sent to subscriber [{user}].")
 
                             except json.decoder.JSONDecodeError:
                                 logging.error("ERROR: Something bad happend with the json decoding! The Free EpicGames list was created again!", exc_info=True)
@@ -463,9 +468,23 @@ async def _get_free_steamgames():
                                     guild = bot.get_guild(539546796473712650)
                                     SteamRole = discord.utils.get(guild.roles, name="Free Steam Game Alert")
                                     await bot.get_channel(539553203570606090).send(content=f"{SteamRole.mention}", embed=SteamEmbed)
+                                    # Send Steam Games to Subscribers via DM
+                                    DMRoleSteam = discord.utils.get(guild.roles, name="DM Alert Steam")
+                                    for user in DMRoleSteam.members:
+                                        UserDM = await bot.get_or_fetch_user(user.id)
+                                        await UserDM.send(embed=SteamEmbed)
+                                        await asyncio.sleep(2)  # for ratelimiting reasons
+                                        logging.info(f"Free Steam Games were sent to subscriber [{user}].")
                                     NotifiedUsers = True
                                 else:
                                     await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
+                                    # Send Steam Games to Subscribers via DM
+                                    DMRoleSteam = discord.utils.get(guild.roles, name="DM Alert Steam")
+                                    for user in DMRoleSteam.members:
+                                        UserDM = await bot.get_or_fetch_user(user.id)
+                                        await UserDM.send(embed=SteamEmbed)
+                                        await asyncio.sleep(2)  # for ratelimiting reasons
+                                        logging.info(f"Free Steam Games were sent to subscriber [{user}].")
                                 bot.Settings["Settings"]["FreeSteamGames"].append(SteamGameTitle)
                                 _write_json("Settings.json", bot.Settings)
                                 # Hack for missing char mapping in logging module
@@ -507,6 +526,13 @@ async def _get_free_goggames():
                         await bot.get_channel(539553203570606090).send(content=f"{GOGRole.mention}", embed=GOGEmbed)
                         bot.Settings["Settings"]["FreeGOGGames"].append(GOGGameTitle)
                         _write_json("Settings.json", bot.Settings)
+                        # Send GOG Games to Subscribers via DM
+                        DMRoleGOG = discord.utils.get(guild.roles, name="DM Alert GOG")
+                        for user in DMRoleGOG.members:
+                            UserDM = await bot.get_or_fetch_user(user.id)
+                            await UserDM.send(embed=GOGEmbed)
+                            await asyncio.sleep(2)  # for ratelimiting reasons
+                            logging.info(f"Free GOG Games were sent to subscriber [{user}].")
                         logging.info(f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
                 else:
                     if bot.Settings["Settings"]["FreeGOGGames"]:

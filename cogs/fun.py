@@ -1,5 +1,7 @@
+import json
 import random
 
+import aiohttp
 import discord
 import uwuify
 from discord.ext import commands
@@ -28,6 +30,37 @@ class Fun(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         pass
+
+    async def get_waifu_img(self) -> dict[str, str | list] | None:
+        waifurl = "https://api.waifu.im/search"
+
+        return_dict = {
+            "url": "",
+            "name": "",
+            "urls": [],
+        }
+
+        async with aiohttp.ClientSession(headers={"Content-Type": "application/json"}) as aiosession, aiosession.get(waifurl) as res:
+            if res.status != 200:
+                logging.error("Waifu API returned status code != 200!")
+                return None
+
+            try:
+                img_json = (await res.json())["images"][0]
+                return_dict["url"] = img_json["url"]
+                if (artist := img_json["artist"]) is not None:
+                    return_dict["name"] = artist["name"]
+                    return_dict["urls"] = [page[1] for page in artist.items() if page[0] in ["patreon", "pixiv", "twitter", "deviant_art"] and page[1] is not None]
+                else:
+                    pass
+            except json.decoder.JSONDecodeError:
+                logging.error("Waifu JSON Decode failed!")
+                return None
+            except KeyError:
+                logging.error("Waifu key error: Something is wrong with the JSON file!")
+                return None
+
+            return return_dict
 
     # Commands
     @commands.slash_command(name="josch", description="Entwickler...", brief="Entwickler...")
@@ -124,6 +157,25 @@ class Fun(commands.Cog):
     async def _dont_ask(self, ctx):
         await ctx.respond("https://i.redd.it/before-t8-was-announced-harada-said-dont-ask-me-for-shit-v0-e4arzhnywrda1.jpg?width=451&format=pjpg&auto=webp&s=0ec112c803a3a927add3aad4eabafcb83a0bedec")
 
+    @commands.slash_command(name="schnabi", description="Er malt gerne!", brief="Er malt gerne!")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def _schnabi(self, ctx: discord.context.ApplicationContext):
+        if (waifu_data := await self.get_waifu_img()) is None:
+            ctx.respond("Heute keine Waifus für dich, fass mal Gras an :)")
+            return
+
+        embed = discord.Embed(title="Hat jemand was von Waifus gesagt?" if not waifu_data["name"] else f"Künstler: {waifu_data['name']}", colour=discord.Colour(0xA53D8F)).set_image(
+            url=waifu_data["url"]
+        )  # this is switched with the author since the author is above the title
+
+        if waifu_data["name"]:
+            embed.set_author(name="Hat da jemand Waifu gesagt?")
+
+        if waifu_data["urls"]:
+            embed.description = "**Artist Links (Achtung, vielleicht NSFW Content):**\n" + "\n".join(waifu_data["urls"])
+
+        await ctx.respond(embed=embed)
+
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
         if isinstance(message.channel, discord.channel.DMChannel) or message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693:
@@ -160,6 +212,12 @@ class Fun(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
             logging.warning(f"{ctx.author} wanted to spam the Haradacommand!")
+
+    @_schnabi.error
+    async def _schnabi_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
+            logging.warning(f"{ctx.author} wanted to spam the Schnabicommand!")
 
 
 def setup(bot):
