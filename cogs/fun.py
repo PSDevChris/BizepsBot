@@ -51,8 +51,6 @@ class Fun(commands.Cog):
                 if (artist := img_json["artist"]) is not None:
                     return_dict["name"] = artist["name"]
                     return_dict["urls"] = [page[1] for page in artist.items() if page[0] in ["patreon", "pixiv", "twitter", "deviant_art"] and page[1] is not None]
-                else:
-                    pass
             except json.decoder.JSONDecodeError:
                 logging.error("Waifu JSON Decode failed!")
                 return None
@@ -164,7 +162,7 @@ class Fun(commands.Cog):
             ctx.respond("Heute keine Waifus für dich, fass mal Gras an :)")
             return
 
-        embed = discord.Embed(title="Hat jemand was von Waifus gesagt?" if not waifu_data["name"] else f"Künstler: {waifu_data['name']}", colour=discord.Colour(0xA53D8F)).set_image(
+        embed = discord.Embed(title="Hat da jemand Waifu gesagt?" if not waifu_data["name"] else f"Künstler: {waifu_data['name']}", colour=discord.Colour(0xA53D8F)).set_image(
             url=waifu_data["url"]
         )  # this is switched with the author since the author is above the title
 
