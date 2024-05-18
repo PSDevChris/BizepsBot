@@ -141,6 +141,7 @@ class Management(commands.Cog):
         logging.info("Twitchlist was posted.")
 
     @commands.slash_command(name="extension", description="Verwaltet die Extensions")
+    @discord.default_permissions(administrator=True)
     async def _extensions(self, ctx, changearg: Option(str, "laden/entladen", choices=["load", "unload"], required=True), extension):
         """
         Verwaltet die externen Cogs.
