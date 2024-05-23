@@ -70,13 +70,18 @@ class HansTaskList(commands.Cog):
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
         else:
-            await ctx.defer()
             if self.HansTasks == []:
+                await ctx.defer()  # only defer if there is a refresh
                 _refresh_hanstasks()
-            HansTask = random.SystemRandom().choice(self.HansTasks)
-            await ctx.followup.send(f"Hans muss {HansTask}...")
-            self.HansTasks.remove(HansTask)
-            logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
+                HansTask = random.SystemRandom().choice(self.HansTasks)
+                await ctx.followup.send(f"Hans muss {HansTask}...")
+                self.HansTasks.remove(HansTask)
+                logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
+            else:
+                HansTask = random.SystemRandom().choice(self.HansTasks)
+                await ctx.respond(f"Hans muss {HansTask}...")
+                self.HansTasks.remove(HansTask)
+                logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
 
     @_hanstasks.error
     async def _hanstasks_error(self, ctx, error):
