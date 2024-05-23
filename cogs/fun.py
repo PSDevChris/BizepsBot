@@ -39,8 +39,9 @@ class Fun(commands.Cog):
             "name": "",
             "urls": [],
         }
+        async_timeout = aiohttp.ClientTimeout(total=2)
 
-        async with aiohttp.ClientSession(headers={"Content-Type": "application/json"}) as aiosession, aiosession.get(waifurl) as res:
+        async with aiohttp.ClientSession(headers={"Content-Type": "application/json"}, timeout=async_timeout) as aiosession, aiosession.get(waifurl) as res:
             if res.status != 200:
                 logging.error("Waifu API returned status code != 200!")
                 return None
@@ -159,18 +160,15 @@ class Fun(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _schnabi(self, ctx: discord.context.ApplicationContext):
         if (waifu_data := await self.get_waifu_img()) is None:
-            ctx.respond("Heute keine Waifus für dich, fass mal Gras an :)")
+            await ctx.respond("Heute keine Waifus für dich, fass mal Gras an :)")
             return
 
-        embed = discord.Embed(title="Hat da jemand Waifu gesagt?" if not waifu_data["name"] else f"Künstler: {waifu_data['name']}", colour=discord.Colour(0xA53D8F)).set_image(
-            url=waifu_data["url"]
-        )  # this is switched with the author since the author is above the title
+        embed = discord.Embed(title="Hat da jemand Waifu gesagt?", colour=discord.Colour(0xA53D8F)).set_image(url=waifu_data["url"])
 
         if waifu_data["name"]:
-            embed.set_author(name="Hat da jemand Waifu gesagt?")
-
+            embed.add_field(name="**Künstler*in**", value=f"{waifu_data['name']}")
         if waifu_data["urls"]:
-            embed.description = "**Artist Links (Achtung, vielleicht NSFW Content):**\n" + "\n".join(waifu_data["urls"])
+            embed.add_field(name="**Artist Links (Achtung, vielleicht NSFW Content)**", value="" + "\n".join(waifu_data["urls"]), inline=False)
 
         await ctx.respond(embed=embed)
 
