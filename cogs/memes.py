@@ -147,6 +147,7 @@ class Memes(commands.Cog):
                 RefreshMemes()
             NoWednesdayMemes = list(filter(lambda x: "Mittwoch" not in x, AllFiles))
             RandomMeme = NoWednesdayMemes.pop()
+            AllFiles.remove(RandomMeme)  # still needed since the mittwoch and normal memes are in one folder
             AuthorOfMeme = RandomMeme.split("/")[-2].split(" ")[0]
             logging.info(f"{ctx.author} wanted a random meme. Chosen was [{RandomMeme}].")
             await ctx.respond(f"Zufalls-Meme! Dieses Meme wurde eingereicht von {AuthorOfMeme}", file=discord.File(f"{RandomMeme}"))
@@ -253,6 +254,7 @@ class Memes(commands.Cog):
                     RefreshMemes()
                     WednesdayMemes = list(filter(lambda x: "Mittwoch" in x, AllFiles))
                 RandomWedMeme = WednesdayMemes.pop()
+                AllFiles.remove(RandomWedMeme)  # still needed since the normal and mittwoch memes are in one folder
                 MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen", "froschigen", "prähistorischen"]
                 RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
                 logging.info(f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
