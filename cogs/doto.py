@@ -62,7 +62,6 @@ class DotoJokes(commands.Cog):
             DotoJoke = self.bot.DotoJokes.pop()
             logging.info(f"{ctx.author} requested a Doto Joke, the joke was [{DotoJoke}].")
             await ctx.respond(f"{DotoJoke}")
-            self.bot.DotoJokes.remove(DotoJoke)
 
     @_dotojokes.error
     async def _dotojokes_error(self, ctx, error):
