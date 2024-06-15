@@ -9,6 +9,7 @@ from Main import _is_banned, _read_json, _write_json, logging
 
 def _refresh_hanstasks():
     HansTasksJSON = _read_json("Settings.json")
+    random.shuffle(HansTasksJSON)
     return list(HansTasksJSON["Settings"]["HansTasks"]["Tasks"])
 
 
@@ -39,18 +40,18 @@ class HansTaskList(commands.Cog):
         if option == "show":
             HansOutputBuffer = io.StringIO()
             HansOutputLength = 0
-            await ctx.respond("Hans hat folgende Tasks:\n")
+            await ctx.respond("Hans hat folgende Tasks:\n", ephemeral=True)
             for HansTaskEntry in self.bot.Settings["Settings"]["HansTasks"]["Tasks"]:
                 HansOutputLength += len(HansTaskEntry)
                 if HansOutputLength >= 1994:
-                    await ctx.respond(f"```{HansOutputBuffer.getvalue()}```")
+                    await ctx.respond(f"```{HansOutputBuffer.getvalue()}```", ephemeral=True)
                     HansOutputBuffer.truncate(0)
                     HansOutputBuffer.seek(0)  # Needs to be done in Python 3
                     HansOutputLength = 0
                 HansOutputBuffer.write(HansTaskEntry + "\n")
                 HansOutputLength = HansOutputLength + len(HansTaskEntry)
             if HansOutputLength > 0:
-                await ctx.respond(f"```{HansOutputBuffer.getvalue()}```")
+                await ctx.respond(f"```{HansOutputBuffer.getvalue()}```", ephemeral=True)
             HansOutputBuffer.close()
             logging.info(f"{ctx.author} requested the list of Hans tasks.")
         elif option == "count":
@@ -73,15 +74,10 @@ class HansTaskList(commands.Cog):
             if self.HansTasks == []:
                 await ctx.defer()  # only defer if there is a refresh
                 _refresh_hanstasks()
-                HansTask = random.SystemRandom().choice(self.HansTasks)
-                await ctx.followup.send(f"Hans muss {HansTask}...")
-                self.HansTasks.remove(HansTask)
-                logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
-            else:
-                HansTask = random.SystemRandom().choice(self.HansTasks)
-                await ctx.respond(f"Hans muss {HansTask}...")
-                self.HansTasks.remove(HansTask)
-                logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
+            HansTask = self.HansTasks.pop()
+            await ctx.respond(f"Hans muss {HansTask}...")
+            self.HansTasks.remove(HansTask)
+            logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
 
     @_hanstasks.error
     async def _hanstasks_error(self, ctx, error):

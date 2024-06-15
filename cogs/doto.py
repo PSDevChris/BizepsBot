@@ -11,6 +11,7 @@ def _refresh_dotojokes():
     DotoJokesJSON = _read_json("Settings.json")
     DotoJokes = list(DotoJokesJSON["Settings"]["DotoJokes"]["Jokes"])
     logging.info("Refreshed the list of Doto Jokes.")
+    random.shuffle(DotoJokes)
     return DotoJokes
 
 
@@ -33,22 +34,21 @@ class DotoJokes(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _dotojokes(self, ctx, options: Option(str, "Zeigt oder zählt die Witze", choices=["show", "count"], required=False)):
         if options == "show":
-            await ctx.defer()
             DotoJokesJSON = self.bot.Settings
             DotoOutputBuffer = io.StringIO()
             DotoOutputLength = 0
-            await ctx.respond("Doto hat folgende Gagfeuerwerke gezündet:\n")
+            await ctx.respond("Doto hat folgende Gagfeuerwerke gezündet:\n", ephemeral=True)
             for DotoTaskEntry in DotoJokesJSON["Settings"]["DotoJokes"]["Jokes"]:
                 DotoOutputLength += len(DotoTaskEntry)
                 if DotoOutputLength >= 1994:
-                    await ctx.respond(f"```{DotoOutputBuffer.getvalue()}```")
+                    await ctx.respond(f"```{DotoOutputBuffer.getvalue()}```", ephemeral=True)
                     DotoOutputBuffer.truncate(0)
                     DotoOutputBuffer.seek(0)  # Needs to be done in Python 3
                     DotoOutputLength = 0
                 DotoOutputBuffer.write(DotoTaskEntry + "\n\n")
                 DotoOutputLength = DotoOutputLength + len(DotoTaskEntry)
             if DotoOutputLength > 0:
-                await ctx.followup.send(f"```{DotoOutputBuffer.getvalue()}```")
+                await ctx.followup.send(f"```{DotoOutputBuffer.getvalue()}```", ephemeral=True)
             DotoOutputBuffer.close()
             logging.info(f"{ctx.author} requested the list of Doto Jokes.")
         elif options == "count":
@@ -56,12 +56,12 @@ class DotoJokes(commands.Cog):
             DotoJokesCount = len(DotoJokesJSON["Settings"]["DotoJokes"]["Jokes"])
             await ctx.respond(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
         else:
-            await ctx.defer()
             if len(self.bot.DotoJokes) == 0:
                 _refresh_dotojokes()
-            DotoJoke = random.SystemRandom().choice(self.bot.DotoJokes)
+                await ctx.defer()
+            DotoJoke = self.bot.DotoJokes.pop()
             logging.info(f"{ctx.author} requested a Doto Joke, the joke was [{DotoJoke}].")
-            await ctx.followup.send(f"{DotoJoke}")
+            await ctx.respond(f"{DotoJoke}")
             self.bot.DotoJokes.remove(DotoJoke)
 
     @_dotojokes.error

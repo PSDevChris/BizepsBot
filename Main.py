@@ -64,16 +64,6 @@ def _write_json(FileName, Content):
         json.dump(Content, JsonWrite, indent=4)
 
 
-def RefreshMemes():
-    global AllFiles
-    AllFiles = []
-    for MemeFolder, _MemberFolder, Files in os.walk("memes/"):
-        for FileName in Files:
-            if FileName.endswith(("gif", "jpg", "png", "jpeg")):
-                AllFiles.append(f"{MemeFolder}/{FileName}")
-    return AllFiles
-
-
 def _load_settings_file():
     global bot
     bot.Settings = _read_json("Settings.json")
@@ -498,48 +488,52 @@ async def _get_free_steamgames():
                         _write_json("Settings.json", bot.Settings)
 
 
-@tasks.loop(minutes=20)
+@tasks.loop(time=datetime.time(hour=19, minute=5, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def _get_free_goggames():
     GOGURL = "https://www.gog.com/"
-    async with aiohttp.ClientSession() as GOGSession, GOGSession.get(GOGURL) as GOGReq:
-        if GOGReq.status == 200:
-            GOGHTML = await GOGReq.read()
-            if GOGHTML:
-                GOGResult = BeautifulSoup(GOGHTML, "html.parser")
-                GOGPage = GOGResult.find_all("a", class_="container giveaway-banner giveaway-banner--with-consent is-loading")
-                if GOGPage != []:
-                    GOGGameURL = f"http://www.gog.com{GOGPage[0]['ng-href']}"
-                    GOGGameTitleBanner = GOGPage[0].find_all("span", "giveaway-banner__title")
-                    GOGGameTitle = " ".join(GOGGameTitleBanner[-1].text.split()[1:])
-                    if GOGGameTitle not in bot.Settings["Settings"]["FreeGOGGames"]:
-                        GOGImageURL = GOGPage[0].find_all("source", attrs={"srcset": True})
-                        GOGImageURL = f"http:{GOGImageURL[-1]['srcset'].split(',')[-1].split()[0]}"
+    async with aiohttp.ClientSession() as GOGSession:
+        for _giveaway_not_found in range(10):  # ten tries to find the giveaway HTML, this is absolutely godless but otherwise the bot is too spammy
+            async with GOGSession.get(GOGURL) as GOGReq:
+                if GOGReq.status == 200:
+                    GOGHTML = await GOGReq.read()
+                    if GOGHTML:
+                        GOGResult = BeautifulSoup(GOGHTML, "html.parser")
+                        GOGPage = GOGResult.find_all("a", id="giveaway")
+                        if GOGPage != []:
+                            GOGGameURL = f"http://www.gog.com{GOGPage[0]['ng-href']}"
+                            GOGGameTitleBanner = GOGPage[0].find_all("span", "giveaway-banner__title")
+                            GOGGameTitle = " ".join(GOGGameTitleBanner[-1].text.split()[1:])
+                            if GOGGameTitle not in bot.Settings["Settings"]["FreeGOGGames"]:
+                                GOGImageURL = GOGPage[0].find_all("source", attrs={"srcset": True})
+                                GOGImageURL = f"http:{GOGImageURL[-1]['srcset'].split(',')[-1].split()[0]}"
 
-                        GOGEmbed = discord.Embed(title=f"Neues Gratis GOG Game: {GOGGameTitle}!\r\n\n", colour=discord.Colour(0xFFFFFF), timestamp=datetime.datetime.now())
-                        GOGEmbed.set_thumbnail(url=r"https://www.gog.com/blog/wp-content/uploads/2022/01/gogcomlogo-1.jpeg")
-                        GOGEmbed.set_author(name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/avatars/794273832508588062/9267c06d60098704f652d980caa5a43c.png")
-                        GOGEmbed.add_field(name="Besuch mich auf GOG", value=f"{GOGGameURL}", inline=True)
-                        GOGEmbed.set_image(url=f"{GOGImageURL}")
-                        GOGEmbed.set_footer(text="Bizeps_Bot")
-                        guild = bot.get_guild(539546796473712650)
-                        GOGRole = discord.utils.get(guild.roles, name="Free GOG Game Alert")
-                        await bot.get_channel(539553203570606090).send(content=f"{GOGRole.mention}", embed=GOGEmbed)
-                        bot.Settings["Settings"]["FreeGOGGames"].append(GOGGameTitle)
-                        _write_json("Settings.json", bot.Settings)
-                        # Send GOG Games to Subscribers via DM
-                        DMRoleGOG = discord.utils.get(guild.roles, name="DM Alert GOG")
-                        for user in DMRoleGOG.members:
-                            UserDM = await bot.get_or_fetch_user(user.id)
-                            await UserDM.send(embed=GOGEmbed)
-                            await asyncio.sleep(2)  # for ratelimiting reasons
-                            logging.info(f"Free GOG Games were sent to subscriber [{user}].")
-                        logging.info(f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
-                else:
-                    if bot.Settings["Settings"]["FreeGOGGames"]:
-                        for FreeGameEntry in bot.Settings["Settings"]["FreeGOGGames"]:
-                            bot.Settings["Settings"]["FreeGOGGames"].remove(FreeGameEntry)
-                            logging.info(f"{FreeGameEntry} removed from free GOG Games, since it expired!")
-                            _write_json("Settings.json", bot.Settings)
+                                GOGEmbed = discord.Embed(title=f"Neues Gratis GOG Game: {GOGGameTitle}!\r\n\n", colour=discord.Colour(0xFFFFFF), timestamp=datetime.datetime.now())
+                                GOGEmbed.set_thumbnail(url=r"https://www.gog.com/blog/wp-content/uploads/2022/01/gogcomlogo-1.jpeg")
+                                GOGEmbed.set_author(name="Bizeps_Bot", icon_url="https://cdn.discordapp.com/avatars/794273832508588062/9267c06d60098704f652d980caa5a43c.png")
+                                GOGEmbed.add_field(name="Besuch mich auf GOG", value=f"{GOGGameURL}", inline=True)
+                                GOGEmbed.set_image(url=f"{GOGImageURL}")
+                                GOGEmbed.set_footer(text="Bizeps_Bot")
+                                guild = bot.get_guild(539546796473712650)
+                                GOGRole = discord.utils.get(guild.roles, name="Free GOG Game Alert")
+                                await bot.get_channel(539553203570606090).send(content=f"{GOGRole.mention}", embed=GOGEmbed)
+                                bot.Settings["Settings"]["FreeGOGGames"].append(GOGGameTitle)
+                                _write_json("Settings.json", bot.Settings)
+                                # Send GOG Games to Subscribers via DM
+                                DMRoleGOG = discord.utils.get(guild.roles, name="DM Alert GOG")
+                                for user in DMRoleGOG.members:
+                                    UserDM = await bot.get_or_fetch_user(user.id)
+                                    await UserDM.send(embed=GOGEmbed)
+                                    await asyncio.sleep(2)  # for ratelimiting reasons
+                                    logging.info(f"Free GOG Games were sent to subscriber [{user}].")
+                                logging.info(f"Added GOG Game: {GOGGameTitle} to Free GOG List.")
+                            break
+                        await asyncio.sleep(360)  # wait five minutes to search for that html again
+        else:
+            if bot.Settings["Settings"]["FreeGOGGames"]:
+                for FreeGameEntry in bot.Settings["Settings"]["FreeGOGGames"]:
+                    bot.Settings["Settings"]["FreeGOGGames"].remove(FreeGameEntry)
+                    logging.info(f"{FreeGameEntry} removed from free GOG Games, since it expired!")
+                    _write_json("Settings.json", bot.Settings)
 
 
 ### Bot Events ###
@@ -565,7 +559,6 @@ async def on_ready():
         _get_free_steamgames.start()
     if not _get_free_goggames.is_running():
         _get_free_goggames.start()
-    RefreshMemes()
 
 
 @bot.event

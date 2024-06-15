@@ -166,9 +166,9 @@ class Fun(commands.Cog):
         embed = discord.Embed(title="Hat da jemand Waifu gesagt?", colour=discord.Colour(0xA53D8F)).set_image(url=waifu_data["url"])
 
         if waifu_data["name"]:
-            embed.add_field(name="**Künstler*in**", value=f"{waifu_data['name']}")
+            embed.add_field(name="**Künstler*in**", value=waifu_data["name"])
         if waifu_data["urls"]:
-            embed.add_field(name="**Artist Links (Achtung, vielleicht NSFW Content)**", value="" + "\n".join(waifu_data["urls"]), inline=False)
+            embed.add_field(name="**Artist Links (Achtung, vielleicht NSFW Content)**", value="\n".join(waifu_data["urls"]), inline=False)
 
         await ctx.respond(embed=embed)
 
