@@ -27,7 +27,7 @@ class Memes(commands.Cog):
 
         self.RefreshMemes()
 
-    async def cog_check(self, ctx: commands.Context):
+    async def cog_check(self, ctx):
         return await _is_banned(ctx)
 
     def RefreshMemes(self):
@@ -51,7 +51,7 @@ class Memes(commands.Cog):
 
         return RandomMeme, AuthorOfMeme
 
-    async def AddMeme(self, ctx: commands.Context, Message: discord.Message, *, Mittwoch: bool = False) -> None:
+    async def AddMeme(self, ctx, Message: discord.Message, *, Mittwoch: bool = False) -> None:
         Author = Message.author
 
         if Author == self.bot.user:
@@ -133,7 +133,7 @@ class Memes(commands.Cog):
     @commands.has_permissions(attach_files=True)
     async def _memearchiv(
         self,
-        ctx: commands.Context,
+        ctx,
         add: discord.Option(str, "Hinzufügen des zuletzt geposteten Memes ", choices=["meme"], required=False),
         collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per collect und Message ID", required=False),
     ):
@@ -156,7 +156,7 @@ class Memes(commands.Cog):
     @commands.cooldown(2, 180, commands.BucketType.user)
     async def _wedmeme(
         self,
-        ctx: commands.Context,
+        ctx,
         add: discord.Option(str, "Hinzufügen des zuletzt geposteten Mittwochmemes per add", choices=["mittwochmeme"], required=False),
         collect: discord.Option(commands.MessageConverter, "Hinzufügen eines Mittwochmemes per collect und Message ID", required=False),
     ):
@@ -181,7 +181,7 @@ class Memes(commands.Cog):
             await ctx.respond(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
 
     @_memearchiv.error
-    async def _memearchiv_error(self, ctx: commands.Context, error: discord.DiscordException) -> None:
+    async def _memearchiv_error(self, ctx, error: discord.DiscordException) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuche es erneut in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam random memes!")
@@ -191,7 +191,7 @@ class Memes(commands.Cog):
             logging.error(f"ERROR: {error}!")
 
     @_wedmeme.error
-    async def _wedmeme_error(self, ctx: commands.Context, error: discord.DiscordException) -> None:
+    async def _wedmeme_error(self, ctx, error: discord.DiscordException) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuche es erneut in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam random memes!")
