@@ -167,7 +167,7 @@ class Memes(commands.Cog):
             await self.AddMeme(ctx, collect)
         else:
             if datetime.datetime.now().isoweekday() != 3:
-                await ctx.respond("Es ist noch nicht Mittwoch, mein Kerl.")
+                await ctx.respond("Es ist noch nicht Mittwoch, mein Kerl.", ephemeral=True)
                 return
 
             if not self.Mittwoch:
