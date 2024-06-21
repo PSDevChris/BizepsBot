@@ -33,7 +33,7 @@ class Memes(commands.Cog):
     def RefreshMemes(self):
         # Easiest way to walk was with a replace
         for MemeFolder, _, Files in os.walk(os.getcwd() + "/memes/"):
-            ListOfMemes = self.Mittwoch if MemeFolder == "Mittwoch meine Kerle#" else self.Memes
+            ListOfMemes = self.Mittwoch if MemeFolder.split("/")[-1] == "Mittwoch meine Kerle#" else self.Memes
 
             for FileName in Files:
                 if FileName.endswith(("gif", "jpg", "png", "jpeg", "webp")):
@@ -121,7 +121,7 @@ class Memes(commands.Cog):
 
                         random.shuffle(ListOfMemes)
 
-                        logging.info(f"Added Meme {FilePath} to the Gallery.")
+                        logging.info(f"[{ctx.author}] added Meme {FilePath} to the Gallery.")
 
     # Events
     @commands.Cog.listener()
@@ -177,14 +177,14 @@ class Memes(commands.Cog):
             RandomWedMeme, _ = await self.GetMeme(Mittwoch=True)
             MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen", "froschigen", "prähistorischen"]
             RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
-            logging.info(f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
+            logging.info(f"[{ctx.author}] wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
             await ctx.respond(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
 
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error: discord.DiscordException) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuche es erneut in {int(error.retry_after)} Sekunden nochmal.")
-            logging.warning(f"{ctx.author} wanted to spam random memes!")
+            logging.warning(f"[{ctx.author}] wanted to spam random memes!")
         elif isinstance(error, commands.MessageNotFound):
             await ctx.respond("Die Nachricht mit dem Meme konnte nicht gefunden werden.")
         else:
