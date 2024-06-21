@@ -10,8 +10,10 @@ from Main import _is_banned, datetime, logging
 
 MAX_DISCORD_FILE_SIZE = 8_000_000
 
+
 def setup(bot: commands.Bot) -> None:
     bot.add_cog(Memes(bot))
+
 
 def _fetch_urls_from_message(Message: discord.Message) -> list[str]:
     return [split for split in Message.content.split() if split.startswith(("http://", "https://"))]
@@ -31,25 +33,25 @@ class Memes(commands.Cog):
     def RefreshMemes(self):
         # Easiest way to walk was with a replace
         for MemeFolder, _, Files in os.walk(os.getcwd() + "/memes/"):
-            List = self.Mittwoch if MemeFolder == "Mittwoch meine Kerle#" else self.Memes
+            ListOfMemes = self.Mittwoch if MemeFolder == "Mittwoch meine Kerle#" else self.Memes
 
             for FileName in Files:
                 if FileName.endswith(("gif", "jpg", "png", "jpeg", "webp")):
-                    List.append(f"{MemeFolder}/{FileName}")
+                    ListOfMemes.append(f"{MemeFolder}/{FileName}")
 
         random.shuffle(self.Memes)
         random.shuffle(self.Mittwoch)
         logging.info("Refreshed Memelist.")
 
     async def GetMeme(self, *, Mittwoch: bool = False) -> Tuple[str, str]:
-        List = self.Memes if not Mittwoch else self.Mittwoch
+        ListOfMemes = self.Memes if not Mittwoch else self.Mittwoch
 
-        RandomMeme = List.pop()
+        RandomMeme = ListOfMemes.pop()
         AuthorOfMeme = RandomMeme.split("/")[-2].split(" ")[0]
 
         return RandomMeme, AuthorOfMeme
 
-    async def AddMeme(self,ctx: commands.Context, Message: discord.Message, *, Mittwoch: bool = False) -> None:
+    async def AddMeme(self, ctx: commands.Context, Message: discord.Message, *, Mittwoch: bool = False) -> None:
         Author = Message.author
 
         if Author == self.bot.user:
@@ -61,7 +63,7 @@ class Memes(commands.Cog):
             return
 
         AuthorName = str(Author) if not Mittwoch else "Mittwoch meine Kerle#"
-        List = self.Mittwoch if Mittwoch else self.Memes
+        ListOfMemes = self.Mittwoch if Mittwoch else self.Memes
 
         AuthorPath = f"{os.getcwd()}/memes/{AuthorName}"
 
@@ -79,11 +81,11 @@ class Memes(commands.Cog):
                 FilePath = f"{AuthorPath}/{NumberOfFiles + 1 + index}_{meme.filename}"
 
                 await meme.save(FilePath)
-                List.append(FilePath)
+                ListOfMemes.append(FilePath)
 
                 await ctx.respond("Meme hinzugefügt.")
 
-                random.shuffle(List)
+                random.shuffle(ListOfMemes)
 
                 logging.info(f"{ctx.author} has added a meme, filename was [{meme.filename}].")
         else:
@@ -113,11 +115,11 @@ class Memes(commands.Cog):
                         with open(FilePath, "wb") as write_file:
                             write_file.write(meme_bimage)
 
-                        List.append(FilePath)
+                        ListOfMemes.append(FilePath)
 
                         await ctx.respond("Meme hinzugefügt.")
 
-                        random.shuffle(List)
+                        random.shuffle(ListOfMemes)
 
                         logging.info(f"Added Meme {FilePath} to the Gallery.")
 
@@ -172,7 +174,7 @@ class Memes(commands.Cog):
                 await ctx.defer()
                 self.RefreshMemes()
 
-            RandomWedMeme, _ = await self.GetMeme(Mittwoch = True)
+            RandomWedMeme, _ = await self.GetMeme(Mittwoch=True)
             MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen", "froschigen", "prähistorischen"]
             RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
             logging.info(f"{ctx.author} wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
