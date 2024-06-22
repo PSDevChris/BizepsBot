@@ -174,16 +174,13 @@ class Fun(commands.Cog):
 
     @commands.Cog.listener("on_message")
     async def _uwumsg(self, message):
-        if isinstance(message.channel, discord.channel.DMChannel) or message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693:
-            pass
-        else:
-            if message.author == self.bot.user:
-                return
-            if random.randint(0, 75) == 1 and len(message.content) > 50 and "http://" not in message.content and "https://" not in message.content:  # noqa: S311
-                LastMessageContent = message.content
-                flags = uwuify.SMILEY | uwuify.YU
-                await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
-                logging.info(f"The message [{LastMessageContent}] was UwUed.")
+        if isinstance(message.channel, discord.channel.DMChannel) or message.channel.category_id == 539547423782207488 or message.channel.id == 539549544585756693 or message.author == self.bot.user:
+            return
+        if random.randint(0, 75) == 1 and len(message.content) > 50 and "http://" not in message.content and "https://" not in message.content:  # noqa: S311
+            LastMessageContent = message.content
+            flags = uwuify.SMILEY | uwuify.YU
+            await message.channel.send(f"{uwuify.uwu(LastMessageContent, flags=flags)} <:UwU:870283726704242698>")
+            logging.info(f"The message [{LastMessageContent}] was UwUed.")
 
     @_lebonk.error
     async def _bonk_error(self, ctx, error):

@@ -498,14 +498,12 @@ async def _get_free_goggames():
                     GOGHTML = await GOGReq.read()
                     if GOGHTML:
                         GOGResult = BeautifulSoup(GOGHTML, "html.parser")
-                        GOGPage = GOGResult.find_all("a", id="giveaway")
+                        GOGPage = GOGResult.find_all(class_="giveaway")
                         if GOGPage != []:
-                            GOGGameURL = f"http://www.gog.com{GOGPage[0]['ng-href']}"
-                            GOGGameTitleBanner = GOGPage[0].find_all("span", "giveaway-banner__title")
-                            GOGGameTitle = " ".join(GOGGameTitleBanner[-1].text.split()[1:])
+                            GOGGameURL = GOGPage[0].find_all(class_="giveaway__overlay-link")[0]["href"]
+                            GOGGameTitle = GOGPage[0].find_all(class_="giveaway__image")[0].find_all("img", alt=True)[0]["alt"].replace(" giveaway", "")
                             if GOGGameTitle not in bot.Settings["Settings"]["FreeGOGGames"]:
-                                GOGImageURL = GOGPage[0].find_all("source", attrs={"srcset": True})
-                                GOGImageURL = f"http:{GOGImageURL[-1]['srcset'].split(',')[-1].split()[0]}"
+                                GOGImageURL = GOGPage[0].find_all(class_="giveaway__image")[0].find_all("source", srcset=True, type="image/jpeg")[0]["srcset"].split(",")[0]
 
                                 GOGEmbed = discord.Embed(title=f"Neues Gratis GOG Game: {GOGGameTitle}!\r\n\n", colour=discord.Colour(0xFFFFFF), timestamp=datetime.datetime.now())
                                 GOGEmbed.set_thumbnail(url=r"https://www.gog.com/blog/wp-content/uploads/2022/01/gogcomlogo-1.jpeg")
