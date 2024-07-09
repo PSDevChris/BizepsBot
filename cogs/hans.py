@@ -64,6 +64,7 @@ class HansTaskList(commands.Cog):
                     self.bot.Settings["Settings"]["HansTasks"]["Tasks"].append(task)
                     _write_json("Settings.json", self.bot.Settings)
                     self.HansTasks.append(task)
+                    random.shuffle(self.HansTasks)
                     logging.info(f"{ctx.author} has added {task} to Hans tasks.")
                     await ctx.respond(f"Der Task '{task}' wurde Hans hinzugefügt.")
                 else:

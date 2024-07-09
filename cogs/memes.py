@@ -162,9 +162,9 @@ class Memes(commands.Cog):
     ):
         if add:
             LastMessage = await ctx.channel.history(limit=2).flatten()[1]
-            await self.AddMeme(ctx, LastMessage)
+            await self.AddMeme(ctx, LastMessage, Mittwoch=True)
         elif collect:
-            await self.AddMeme(ctx, collect)
+            await self.AddMeme(ctx, collect, Mittwoch=True)
         else:
             if datetime.datetime.now().isoweekday() != 3:
                 await ctx.respond("Es ist noch nicht Mittwoch, mein Kerl.", ephemeral=True)
