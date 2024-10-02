@@ -27,17 +27,6 @@ class Management(commands.Cog):
         self.bot.reload_settings()
         await ctx.respond("Die Boteinstellungen wurden neugeladen.")
 
-    @commands.slash_command(name="add_dotojoke", description="Ein guter oder schlechter Witz wird hinzugefügt", brief="Ein guter oder schlechter Witz wird hinzugefügt")
-    @discord.default_permissions(administrator=True)
-    # just added as safety so if the default_perm is missing, it is not invoking
-    @commands.has_role("Admin")
-    @commands.cooldown(1, 30, commands.BucketType.user)
-    async def _add_dotojoke(self, ctx, joke: Option(str, "Besagter Witz", required=True)):
-        self.bot.Settings["Settings"]["DotoJokes"]["Jokes"].append(joke)
-        _write_json("Settings.json", self.bot.Settings)
-        self.bot.DotoJokes.append(joke)
-        await ctx.respond(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
-
     @commands.slash_command(name="ip", description="Gibt die aktuelle public IP aus")
     @discord.default_permissions(administrator=True)
     @commands.has_any_role("Admin", "Moderatoren")
@@ -176,15 +165,6 @@ class Management(commands.Cog):
         if isinstance(error, discord.errors.CheckFailure):
             await ctx.respond("Na na, das darf nur der Admin.")
             logging.warning(f"{ctx.author} wanted to read the logs!")
-
-    @_add_dotojoke.error
-    async def _add_dotojokes_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
-            logging.warning(f"{ctx.author} wanted to spam add Doto-Jokes!")
-        elif isinstance(error, discord.errors.CheckFailure):
-            await ctx.respond("Nur Doto darf so schlechte Witze machen und hinzufügen.")
-            logging.warning(f"{ctx.author} wanted to add Doto-Jokes!")
 
 
 def setup(bot):

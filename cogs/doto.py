@@ -4,7 +4,7 @@ import random
 from discord import Option
 from discord.ext import commands
 
-from Main import _is_banned, _read_json, logging
+from Main import _is_banned, _read_json, _write_json, discord, logging
 
 
 def _refresh_dotojokes():
@@ -18,7 +18,7 @@ def _refresh_dotojokes():
 class DotoJokes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        bot.DotoJokes = _refresh_dotojokes()
+        self.DotoJokes = _refresh_dotojokes()
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
@@ -56,18 +56,39 @@ class DotoJokes(commands.Cog):
             DotoJokesCount = len(DotoJokesJSON["Settings"]["DotoJokes"]["Jokes"])
             await ctx.respond(f"Doto hat bereits {DotoJokesCount} Knaller im Discord gezündet!")
         else:
-            if len(self.bot.DotoJokes) == 0:
-                _refresh_dotojokes()
+            if not self.DotoJokes:
                 await ctx.defer()
-            DotoJoke = self.bot.DotoJokes.pop()
+                self.DotoJokes = _refresh_dotojokes()
+            DotoJoke = self.DotoJokes.pop()
             logging.info(f"{ctx.author} requested a Doto Joke, the joke was [{DotoJoke}].")
             await ctx.respond(f"{DotoJoke}")
+
+    @commands.slash_command(name="add_dotojoke", description="Ein guter oder schlechter Witz wird hinzugefügt", brief="Ein guter oder schlechter Witz wird hinzugefügt")
+    @discord.default_permissions(administrator=True)
+    # just added as safety so if the default_perm is missing, it is not invoking
+    @commands.has_role("Admin")
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def _add_dotojoke(self, ctx, joke: Option(str, "Besagter Witz", required=True)):
+        self.bot.Settings["Settings"]["DotoJokes"]["Jokes"].append(joke)
+        _write_json("Settings.json", self.bot.Settings)
+        self.DotoJokes.append(joke)
+        random.shuffle(self.DotoJokes)
+        await ctx.respond(f"Der Schenkelklopfer '{joke}' wurde hinzugefügt.")
 
     @_dotojokes.error
     async def _dotojokes_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
             logging.warning(f"{ctx.author} wanted to spam Doto-Jokes!")
+
+    @_add_dotojoke.error
+    async def _add_dotojokes_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.")
+            logging.warning(f"{ctx.author} wanted to spam add Doto-Jokes!")
+        elif isinstance(error, discord.errors.CheckFailure):
+            await ctx.respond("Nur Doto darf so schlechte Witze machen und hinzufügen.")
+            logging.warning(f"{ctx.author} wanted to add Doto-Jokes!")
 
 
 def setup(bot):

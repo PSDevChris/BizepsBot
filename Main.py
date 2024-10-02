@@ -245,9 +245,6 @@ async def GameReminder():
         _write_json("Settings.json", bot.Settings)
 
 
-# this needs a fix discussed in https://github.com/Pycord-Development/pycord/issues/1990
-
-
 @tasks.loop(time=datetime.time(hour=17, minute=0, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def TrashReminder():
     """
@@ -492,7 +489,7 @@ async def _get_free_steamgames():
 async def _get_free_goggames():
     GOGURL = "https://www.gog.com/"
     async with aiohttp.ClientSession() as GOGSession:
-        for _giveaway_not_found in range(10):  # ten tries to find the giveaway HTML, this is absolutely godless but otherwise the bot is too spammy
+        for _ in range(10):  # ten tries to find the giveaway HTML, this is absolutely godless but otherwise the bot is too spammy
             async with GOGSession.get(GOGURL) as GOGReq:
                 if GOGReq.status == 200:
                     GOGHTML = await GOGReq.read()

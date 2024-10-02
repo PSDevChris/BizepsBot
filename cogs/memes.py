@@ -83,7 +83,7 @@ class Memes(commands.Cog):
                 await meme.save(FilePath)
                 ListOfMemes.append(FilePath)
 
-                await ctx.respond("Meme hinzugefügt.")
+                await ctx.respond(f"Meme {meme.filename} hinzugefügt.")
 
                 random.shuffle(ListOfMemes)
 
@@ -117,7 +117,7 @@ class Memes(commands.Cog):
 
                         ListOfMemes.append(FilePath)
 
-                        await ctx.respond("Meme hinzugefügt.")
+                        await ctx.respond(f"Meme {dl_filename}.{file_ending} hinzugefügt.")
 
                         random.shuffle(ListOfMemes)
 
@@ -138,7 +138,8 @@ class Memes(commands.Cog):
         collect: discord.Option(commands.MessageConverter, "Hinzufügen von Memes per collect und Message ID", required=False),
     ):
         if add:
-            LastMessage = await ctx.channel.history(limit=2).flatten()[1]
+            LastMessage = await ctx.channel.history(limit=2).flatten()
+            LastMessage = LastMessage[0]  # Quick Fix, needs to be investigated
             await self.AddMeme(ctx, LastMessage)
         elif collect:
             await self.AddMeme(ctx, collect)
@@ -161,7 +162,8 @@ class Memes(commands.Cog):
         collect: discord.Option(commands.MessageConverter, "Hinzufügen eines Mittwochmemes per collect und Message ID", required=False),
     ):
         if add:
-            LastMessage = await ctx.channel.history(limit=2).flatten()[1]
+            LastMessage = await ctx.channel.history(limit=2).flatten()
+            LastMessage = LastMessage[0]
             await self.AddMeme(ctx, LastMessage, Mittwoch=True)
         elif collect:
             await self.AddMeme(ctx, collect, Mittwoch=True)

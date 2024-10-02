@@ -9,6 +9,8 @@ from Main import _is_banned, _read_json, _write_json, logging
 
 def _refresh_hanstasks():
     HansTasksJSON = _read_json("Settings.json")
+    logging.info("Refreshed the list of Hans Tasks.")
+    random.shuffle(HansTasksJSON)
     return list(HansTasksJSON["Settings"]["HansTasks"]["Tasks"])
 
 
@@ -16,7 +18,6 @@ class HansTaskList(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.HansTasks = _refresh_hanstasks()
-        random.shuffle(self.HansTasks)
 
     # Async for cog_check, normal for command_check
     async def cog_check(self, ctx):
@@ -72,9 +73,9 @@ class HansTaskList(commands.Cog):
             else:
                 await ctx.respond("Das füge ich nicht hinzu.")
         else:
-            if self.HansTasks == []:
+            if not self.HansTasks:
                 await ctx.defer()  # only defer if there is a refresh
-                _refresh_hanstasks()
+                self.HansTasks = _refresh_hanstasks()
             HansTask = self.HansTasks.pop()
             await ctx.respond(f"Hans muss {HansTask}...")
             logging.info(f"[{ctx.author}] wanted to know what Hans is doing all day, task chosen was [{HansTask}].")
