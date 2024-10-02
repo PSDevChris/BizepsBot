@@ -10,7 +10,7 @@ from Main import _is_banned, _read_json, _write_json, logging
 def _refresh_hanstasks():
     HansTasksJSON = _read_json("Settings.json")
     logging.info("Refreshed the list of Hans Tasks.")
-    random.shuffle(HansTasksJSON)
+    random.shuffle(HansTasksJSON["Settings"]["HansTasks"]["Tasks"])
     return list(HansTasksJSON["Settings"]["HansTasks"]["Tasks"])
 
 
