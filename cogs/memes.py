@@ -36,7 +36,7 @@ class Memes(commands.Cog):
             ListOfMemes = self.Mittwoch if MemeFolder.split("/")[-1] == "Mittwoch meine Kerle#" else self.Memes
 
             for FileName in Files:
-                if FileName.endswith(("gif", "jpg", "png", "jpeg", "webp")):
+                if FileName.endswith(("gif", "jpg", "png", "jpeg", "webp", "mp4")):
                     ListOfMemes.append(f"{MemeFolder}/{FileName}")
 
         random.shuffle(self.Memes)
@@ -74,7 +74,7 @@ class Memes(commands.Cog):
 
         if Message.attachments:
             for index, meme in enumerate(Message.attachments):
-                if not meme.filename.lower().endswith(("gif", "jpg", "png", "jpeg", "webp")) and meme.size > MAX_DISCORD_FILE_SIZE:
+                if not meme.filename.lower().endswith(("gif", "jpg", "png", "jpeg", "webp", "mp4")) or meme.size > MAX_DISCORD_FILE_SIZE:
                     logging.error(f"ERROR: Meme was not under 8mb or not a supported format. Filename was [{meme.filename}], size was [{meme.size}]!")
                     continue
 
@@ -92,7 +92,7 @@ class Memes(commands.Cog):
             found_urls = _fetch_urls_from_message(Message)
 
             if not found_urls:
-                await ctx.respond("Es wurde weder ein Anhang, noch eine Bild-URL gefunden. Bitte das Meme erneut einreichen in passendem Bildformat (jpg, gif, png, webp) oder als Anhang.")
+                await ctx.respond("Es wurde weder ein Anhang, noch eine Bild-URL gefunden. Bitte das Meme erneut einreichen in passendem Bildformat (jpg, gif, png, webp, mp4) oder als Anhang.")
                 return
 
             async with aiohttp.ClientSession() as MemeSession:
