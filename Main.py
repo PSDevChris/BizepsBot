@@ -4,13 +4,13 @@ import io
 import json
 import logging
 import os
+import zoneinfo
 from datetime import timedelta, timezone
 
 import aiohttp
 import discord
 import pandas as pd
 import requests
-import zoneinfo
 from bs4 import BeautifulSoup
 from dateutil import parser
 from discord.ext import commands, tasks
@@ -113,9 +113,10 @@ async def TwitchLiveCheck():
     try:
         # YOU NEED TO CHANGE THIS IF YOU WANT TO USE YOUR SERVER
         guild = bot.get_guild(539546796473712650)
-        async with aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as TwitchSession, TwitchSession.get(
-            f"https://api.twitch.tv/helix/streams?{API_Call.getvalue()}"
-        ) as rUserData:
+        async with (
+            aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as TwitchSession,
+            TwitchSession.get(f"https://api.twitch.tv/helix/streams?{API_Call.getvalue()}") as rUserData,
+        ):
             API_Call.close()
             if rUserData.status == 200:
                 AllTwitchdata = await rUserData.json()
@@ -161,9 +162,10 @@ async def TwitchLiveCheck():
                     CurrentTime = int(datetime.datetime.timestamp(datetime.datetime.now()))
                     embed = discord.Embed(title=f"{data['title']}", colour=discord.Colour(0x772CE8), url=f"https://twitch.tv/{USER}", timestamp=datetime.datetime.now())
                     embed.set_image(url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
-                    async with aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as TwitchSession, TwitchSession.get(
-                        f'https://api.twitch.tv/helix/users?login={data["user_login"]}'
-                    ) as ProfileData:
+                    async with (
+                        aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as TwitchSession,
+                        TwitchSession.get(f'https://api.twitch.tv/helix/users?login={data["user_login"]}') as ProfileData,
+                    ):
                         if ProfileData.status == 200:
                             UserProfile = await ProfileData.json()
                             ProfilePicData = UserProfile["data"][0]["profile_image_url"]

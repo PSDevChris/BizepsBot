@@ -1,7 +1,7 @@
+import zoneinfo
 from datetime import datetime
 
 import aiohttp
-import zoneinfo
 from discord import Option
 from discord.ext import commands
 
@@ -24,7 +24,7 @@ class GDQ(commands.Cog):
     @commands.slash_command(name="gdq", description="Zeigt das aktuelle GDQ Game, inkl. Kategorie und Runner!", brief="Zeigt das aktuelle GDQ Game, inkl. Kategorie und Runner!")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _gdqgame(self, ctx, option: Option(str, "Zeigt das nächste Spiel", choices=["spaeter"], required=False)):
-        GDQURL = "https://gamesdonequick.com/tracker/api/v2/events/46/runs/"
+        GDQURL = "https://tracker.gamesdonequick.com/tracker/api/v2/events/52/runs/"
         CURRENTTIME = datetime.now(tz=zoneinfo.ZoneInfo("Europe/Berlin")).replace(microsecond=0)
         try:
             async with aiohttp.ClientSession() as GDQSession, GDQSession.get(GDQURL) as RequestToGDQSchedule:

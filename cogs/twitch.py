@@ -10,9 +10,10 @@ from Main import RequestTwitchToken, _is_banned, aiohttp, datetime, discord, jso
 
 
 async def _get_twitch_clips():
-    async with aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as session, session.get(
-        "https://api.twitch.tv/helix/clips?broadcaster_id=41503263"
-    ) as r:
+    async with (
+        aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as session,
+        session.get("https://api.twitch.tv/helix/clips?broadcaster_id=41503263&first=100") as r,
+    ):
         # My ID is entered, change it to yours, 20 Clips are returned at max, so we have to go through pages
         if r.status == 200:
             Clips = await r.json()

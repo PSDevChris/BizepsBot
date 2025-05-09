@@ -110,7 +110,10 @@ class Memes(commands.Cog):
                         dl_filename = url.split("/")[-1]
                         file_ending = meme_img_req.headers["content-type"].split("/")[-1]
 
-                        FilePath = f"{AuthorPath}/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending}"
+                        if dl_filename.endswith(("gif", "jpg", "png", "jpeg", "webp", "mp4")):
+                            FilePath = f"{AuthorPath}/{NumberOfFiles + 1 + index}_{dl_filename}"
+                        else:
+                            FilePath = f"{AuthorPath}/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending}"
 
                         with open(FilePath, "wb") as write_file:
                             write_file.write(meme_bimage)
