@@ -112,15 +112,17 @@ class Memes(commands.Cog):
 
                         if dl_filename.endswith(("gif", "jpg", "png", "jpeg", "webp", "mp4")):
                             FilePath = f"{AuthorPath}/{NumberOfFiles + 1 + index}_{dl_filename}"
+                            FileReturnString = dl_filename
                         else:
                             FilePath = f"{AuthorPath}/{NumberOfFiles + 1 + index}_{dl_filename}.{file_ending}"
+                            FileReturnString = f"{dl_filename}.{file_ending}"
 
                         with open(FilePath, "wb") as write_file:
                             write_file.write(meme_bimage)
 
                         ListOfMemes.append(FilePath)
 
-                        await ctx.respond(f"Meme {dl_filename}.{file_ending} hinzugefügt.")
+                        await ctx.respond(f"Meme {FileReturnString} hinzugefügt.")
 
                         random.shuffle(ListOfMemes)
 

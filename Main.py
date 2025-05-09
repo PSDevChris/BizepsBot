@@ -164,7 +164,7 @@ async def TwitchLiveCheck():
                     embed.set_image(url=f"https://static-cdn.jtvnw.net/previews-ttv/live_user_{USER}-1920x1080.jpg?v={CurrentTime}")
                     async with (
                         aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as TwitchSession,
-                        TwitchSession.get(f'https://api.twitch.tv/helix/users?login={data["user_login"]}') as ProfileData,
+                        TwitchSession.get(f"https://api.twitch.tv/helix/users?login={data['user_login']}") as ProfileData,
                     ):
                         if ProfileData.status == 200:
                             UserProfile = await ProfileData.json()
