@@ -41,20 +41,20 @@ class GDQ(commands.Cog):
                             Speedrunners = [runner["name"] for runner in FoundRun["runners"]]
                             if option == "spaeter":
                                 await ctx.followup.send(f"Bei GDQ läuft danach **{FoundRun['display_name']}** mit der Kategorie *{FoundRun['category']}* von {', '.join(Speedrunners)}.")
-                                logging.info(f"{ctx.author} wanted to know the next game that is run at GDQ.")
+                                logging.info(f"[{ctx.author}] wanted to know the next game that is run at GDQ.")
                                 break
                             await ctx.followup.send(f"Aktuell läuft bei GDQ **{FoundRun['display_name']}** mit der Kategorie *{FoundRun['category']}* von {', '.join(Speedrunners)}.")
-                            logging.info(f"{ctx.author} wanted to know the current game that is run at GDQ.")
+                            logging.info(f"[{ctx.author}] wanted to know the current game that is run at GDQ.")
                             break
                     else:
                         await ctx.followup.send("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
-                        logging.info(f"{ctx.author} wanted to know the current game that is run at GDQ, but GDQ has not started or is done.")
+                        logging.info(f"[{ctx.author}] wanted to know the current game that is run at GDQ, but GDQ has not started or is done.")
                 else:
                     await ctx.followup.send("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
-                    logging.error(f"{ctx.author} wanted to know the current game that is run at GDQ, the website is not responding.")
+                    logging.error(f"[{ctx.author}] wanted to know the current game that is run at GDQ, the website is not responding.")
         except ValueError:
             await ctx.followup.send("GDQ ist vorbei oder noch nicht angefangen, beehre uns bald wieder.")
-            logging.warning(f"{ctx.author} wanted to know the current game that is run at GDQ, but there is no schedule live.")
+            logging.warning(f"[{ctx.author}] wanted to know the current game that is run at GDQ, but there is no schedule live.")
         except:
             logging.error("ERROR: ", exc_info=True)
 
@@ -62,7 +62,7 @@ class GDQ(commands.Cog):
     async def _gdqgame_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuch es in {int(error.retry_after)} Sekunden nochmal.", ephemeral=True)
-            logging.warning(f"{ctx.author} wanted to spam the GDQ command!")
+            logging.warning(f"[{ctx.author}] wanted to spam the GDQ command!")
 
 
 def setup(bot):
