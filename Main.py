@@ -1,4 +1,5 @@
 import asyncio
+import csv
 import datetime
 import io
 import json
@@ -9,7 +10,6 @@ from datetime import timedelta, timezone
 
 import aiohttp
 import discord
-import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
@@ -24,11 +24,17 @@ logging.basicConfig(
 # To show the whole table, currently unused
 # pd.set_option('display.max_rows', None)  # noqa: ERA001
 
+
+with open("Token.json", mode="r", encoding="UTF8") as Tokenfile:
+    Tokenvalues = json.load(Tokenfile)
+    SERVER = Tokenvalues["SERVER"]
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True  # Needed for DM function on alerts
+
 # Remember to remove the debug guild if you want to use it on your server
-bot = commands.Bot(debug_guilds=[539546796473712650], command_prefix=("!"), intents=intents)
+bot = commands.Bot(debug_guilds=[SERVER], command_prefix=("!"), intents=intents)
 
 ### Functions ###
 
@@ -112,7 +118,7 @@ async def TwitchLiveCheck():
 
     try:
         # YOU NEED TO CHANGE THIS IF YOU WANT TO USE YOUR SERVER
-        guild = bot.get_guild(539546796473712650)
+        guild = bot.get_guild(SERVER)
         async with (
             aiohttp.ClientSession(headers={"Authorization": f"Bearer {TWITCH_TOKEN}", "Client-Id": f"{TWITCH_CLIENT_ID}"}) as TwitchSession,
             TwitchSession.get(f"https://api.twitch.tv/helix/streams?{API_Call.getvalue()}") as rUserData,
@@ -175,14 +181,14 @@ async def TwitchLiveCheck():
                     embed.set_footer(text="Bizeps_Bot")
                     NotificationTime = datetime.datetime.now() - timedelta(minutes=60)
                     if USER == "dota_joker":
-                        DotoChannel = bot.get_channel(539547495567720492)
+                        DotoChannel = discord.utils.get(guild.text_channels, name="live")
                         LastMessages = await DotoChannel.history(after=NotificationTime).flatten()
                         if LastMessages:
                             for message in LastMessages:
                                 if message.content.startswith(f"**{Displayname}**"):
                                     logging.info(f"{Displayname} went live on Twitch! Twitch Twitch Notification NOT sent, because the last Notification is under 60min old!")
                                     break
-                                await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
+                                await DotoChannel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
                                 logging.info(f"{Displayname} went live on Twitch! Twitch Notification sent!")
                                 # DM when I go live, requested by Kernie
                                 KernieDM = await bot.fetch_user(628940079913500703)
@@ -190,14 +196,14 @@ async def TwitchLiveCheck():
                                 logging.info(f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
                                 break
                         else:
-                            await bot.get_channel(539547495567720492).send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
+                            await DotoChannel.send(content=f"**{Displayname}** ist live mit {game}! {custommsg} {twitchuserrole.mention}", embed=embed)
                             logging.info(f"{Displayname} went live on Twitch! Twitch Notification sent!")
                             # DM when I go live, requested by Kernie
                             KernieDM = await bot.fetch_user(628940079913500703)
                             await KernieDM.send(content="Doto ist live, Kernovic!", embed=embed)
                             logging.info(f"{Displayname} went live on Twitch! Twitch Notification sent to Kernie!")
                     else:
-                        channel = bot.get_channel(703530328836407327)
+                        channel = discord.utils.get(guild.text_channels, name="kumpels-und-kumpelinen")
                         LastMessages = await channel.history(after=NotificationTime).flatten()
                         if LastMessages:
                             for message in LastMessages:
@@ -253,37 +259,41 @@ async def TrashReminder():
     Prüft einmal um 17 Uhr ob morgen Müll ist und sendet eine Nachricht an mich per Discord DM,
     dabei wird eine CSV Datei eingelesen und durchiteriert.
     """
+    logging.info("Checking if there is garbage collection tomorrow...")
     AdminToNotify = 248181624485838849
     MyDiscordUser = await bot.fetch_user(AdminToNotify)
-    tomorrowNow = datetime.datetime.today() + timedelta(days=1)
-    tomorrowClean = tomorrowNow.replace(hour=00, minute=00, second=00, microsecond=00)
-    # categorial DFs reduce memory usage
-    MuellListe = pd.read_csv("Muell.csv", sep=";", dtype="category")
-    for entry in MuellListe["Schwarze Tonne"].dropna():
-        EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
-        if tomorrowClean == EntryDate:
-            await MyDiscordUser.send(f"Die nächste schwarze Tonne ist morgen am: {entry}")
-            logging.info(f"Reminder for black garbage can which is collected on {entry} sent!")
-            break
+    TomorrowNow = datetime.datetime.today() + timedelta(days=1)
+    TomorrowClean = TomorrowNow.replace(hour=00, minute=00, second=00, microsecond=00)
 
-    for entry in MuellListe["Blaue Tonne"].dropna():
-        EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
-        if tomorrowClean == EntryDate:
-            await MyDiscordUser.send(f"Die nächste blaue Tonne ist morgen am: {entry}")
-            logging.info(f"Reminder for blue garbage can which is collected on {entry} sent!")
-            break
+    with open(
+        file="Muell.csv",
+        mode="r",
+        newline="",
+    ) as TrashFile:
+        CSVReader = csv.DictReader(TrashFile, delimiter=";")
+        for Row in CSVReader:
+            if Row["Schwarze Tonne"] != "":
+                BlackTrashCan = parser.parse(Row["Schwarze Tonne"], fuzzy=True)
+            if Row["Blaue Tonne"] != "":
+                BlueTrashCan = parser.parse(Row["Blaue Tonne"], fuzzy=True)
+            if Row["Gelbe Saecke"] != "":
+                YellowTrashCan = parser.parse(Row["Gelbe Saecke"], fuzzy=True)
 
-    for entry in MuellListe["Gelbe Saecke"].dropna():
-        EntryDate = pd.to_datetime(entry[3:], dayfirst=True)
-        if tomorrowClean == EntryDate:
-            await MyDiscordUser.send(f"Die nächsten gelben Säcke sind morgen am: {entry}")
-            logging.info(f"Reminder for yellow trashbag which is collected on {entry} sent!")
-            break
+            if TomorrowClean == BlackTrashCan:
+                await MyDiscordUser.send(f"Die nächste schwarze Tonne ist morgen am: {Row['Schwarze Tonne']}")
+                logging.info(f"Reminder for black garbage can which is collected on {Row['Schwarze Tonne']} sent!")
+            if TomorrowClean == BlueTrashCan:
+                await MyDiscordUser.send(f"Die nächste blaue Tonne ist morgen am: {Row['Blaue Tonne']}")
+                logging.info(f"Reminder for blue garbage can which is collected on {Row['Blaue Tonne']} sent!")
+            if TomorrowClean == YellowTrashCan:
+                await MyDiscordUser.send(f"Die nächste gelbe Tonne ist morgen am: {Row['Gelbe Saecke']}")
+                logging.info(f"Reminder for yellow trashbag which is collected on {Row['Gelbe Saecke']} sent!")
 
 
 # this needs a fix discussed in https://github.com/Pycord-Development/pycord/issues/1990
 @tasks.loop(time=datetime.time(hour=17, minute=5, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def GetFreeEpicGames():
+    logging.info("Checking if there are new free epic games...")
     AllEpicFiles = next(os.walk("epic/"))[2]
     NumberOfEpicFiles = len(AllEpicFiles)
     CurrentTime = datetime.datetime.now(timezone.utc)
@@ -406,9 +416,10 @@ async def GetFreeEpicGames():
                                         EpicImagePath = f"{NumberOfEpicFiles}_epic.jpg"
                                         with open(f"epic/{EpicImagePath}", "wb") as write_file:
                                             write_file.write(EpicImage)
-                                    guild = bot.get_guild(539546796473712650)
+                                    guild = bot.get_guild(SERVER)
                                     EpicRole = discord.utils.get(guild.roles, name="Free Epic Game Alert")
-                                    await bot.get_channel(539553203570606090).send(content=f"{EpicRole.mention}", embed=EpicEmbed)
+                                    GamingChannel = discord.utils.get(guild.text_channels, name="gaming")
+                                    await GamingChannel.send(content=f"{EpicRole.mention}", embed=EpicEmbed)
                                     logging.info(f"{FreeGame['title']} was added to free Epic Games!")
                                     # Send Epic Games to Subscribers via DM
                                     DMRoleEpic = discord.utils.get(guild.roles, name="DM Alert Epic")
@@ -453,10 +464,11 @@ async def _get_free_steamgames():
                                 SteamImageURL = quote(ImageSrc, safe=":/")
                                 SteamEmbed.set_image(url=f"{SteamImageURL}")
                                 SteamEmbed.set_footer(text="Bizeps_Bot")
+                                guild = bot.get_guild(SERVER)
+                                GamingChannel = discord.utils.get(guild.text_channels, name="gaming")
                                 if NotifiedUsers is False:
-                                    guild = bot.get_guild(539546796473712650)
                                     SteamRole = discord.utils.get(guild.roles, name="Free Steam Game Alert")
-                                    await bot.get_channel(539553203570606090).send(content=f"{SteamRole.mention}", embed=SteamEmbed)
+                                    await GamingChannel.send(content=f"{SteamRole.mention}", embed=SteamEmbed)
                                     # Send Steam Games to Subscribers via DM
                                     DMRoleSteam = discord.utils.get(guild.roles, name="DM Alert Steam")
                                     for user in DMRoleSteam.members:
@@ -466,7 +478,7 @@ async def _get_free_steamgames():
                                         logging.info(f"Free Steam Games were sent to subscriber [{user}].")
                                     NotifiedUsers = True
                                 else:
-                                    await bot.get_channel(539553203570606090).send(embed=SteamEmbed)
+                                    await GamingChannel.send(embed=SteamEmbed)
                                     # Send Steam Games to Subscribers via DM
                                     DMRoleSteam = discord.utils.get(guild.roles, name="DM Alert Steam")
                                     for user in DMRoleSteam.members:
@@ -489,6 +501,7 @@ async def _get_free_steamgames():
 
 @tasks.loop(time=datetime.time(hour=19, minute=5, second=0, tzinfo=zoneinfo.ZoneInfo("Europe/Berlin")))
 async def _get_free_goggames():
+    logging.info("Check if there are new free GOG.com games...")
     GOGURL = "https://www.gog.com/"
     async with aiohttp.ClientSession() as GOGSession:
         for _ in range(10):  # ten tries to find the giveaway HTML, this is absolutely godless but otherwise the bot is too spammy
@@ -510,9 +523,10 @@ async def _get_free_goggames():
                                 GOGEmbed.add_field(name="Besuch mich auf GOG", value=f"{GOGGameURL}", inline=True)
                                 GOGEmbed.set_image(url=f"{GOGImageURL}")
                                 GOGEmbed.set_footer(text="Bizeps_Bot")
-                                guild = bot.get_guild(539546796473712650)
+                                guild = bot.get_guild(SERVER)
                                 GOGRole = discord.utils.get(guild.roles, name="Free GOG Game Alert")
-                                await bot.get_channel(539553203570606090).send(content=f"{GOGRole.mention}", embed=GOGEmbed)
+                                GamingChannel = discord.utils.get(guild.text_channels, name="gaming")
+                                await GamingChannel.send(content=f"{GOGRole.mention}", embed=GOGEmbed)
                                 bot.Settings["Settings"]["FreeGOGGames"].append(GOGGameTitle)
                                 _write_json("Settings.json", bot.Settings)
                                 # Send GOG Games to Subscribers via DM
@@ -537,13 +551,30 @@ async def _get_free_goggames():
 
 
 @bot.event
+async def on_connect():
+    pass
+
+
+@bot.event
 async def on_ready():
     """
     Startet den Bot und die Loops werden gestartet, sollten sie nicht schon laufen.
     """
     bot.reload_settings = _load_settings_file
-    logging.info(f"Logged in as {bot.user}!")
-    logging.info("Bot started up!")
+
+    ### Add Cogs in bot file ###
+
+    for File in os.listdir("./cogs"):
+        if File.endswith(".py") and f"cogs.{File[:-3]}" not in bot.extensions and not File.startswith("management") and not File.startswith("old"):
+            bot.load_extension(f"cogs.{File[:-3]}")
+            logging.info(f"Extension {File[:-3]} loaded.")
+    if "cogs.management" not in bot.extensions:
+        bot.load_extension("cogs.management")
+        logging.info("Extension management loaded.")
+
+    logging.info(msg=f"Logged in as {bot.user}!")
+    logging.info(msg="Bot started up!")
+
     if not TwitchLiveCheck.is_running():
         TwitchLiveCheck.start()
     if not GameReminder.is_running():
@@ -556,6 +587,7 @@ async def on_ready():
         _get_free_steamgames.start()
     if not _get_free_goggames.is_running():
         _get_free_goggames.start()
+    await bot.sync_commands()
 
 
 @bot.event
@@ -600,16 +632,6 @@ if __name__ == "__main__":
 
     # Reading Banned Users before Startup for Cogs
     _get_banned_users()
-
-    ### Add Cogs in bot file ###
-
-    for File in os.listdir("./cogs"):
-        if File.endswith(".py") and f"cogs.{File[:-3]}" not in bot.extensions and not File.startswith("management") and not File.startswith("old"):
-            bot.load_extension(f"cogs.{File[:-3]}")
-            logging.info(f"Extension {File[:-3]} loaded.")
-    if "cogs.management" not in bot.extensions:
-        bot.load_extension("cogs.management")
-        logging.info("Extension management loaded.")
 
     ### Run Bot ###
 

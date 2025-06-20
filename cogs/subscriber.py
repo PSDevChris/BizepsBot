@@ -86,15 +86,12 @@ class Subscriber(commands.Cog):
         DMSteamButton = DMFreeStuffButton("Privatnachricht bei gratis Steam Game", "DM Alert Steam Button")
         DMGOGButton = DMFreeStuffButton("Privatnachricht bei gratis GOG Game", "DM Alert GOG Button")
         DMEpicButton = DMFreeStuffButton("Privatnachricht bei gratis Epic Game", "DM Alert Epic Button")
-        # FreeOWLButton = FreeStuffButton(
-        # "Gratis OWL-Tokens abonnieren", f"OWL Tokens Button")
         SubscribeUserView.add_item(FreeSteamButton)
         SubscribeUserView.add_item(FreeEpicButton)
         SubscribeUserView.add_item(FreeGOGButton)
         SubscribeUserView.add_item(DMSteamButton)
         SubscribeUserView.add_item(DMGOGButton)
         SubscribeUserView.add_item(DMEpicButton)
-        # SubscribeUserView.add_item(FreeOWLButton)
 
         await ctx.respond(view=SubscribeUserView, ephemeral=True)
 
