@@ -29,6 +29,9 @@ class HansTaskList(commands.Cog):
     async def on_ready(self):
         pass
 
+    async def split_msg_at_2k(self, ctx, message):
+        pass
+
     # Commands
     @commands.slash_command(name="hans", description="Er hat zu tun!", brief="Er hat zu tun!")
     @commands.cooldown(1, 10, commands.BucketType.user)

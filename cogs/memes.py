@@ -24,13 +24,12 @@ class Memes(commands.Cog):
         self.bot = bot
         self.Memes = []
         self.Mittwoch = []
-
-        self.RefreshMemes()
+        self.bot.loop.create_task(self.RefreshMemes())
 
     async def cog_check(self, ctx):
         return await _is_banned(ctx)
 
-    def RefreshMemes(self):
+    async def RefreshMemes(self):
         # Easiest way to walk was with a replace
         for MemeFolder, _, Files in os.walk(os.getcwd() + "/memes/"):
             ListOfMemes = self.Mittwoch if MemeFolder.split("/")[-1] == "Mittwoch meine Kerle#" else self.Memes
@@ -151,7 +150,7 @@ class Memes(commands.Cog):
         else:
             if not self.Memes:
                 await ctx.defer()
-                self.RefreshMemes()
+                await self.RefreshMemes()
 
             RandomMeme, AuthorOfMeme = await self.GetMeme()
 
@@ -179,13 +178,34 @@ class Memes(commands.Cog):
 
             if not self.Mittwoch:
                 await ctx.defer()
-                self.RefreshMemes()
+                await self.RefreshMemes()
 
             RandomWedMeme, _ = await self.GetMeme(Mittwoch=True)
-            MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen", "froschigen", "prähistorischen"]
+            MyDudesAdjectives = ["ehrenhaften", "hochachtungsvollen", "kerligen", "verehrten", "memigen", "standhaften", "stabilen", "froschigen", "prähistorischen", "welsigen"]
             RandomAdjective = random.SystemRandom().choice(MyDudesAdjectives)
             logging.info(f"[{ctx.author}] wanted a wednesday meme, chosen adjective was [{RandomAdjective}], chosen meme was [{RandomWedMeme}].")
             await ctx.respond(f"Es ist Mittwoch, meine {RandomAdjective} Kerl*innen und \*außen!!!", file=discord.File(f"{RandomWedMeme}"))
+
+    @commands.slash_command(name="orakel", description="Gibt ein Zufallsmeme aus, kann auch Memes adden")
+    @commands.cooldown(2, 180, commands.BucketType.user)
+    @commands.has_permissions(attach_files=True)
+    async def _oracle(self, ctx: discord.context.ApplicationContext):
+        oracle_announcements = [
+            "das Orakel sieht in deiner Zukunft klar und deutlich dies hier.",
+            "deine Zukunft ist gesetzt, wie eine Schachfigur und dies ist sie!",
+            "ohne Zweifel erwartet dich in deiner Zukunft folgendes.",
+            "unausweichlich steht dir folgendes bevor.",
+            "dir steht etwas ganz besonderes bevor, dies ist deine Zukunft.",
+        ]
+
+        if not self.Memes:
+            await ctx.defer()
+            await self.RefreshMemes()
+
+        RandomMeme = await self.GetMeme()
+        random_oracle_sent = random.SystemRandom().choice(oracle_announcements)
+        logging.info(f"{ctx.author} used the orakel command. Chosen was [{random_oracle_sent}] [{RandomMeme[0]}].")
+        await ctx.respond(f"**{ctx.author.display_name}**, {random_oracle_sent}", file=discord.File(f"{RandomMeme[0]}"))
 
     @_memearchiv.error
     async def _memearchiv_error(self, ctx, error: discord.DiscordException) -> None:
@@ -201,8 +221,14 @@ class Memes(commands.Cog):
     async def _wedmeme_error(self, ctx, error: discord.DiscordException) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuche es erneut in {int(error.retry_after)} Sekunden nochmal.")
-            logging.warning(f"{ctx.author} wanted to spam random memes!")
+            logging.warning(f"{ctx.author} wanted to spam random wednesday memes!")
         elif isinstance(error, commands.MessageNotFound):
-            await ctx.respond("Die Nachricht mit dem Meme konnte nicht gefunden werden.")
+            await ctx.respond("Die Nachricht mit dem Mittwochs-Meme konnte nicht gefunden werden.")
         else:
             logging.error(f"ERROR: {error}!")
+
+    @_oracle.error
+    async def _oracle_error(self, ctx, error: discord.DiscordException) -> None:
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.respond(f"Dieser Befehl ist noch im Cooldown. Versuche es erneut in {int(error.retry_after)} Sekunden nochmal.")
+            logging.warning(f"[{ctx.author}] wanted to spam the oracle command!")

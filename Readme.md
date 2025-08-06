@@ -22,3 +22,6 @@ Feel free to open an issue thread or a pull request with suggestions or better c
 ## To Dos ## 
 
 + Split Messages over 2k chars | Needs to be implemented as func
++ Add an automated oracle command
++ Restructure a lot of commands in cogs
++ Remove global stuff
