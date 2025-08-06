@@ -19,7 +19,7 @@ logging.basicConfig(
 )
 
 
-with open("Token.json", mode="r", encoding="UTF8") as Tokenfile:
+with open("TOKEN.json", mode="r", encoding="UTF8") as Tokenfile:
     Tokenvalues = json.load(Tokenfile)
     SERVER = Tokenvalues["SERVER"]
     TWITCH_TOKEN = Tokenvalues["TWITCH_TOKEN"]
